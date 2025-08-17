@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Complete Your Profile - Tyton</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root{
+      --navy:#0a0d1a; --gold:#daa520; --maroon:#7a263a; --ink:#050814; --muted:#a8c8ec; --bg:#060b16;
+      --card:#0e1425; --ring:#1a2847; --ring-focus:#daa520; --white:#f0f9ff; --shadow:rgba(0,0,0,.6);
+      --gradient-primary: linear-gradient(135deg, #b8860b 0%, #daa520 30%, #ffb627 70%, #ffd700 100%);
+      --gradient-secondary: linear-gradient(135deg, #00d4aa 0%, #0891b2 50%, #0284c7 100%);
+      --gradient-mystical: linear-gradient(135deg, #8b5cf6 0%, #a855f7 30%, #c084fc 70%, #e879f9 100%);
+      --glow-primary: rgba(218,165,32,.4);
+      --glow-secondary: rgba(8,145,178,.3);
+      --glow-mystical: rgba(168,85,247,.3);
+      --surface-elevated: rgba(14,20,37,.85);
+      --border-subtle: rgba(168,200,236,.12);
+      --border-accent: rgba(218,165,32,.5);
+      --atomic-cyan: #00d4aa;
+      --cosmic-purple: #8b5cf6;
+      --retro-orange: #daa520;
+    }
+    
+    html,body{
+      margin:0;padding:0;
+      background: 
+        radial-gradient(ellipse at 15% 20%, rgba(255,107,53,.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 30%, rgba(0,212,170,.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(139,92,246,.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 60%, rgba(255,182,39,.02) 0%, transparent 45%),
+        conic-gradient(from 0deg at 50% 50%, var(--bg) 0deg, #0a1121 120deg, #051018 240deg, var(--bg) 360deg);
+      color:var(--white); 
+      font:14px/1.5 'Space Grotesk', 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Atomic Age Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Exo 2', 'Orbitron', 'Rajdhani', 'Space Mono', 'Space Grotesk', monospace;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--white) 0%, #e2e8f0 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(218,165,32,0.3);
+    }
+    
+    html::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 20% 30%, var(--atomic-cyan) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, var(--cosmic-purple) 0%, transparent 40%),
+        radial-gradient(circle at 40% 80%, var(--retro-orange) 0%, transparent 30%);
+      opacity: 0.1;
+      z-index: -1;
+      animation: atomic-float 20s ease-in-out infinite;
+    }
+
+    @keyframes atomic-float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(2deg); }
+      66% { transform: translateY(20px) rotate(-2deg); }
+    }
+
+    .setup-container {
+      max-width: 800px;
+      width: 100%;
+      padding: 40px 20px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .setup-card{
+      background: linear-gradient(145deg, rgba(18,26,42,0.9) 0%, rgba(26,35,56,0.8) 100%);
+      border: 2px solid;
+      border-image: var(--gradient-primary) 1;
+      border-radius:20px; 
+      padding:40px; 
+      box-shadow:
+        0 15px 60px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        0 0 0 1px rgba(218,165,32,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .setup-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: var(--gradient-primary);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .setup-card::after {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: var(--gradient-mystical);
+      border-radius: 22px;
+      z-index: -1;
+      opacity: 0.6;
+      animation: mystical-glow 8s ease-in-out infinite;
+    }
+
+    @keyframes mystical-glow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px 0;
+      font-size: 32px;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,.1);
+      border-radius: 2px;
+      margin: 24px 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient-primary);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .account-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,.05);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .account-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid rgba(218,165,32,.3);
+      object-fit: cover;
+    }
+
+    .account-details h3 {
+      margin: 0 0 4px 0;
+      color: var(--white);
+      font-size: 18px;
+    }
+
+    .account-details p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .field{
+      display:grid; gap:8px; margin-bottom:20px;
+    }
+    
+    .field label { 
+      font-weight: 500; 
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .required {
+      color: #ef4444;
+      font-size: 12px;
+    }
+    
+    .field input,.field textarea,.field select{
+      background:#0f172a; color:var(--white); 
+      border:1px solid var(--ring); border-radius:12px; 
+      padding:14px 16px; outline:none;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    
+    .field input:focus,.field textarea:focus,.field select:focus{
+      border-color:var(--ring-focus); 
+      box-shadow:0 0 0 3px rgba(218,165,32,.4);
+      background: rgba(15,23,42,.8);
+    }
+
+    .field-help {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    .btn{
+      appearance:none; border:1px solid rgba(255,255,255,.15); 
+      background:rgba(255,255,255,.05); color:var(--white); 
+      padding:12px 20px; border-radius:12px; cursor:pointer;
+      font-weight: 500; transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      font-family: inherit;
+    }
+    
+    .btn:hover{
+      border-color:rgba(255,255,255,.4); 
+      background:rgba(255,255,255,.1);
+      transform: translateY(-1px);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.gold{
+      background: var(--gradient-primary);
+      color: #1a0f08; 
+      border: 2px solid var(--retro-orange);
+      font-weight: 700;
+      box-shadow: 
+        0 6px 20px rgba(218,165,32,.4),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn.gold::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn.gold:hover::before {
+      left: 100%;
+    }
+    
+    .btn.gold:hover {
+      box-shadow: 
+        0 8px 32px rgba(218,165,32,.6),
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        0 0 0 1px var(--retro-orange);
+      transform: translateY(-3px);
+      background: linear-gradient(135deg, #ff7a47 0%, #ff8c3e 30%, #ffb627 70%, #ffd700 100%);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: var(--gold);
+      animation: spin 0.8s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      display: block;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .setup-container {
+        padding: 20px 16px;
+      }
+      
+      .setup-card {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="setup-container">
+    <div class="setup-card">
+      <img src="/assets/logo.png" alt="Tyton" class="logo" onerror="this.style.display='none'">
+      
+      <div class="header">
+        <h1>⚛️ Complete Your Tyton Profile</h1>
+        <p>Join the quantum research network - set up your profile to start collaborating</p>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <div id="account-info" class="account-info" style="display: none;">
+        <img id="account-avatar" class="account-avatar" src="" alt="Profile">
+        <div class="account-details">
+          <h3 id="account-name">Loading...</h3>
+          <p id="account-email">Setting up your account...</p>
+        </div>
+      </div>
+
+      <form id="profileSetupForm">
+        <div class="form-grid">
+          <div class="field">
+            <label>First Name <span class="required">*</span></label>
+            <input name="firstName" id="firstName" required placeholder="Enter your first name">
+          </div>
+          <div class="field">
+            <label>Last Name <span class="required">*</span></label>
+            <input name="lastName" id="lastName" required placeholder="Enter your last name">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Username/Handle <span class="required">*</span></label>
+          <input name="handle" id="handle" required placeholder="@username" pattern="^@?[a-zA-Z0-9_]{3,20}$">
+          <div class="field-help">3-20 characters, letters, numbers, and underscores only</div>
+        </div>
+
+        <div class="field">
+          <label>Research Area/Specialization</label>
+          <select name="researchArea" id="researchArea">
+            <option value="">Select your primary research area</option>
+            <option value="bioengineering">Bioengineering</option>
+            <option value="computer-science">Computer Science</option>
+            <option value="electrical-engineering">Electrical Engineering</option>
+            <option value="mechanical-engineering">Mechanical Engineering</option>
+            <option value="materials-science">Materials Science</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="physics">Physics</option>
+            <option value="mathematics">Mathematics</option>
+            <option value="environmental-science">Environmental Science</option>
+            <option value="neuroscience">Neuroscience</option>
+            <option value="robotics">Robotics & Automation</option>
+            <option value="ai-ml">AI & Machine Learning</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Institution/Organization</label>
+          <input name="institution" id="institution" placeholder="University, Company, or Organization">
+        </div>
+
+        <div class="field">
+          <label>Academic Level/Position</label>
+          <select name="academicLevel" id="academicLevel">
+            <option value="">Select your current level</option>
+            <option value="undergraduate">Undergraduate Student</option>
+            <option value="graduate">Graduate Student</option>
+            <option value="phd">PhD Student</option>
+            <option value="postdoc">Postdoctoral Researcher</option>
+            <option value="faculty">Faculty/Professor</option>
+            <option value="industry">Industry Professional</option>
+            <option value="independent">Independent Researcher</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="field field-full">
+          <label>Bio/Research Interests</label>
+          <textarea name="bio" id="bio" rows="4" placeholder="Tell others about your research interests, current projects, or what you're working on..."></textarea>
+          <div class="field-help">This will be visible on your public profile</div>
+        </div>
+
+        <div class="field">
+          <label>Location (Optional)</label>
+          <input name="location" id="location" placeholder="City, State/Country">
+          <div class="field-help">Helps connect you with nearby researchers</div>
+        </div>
+
+        <div class="btn-group">
+          <a href="/auth/logout" class="btn">← Cancel & Logout</a>
+          <button type="submit" class="btn gold" id="submit-btn">
+            Complete Profile & Continue →
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Get token from URL or use session-based auth
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    let currentUser = null;
+
+    // Update progress bar
+    function updateProgress(percentage) {
+      document.getElementById('progress-fill').style.width = percentage + '%';
+    }
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const headers = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch('/auth/me', {
+          headers,
+          credentials: 'include' // For session-based auth
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          currentUser = data.user;
+          
+          // Show account info
+          const accountInfo = document.getElementById('account-info');
+          accountInfo.style.display = 'flex';
+          
+          // Populate account info
+          document.getElementById('account-name').textContent = currentUser.name || 'New User';
+          document.getElementById('account-email').textContent = currentUser.email || '';
+          document.getElementById('account-avatar').src = currentUser.photo || '/assets/logo.png';
+          
+          // Pre-fill form with any existing data
+          if (currentUser.googleData || currentUser.name) {
+            const names = (currentUser.name || currentUser.googleData?.name || '').split(' ');
+            document.getElementById('firstName').value = names[0] || '';
+            document.getElementById('lastName').value = names.slice(1).join(' ') || '';
+          }
+          
+          document.getElementById('handle').value = currentUser.handle || '';
+          document.getElementById('researchArea').value = currentUser.researchArea || '';
+          document.getElementById('institution').value = currentUser.institution || '';
+          document.getElementById('academicLevel').value = currentUser.academicLevel || '';
+          document.getElementById('bio').value = currentUser.bio || '';
+          document.getElementById('location').value = currentUser.location || '';
+          
+          // Update progress based on completed fields
+          updateProgressFromForm();
+        }
+      } catch (error) {
+        console.error('Failed to load user data:', error);
+        // Redirect to login if we can't get user data
+        window.location.href = '/';
+      }
+    }
+
+    // Update progress based on form completion
+    function updateProgressFromForm() {
+      const requiredFields = ['firstName', 'lastName', 'handle'];
+      const optionalFields = ['researchArea', 'institution', 'academicLevel', 'bio', 'location'];
+      
+      let completed = 0;
+      let total = requiredFields.length + optionalFields.length;
+      
+      // Check required fields (weighted more heavily)
+      requiredFields.forEach(fieldId => {
+        if (document.getElementById(fieldId).value.trim()) {
+          completed += 2; // Required fields count for 2 points
+        }
+      });
+      
+      // Check optional fields
+      optionalFields.forEach(fieldId => {
+        if (document.getElementById(fieldId).value.trim()) {
+          completed += 1; // Optional fields count for 1 point
+        }
+      });
+      
+      const maxPoints = (requiredFields.length * 2) + optionalFields.length;
+      const percentage = Math.min(100, (completed / maxPoints) * 100);
+      updateProgress(percentage);
+    }
+
+    // Handle form submission
+    document.getElementById('profileSetupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner"></span> Setting up your profile...';
+      submitBtn.disabled = true;
+
+      try {
+        const formData = new FormData(e.target);
+        
+        // Ensure handle starts with @
+        let handle = formData.get('handle').trim();
+        if (handle && !handle.startsWith('@')) {
+          handle = '@' + handle;
+        }
+        
+        const firstName = formData.get('firstName').trim();
+        const lastName = formData.get('lastName').trim();
+        
+        const profileData = {
+          firstName: firstName,
+          lastName: lastName,
+          name: `${firstName} ${lastName}`.trim(),
+          handle: handle,
+          researchArea: formData.get('researchArea'),
+          institution: formData.get('institution').trim(),
+          academicLevel: formData.get('academicLevel'),
+          bio: formData.get('bio').trim(),
+          location: formData.get('location').trim()
+        };
+
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch('/auth/complete-profile', {
+          method: 'POST',
+          headers,
+          credentials: 'include', // For session-based auth
+          body: JSON.stringify(profileData)
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Store token if we have one and redirect to main app
+          if (token) {
+            localStorage.setItem('tyton_auth_token', token);
+          }
+          
+          // Show success and redirect
+          updateProgress(100);
+          submitBtn.innerHTML = '✅ Profile Complete!';
+          
+          setTimeout(() => {
+            window.location.href = '/?welcome=true';
+          }, 1500);
+        } else {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to complete profile setup');
+        }
+      } catch (error) {
+        alert('❌ Setup failed: ' + error.message);
+      } finally {
+        if (submitBtn.innerHTML.includes('spinner')) {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+        }
+      }
+    });
+
+    // Handle input validation and progress updates
+    document.getElementById('handle').addEventListener('input', (e) => {
+      let value = e.target.value;
+      if (value && !value.startsWith('@')) {
+        e.target.value = '@' + value.replace(/[^a-zA-Z0-9_]/g, '');
+      }
+      updateProgressFromForm();
+    });
+
+    // Update progress when any field changes
+    document.querySelectorAll('input, select, textarea').forEach(field => {
+      field.addEventListener('input', updateProgressFromForm);
+      field.addEventListener('change', updateProgressFromForm);
+    });
+
+    // Load user data on page load
+    loadUserData();
+  </script>
+</body>
+</html>

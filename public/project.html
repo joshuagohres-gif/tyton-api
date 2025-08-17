@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Project Details - Tyton</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root{
+      --navy:#0a0d1a; --gold:#daa520; --maroon:#7a263a; --ink:#050814; --muted:#a8c8ec; --bg:#060b16;
+      --card:#0e1425; --ring:#1a2847; --ring-focus:#daa520; --white:#f0f9ff; --shadow:rgba(0,0,0,.6);
+      --gradient-primary: linear-gradient(135deg, #b8860b 0%, #daa520 30%, #ffb627 70%, #ffd700 100%);
+      --gradient-secondary: linear-gradient(135deg, #00d4aa 0%, #0891b2 50%, #0284c7 100%);
+      --gradient-mystical: linear-gradient(135deg, #8b5cf6 0%, #a855f7 30%, #c084fc 70%, #e879f9 100%);
+      --glow-primary: rgba(218,165,32,.4);
+      --glow-secondary: rgba(8,145,178,.3);
+      --glow-mystical: rgba(168,85,247,.3);
+      --surface-elevated: rgba(14,20,37,.85);
+      --border-subtle: rgba(168,200,236,.12);
+      --border-accent: rgba(218,165,32,.5);
+      --atomic-cyan: #00d4aa;
+      --cosmic-purple: #8b5cf6;
+      --retro-orange: #daa520;
+    }
+    
+    html,body{
+      margin:0;padding:0;
+      background: 
+        radial-gradient(ellipse at 15% 20%, rgba(255,107,53,.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 30%, rgba(0,212,170,.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(139,92,246,.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 60%, rgba(255,182,39,.02) 0%, transparent 45%),
+        conic-gradient(from 0deg at 50% 50%, var(--bg) 0deg, #0a1121 120deg, #051018 240deg, var(--bg) 360deg);
+      color:var(--white); 
+      font:16px/1.7 'Space Grotesk', 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Atomic Age Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Exo 2', 'Orbitron', 'Rajdhani', 'Space Mono', 'Space Grotesk', monospace;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--white) 0%, #e2e8f0 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(218,165,32,0.3);
+      line-height: 1.3;
+    }
+    
+    html::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(2px 2px at 20% 30%, var(--atomic-cyan), transparent),
+        radial-gradient(2px 2px at 40% 70%, var(--retro-orange), transparent),
+        radial-gradient(1px 1px at 90% 40%, var(--cosmic-purple), transparent),
+        radial-gradient(1px 1px at 60% 10%, var(--atomic-cyan), transparent),
+        radial-gradient(2px 2px at 80% 80%, var(--retro-orange), transparent);
+      background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px, 180px 180px;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: -1;
+      animation: atomicFloat 20s linear infinite;
+    }
+    
+    @keyframes atomicFloat {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(-10px, -5px) rotate(120deg); }
+      66% { transform: translate(5px, -10px) rotate(240deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:10; 
+      backdrop-filter: blur(20px) saturate(180%);
+      background:
+        linear-gradient(180deg, var(--surface-elevated) 0%, rgba(15,22,41,.6) 100%);
+      box-shadow:
+        0 8px 32px rgba(0,0,0,.4),
+        0 1px 0 rgba(230,169,26,.1),
+        inset 0 1px 0 rgba(241,245,249,.05);
+      border-bottom: 1px solid var(--border-accent);
+      position: relative;
+    }
+    
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b8860b, #daa520, #ffd700, transparent);
+      opacity: 0.8;
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+    }
+
+    /* Layout */
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      line-height: 1.8;
+    }
+
+    .project-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .project-title {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin: 0 0 16px 0;
+      line-height: 1.2;
+    }
+
+    .project-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .project-meta .author {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .project-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .tag {
+      background: rgba(218,165,32,.2);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .project-content {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255,255,255,.95);
+    }
+
+    .project-content p {
+      margin: 0 0 24px 0;
+    }
+
+    .project-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .project-content h2 {
+      font-size: 24px;
+      margin: 32px 0 16px 0;
+    }
+
+    .project-content h3 {
+      font-size: 20px;
+      margin: 24px 0 12px 0;
+    }
+
+    .project-content blockquote {
+      margin: 24px 0;
+      padding: 16px 24px;
+      background: rgba(218,165,32,.1);
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      font-style: italic;
+    }
+
+    .project-content strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* Back link button */
+    .btn{
+      appearance:none; border:1px solid rgba(255,255,255,.15); 
+      background:rgba(255,255,255,.05); color:var(--white); 
+      padding:12px 20px; border-radius:12px; cursor:pointer;
+      font-weight: 500; transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    
+    .btn:hover{
+      border-color:rgba(255,255,255,.4); 
+      background:rgba(255,255,255,.1);
+      transform: translateY(-1px);
+    }
+
+    .back-link {
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    .project-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+      padding: 24px;
+      background: rgba(255,255,255,.05);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .btn.gold {
+      background: var(--gradient-primary);
+      color: #1a0f08;
+      border: 2px solid var(--retro-orange);
+      font-weight: 700;
+      box-shadow: 
+        0 6px 20px rgba(218,165,32,.4),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .btn.gold:hover {
+      box-shadow: 
+        0 8px 32px rgba(218,165,32,.6),
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        0 0 0 1px var(--retro-orange);
+      transform: translateY(-3px);
+      background: linear-gradient(135deg, #ff7a47 0%, #ff8c3e 30%, #ffb627 70%, #ffd700 100%);
+    }
+
+    .error-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .error-state h2 {
+      color: #ef4444;
+      margin-bottom: 16px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: var(--gold);
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 24px 16px;
+      }
+      
+      .project-title {
+        font-size: 24px;
+      }
+      
+      .project-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .project-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="/" class="btn back-link">← Back to Tyton</a>
+
+    <div id="loading" style="text-align: center; padding: 60px 20px;">
+      <div class="spinner"></div>
+      <p>Loading project details...</p>
+    </div>
+
+    <div id="error" class="error-state" style="display: none;">
+      <h2>⚠️ Project Not Found</h2>
+      <p>The project you're looking for doesn't exist or may have been removed.</p>
+      <a href="/" class="btn">← Back to Home</a>
+    </div>
+
+    <article class="project" id="project-content" style="display: none;">
+      <div class="project-header">
+        <h1 class="project-title" id="project-title">Loading...</h1>
+        <div class="project-meta">
+          <span class="author" id="project-owner">Loading...</span>
+          <span>•</span>
+          <span id="project-date">Loading...</span>
+          <span>•</span>
+          <span id="project-location">Loading...</span>
+        </div>
+        <div class="project-tags" id="project-tags"></div>
+      </div>
+
+      <div class="project-stats">
+        <div class="stat">
+          <div class="stat-value" id="project-likes">0</div>
+          <div class="stat-label">Likes</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="project-followers">0</div>
+          <div class="stat-label">Followers</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="project-age">0</div>
+          <div class="stat-label">Days Active</div>
+        </div>
+      </div>
+
+      <div class="project-content" id="project-content-body">
+        <p>Loading project content...</p>
+      </div>
+
+      <div class="actions">
+        <button class="btn gold" id="like-btn" onclick="handleLike()">
+          ❤️ <span id="like-text">Like Project</span>
+        </button>
+        <button class="btn" id="follow-btn" onclick="handleFollow()">
+          👀 <span id="follow-text">Follow Updates</span>
+        </button>
+        <button class="btn" onclick="handleContact()">
+          📧 Contact Researcher
+        </button>
+        <a href="/" class="btn">
+          🔍 Browse More Projects
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <script>
+    // Get project ID from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+    
+    let currentProject = null;
+    let authToken = localStorage.getItem('tyton_auth_token');
+
+    function formatDate(timestamp) {
+      if (!timestamp) return 'Unknown';
+      return new Date(timestamp).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+
+    // Load project data
+    async function loadProject() {
+      if (!projectId) {
+        showError();
+        return;
+      }
+
+      try {
+        // Fetch project data from API
+        const response = await fetch('/api/data');
+        const data = await response.json();
+        
+        // Find the specific project
+        const project = data.items.find(item => item.id === projectId && item.type === 'project');
+        
+        if (!project) {
+          showError();
+          return;
+        }
+
+        currentProject = project;
+        displayProject(project);
+        
+      } catch (error) {
+        console.error('Error loading project:', error);
+        showError();
+      }
+    }
+
+    function displayProject(project) {
+      // Hide loading state
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('project-content').style.display = 'block';
+
+      // Set title and meta info
+      document.getElementById('project-title').textContent = project.title;
+      document.getElementById('project-owner').textContent = project.owner || '@anonymous';
+      document.getElementById('project-date').textContent = formatDate(project.createdAt);
+      document.getElementById('project-location').textContent = project.location || 'Remote';
+
+      // Set tags
+      const tagsContainer = document.getElementById('project-tags');
+      if (project.tags) {
+        tagsContainer.innerHTML = project.tags.split(',').map(tag => 
+          `<span class="tag">${tag.trim()}</span>`
+        ).join('');
+      } else {
+        tagsContainer.innerHTML = '<span class="tag">research</span>';
+      }
+
+      // Set statistics
+      document.getElementById('project-likes').textContent = project.likes || 0;
+      document.getElementById('project-followers').textContent = project.followers || 0;
+      
+      // Calculate project age
+      const ageInDays = Math.floor((Date.now() - (project.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+      document.getElementById('project-age').textContent = ageInDays;
+
+      // Generate detailed project content based on description and tags
+      const contentBody = generateProjectContent(project);
+      document.getElementById('project-content-body').innerHTML = contentBody;
+
+      // Update page title
+      document.title = `${project.title} - Tyton`;
+
+      // Update button states if user is authenticated
+      updateButtonStates();
+    }
+
+    function generateProjectContent(project) {
+      const description = project.description || 'No description available.';
+      const tags = project.tags ? project.tags.split(',').map(t => t.trim()) : [];
+      
+      // Determine research area
+      let researchArea = 'Interdisciplinary Research';
+      if (tags.some(tag => tag.includes('quantum'))) researchArea = 'Quantum Physics & Computing';
+      else if (tags.some(tag => tag.includes('bio') || tag.includes('neural'))) researchArea = 'Biotechnology & Life Sciences';
+      else if (tags.some(tag => tag.includes('ai') || tag.includes('ml'))) researchArea = 'Artificial Intelligence & Machine Learning';
+      else if (tags.some(tag => tag.includes('physics'))) researchArea = 'Physics & Engineering';
+      else if (tags.some(tag => tag.includes('space'))) researchArea = 'Aerospace & Space Technology';
+      else if (tags.some(tag => tag.includes('climate') || tag.includes('environment'))) researchArea = 'Environmental Science';
+
+      return `
+        <h3>Project Overview</h3>
+        <p>${description}</p>
+        
+        <h3>Research Area</h3>
+        <p><strong>${researchArea}</strong> - This project focuses on advancing knowledge and innovation in this critical field of study.</p>
+        
+        <h3>Research Methodology</h3>
+        <p>This project employs cutting-edge research methodologies and state-of-the-art equipment to achieve breakthrough results. The research team follows rigorous scientific protocols to ensure reproducibility and validity of findings.</p>
+        
+        <h3>Current Status</h3>
+        <p>The project is currently <strong>active</strong> and seeking collaboration opportunities. Researchers and institutions interested in contributing to this work are encouraged to reach out to discuss potential partnerships.</p>
+        
+        <h3>Expected Outcomes</h3>
+        <p>This research aims to produce significant contributions to the scientific community through peer-reviewed publications, patent applications, and practical applications that can benefit society at large.</p>
+        
+        <h3>Collaboration Opportunities</h3>
+        <blockquote>
+          "We welcome collaboration from researchers, institutions, and organizations who share our vision for advancing scientific knowledge and creating meaningful impact through innovation."
+        </blockquote>
+        
+        <p>If you're interested in learning more about this project or exploring collaboration opportunities, please don't hesitate to contact the research team using the options below.</p>
+      `;
+    }
+
+    function updateButtonStates() {
+      // This would check user authentication and update like/follow button states
+      // For now, we'll keep it simple
+      if (authToken) {
+        document.getElementById('like-text').textContent = 'Like Project';
+        document.getElementById('follow-text').textContent = 'Follow Updates';
+      }
+    }
+
+    function showError() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+    }
+
+    async function handleLike() {
+      if (!currentProject || !authToken) {
+        alert('Please log in to like projects');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/items/${currentProject.id}/like`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          document.getElementById('project-likes').textContent = result.likes;
+          document.getElementById('like-text').textContent = result.liked ? 'Liked!' : 'Like Project';
+        }
+      } catch (error) {
+        console.error('Error liking project:', error);
+        alert('Failed to like project. Please try again.');
+      }
+    }
+
+    async function handleFollow() {
+      if (!currentProject || !authToken) {
+        alert('Please log in to follow projects');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/items/${currentProject.id}/follow`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          document.getElementById('follow-text').textContent = result.following ? 'Following!' : 'Follow Updates';
+        }
+      } catch (error) {
+        console.error('Error following project:', error);
+        alert('Failed to follow project. Please try again.');
+      }
+    }
+
+    function handleContact() {
+      if (!currentProject) return;
+      
+      const subject = encodeURIComponent(`Inquiry about: ${currentProject.title}`);
+      const body = encodeURIComponent(`Hi ${currentProject.owner},\n\nI'm interested in learning more about your project "${currentProject.title}". Could we discuss potential collaboration opportunities?\n\nBest regards`);
+      
+      window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    }
+
+    // Load project when page loads
+    document.addEventListener('DOMContentLoaded', loadProject);
+  </script>
+</body>
+</html>

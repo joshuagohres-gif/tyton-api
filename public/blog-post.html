@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Blog Post - Tyton</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root{
+      --navy:#0a0d1a; --gold:#daa520; --maroon:#7a263a; --ink:#050814; --muted:#a8c8ec; --bg:#060b16;
+      --card:#0e1425; --ring:#1a2847; --ring-focus:#daa520; --white:#f0f9ff; --shadow:rgba(0,0,0,.6);
+      --gradient-primary: linear-gradient(135deg, #b8860b 0%, #daa520 30%, #ffb627 70%, #ffd700 100%);
+      --gradient-secondary: linear-gradient(135deg, #00d4aa 0%, #0891b2 50%, #0284c7 100%);
+      --gradient-mystical: linear-gradient(135deg, #8b5cf6 0%, #a855f7 30%, #c084fc 70%, #e879f9 100%);
+      --glow-primary: rgba(218,165,32,.4);
+      --glow-secondary: rgba(8,145,178,.3);
+      --glow-mystical: rgba(168,85,247,.3);
+      --surface-elevated: rgba(14,20,37,.85);
+      --border-subtle: rgba(168,200,236,.12);
+      --border-accent: rgba(218,165,32,.5);
+      --atomic-cyan: #00d4aa;
+      --cosmic-purple: #8b5cf6;
+      --retro-orange: #daa520;
+    }
+    
+    html,body{
+      margin:0;padding:0;
+      background: 
+        radial-gradient(ellipse at 15% 20%, rgba(255,107,53,.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 30%, rgba(0,212,170,.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(139,92,246,.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 60%, rgba(255,182,39,.02) 0%, transparent 45%),
+        conic-gradient(from 0deg at 50% 50%, var(--bg) 0deg, #0a1121 120deg, #051018 240deg, var(--bg) 360deg);
+      color:var(--white); 
+      font:16px/1.7 'Space Grotesk', 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Atomic Age Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Exo 2', 'Orbitron', 'Rajdhani', 'Space Mono', 'Space Grotesk', monospace;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--white) 0%, #e2e8f0 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(218,165,32,0.3);
+      line-height: 1.3;
+    }
+    
+    html::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(2px 2px at 20% 30%, var(--atomic-cyan), transparent),
+        radial-gradient(2px 2px at 40% 70%, var(--retro-orange), transparent),
+        radial-gradient(1px 1px at 90% 40%, var(--cosmic-purple), transparent),
+        radial-gradient(1px 1px at 60% 10%, var(--atomic-cyan), transparent),
+        radial-gradient(2px 2px at 80% 80%, var(--retro-orange), transparent);
+      background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px, 180px 180px;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: -1;
+      animation: atomicFloat 20s linear infinite;
+    }
+    
+    @keyframes atomicFloat {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(-10px, -5px) rotate(120deg); }
+      66% { transform: translate(5px, -10px) rotate(240deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:10; 
+      backdrop-filter: blur(20px) saturate(180%);
+      background:
+        linear-gradient(180deg, var(--surface-elevated) 0%, rgba(15,22,41,.6) 100%);
+      box-shadow:
+        0 8px 32px rgba(0,0,0,.4),
+        0 1px 0 rgba(230,169,26,.1),
+        inset 0 1px 0 rgba(241,245,249,.05);
+      border-bottom: 1px solid var(--border-accent);
+      position: relative;
+    }
+    
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--gradient-primary);
+      opacity: 0.6;
+    }
+    
+    .bar{
+      max-width:1200px;margin:0 auto;
+      display:flex; justify-content: space-between;
+      align-items:center; gap:16px; padding:12px 20px;
+    }
+    
+    .brand{
+      display:flex; align-items:center; gap:12px; 
+      text-decoration:none; color:var(--white);
+      transition: transform 0.2s ease;
+    }
+    
+    .brand:hover { transform: scale(1.02); }
+    
+    .brand img{
+      width:52px;height:52px; border-radius:12px; 
+      display:block; 
+      box-shadow:
+        0 8px 25px rgba(0,0,0,.5),
+        0 0 0 1px rgba(230,169,26,.3),
+        0 0 20px var(--glow-primary);
+      border: 2px solid var(--border-accent);
+      object-fit: cover;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .brand:hover img {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 12px 35px rgba(0,0,0,.6),
+        0 0 0 1px rgba(230,169,26,.5),
+        0 0 30px var(--glow-primary);
+    }
+    
+    .brand span{
+      font-weight:700; letter-spacing:.8px; font-size: 18px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Enhanced Buttons */
+    .btn{
+      appearance:none; 
+      border:1px solid var(--border-subtle); 
+      background: rgba(241,245,249,.08);
+      color:var(--white); 
+      padding:10px 18px; 
+      border-radius:14px; 
+      cursor:pointer;
+      font-weight: 500; 
+      transition: all 0.3s ease;
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+      text-decoration: none;
+    }
+    
+    .btn:hover{
+      border-color:var(--border-accent); 
+      background:
+        linear-gradient(135deg, rgba(241,245,249,.15) 0%, rgba(241,245,249,.08) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,.2);
+    }
+
+    /* Main Content */
+    main{
+      max-width:800px;
+      margin:40px auto; 
+      padding:0 20px 100px;
+    }
+
+    .blog-post {
+      background:
+        linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%),
+        linear-gradient(135deg, rgba(255,107,53,.08) 0%, rgba(139,92,246,.05) 50%, rgba(0,212,170,.07) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px; 
+      padding: 40px;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,.3),
+        0 8px 16px rgba(0,0,0,.2),
+        inset 0 1px 0 rgba(241,245,249,.08);
+      backdrop-filter: blur(16px) saturate(180%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .blog-post::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b8860b, #daa520, #ffd700, transparent);
+      opacity: 0.8;
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+    }
+
+    .blog-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .blog-title {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin: 0 0 16px 0;
+      line-height: 1.2;
+    }
+
+    .blog-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .blog-meta .author {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .blog-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .tag {
+      background: rgba(218,165,32,.2);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid rgba(218,165,32,.3);
+    }
+
+    .blog-content {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255,255,255,.95);
+    }
+
+    .blog-content p {
+      margin: 0 0 24px 0;
+    }
+
+    .blog-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .blog-content h2 {
+      font-size: 24px;
+      margin: 32px 0 16px 0;
+    }
+
+    .blog-content h3 {
+      font-size: 20px;
+      margin: 24px 0 12px 0;
+    }
+
+    .blog-content blockquote {
+      margin: 24px 0;
+      padding: 16px 24px;
+      background: rgba(218,165,32,.1);
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      font-style: italic;
+    }
+
+    .blog-content strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .back-link {
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 20px 16px 60px;
+      }
+
+      .blog-post {
+        padding: 24px;
+      }
+
+      .blog-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <a href="/" class="brand">
+        <img src="/assets/logo.png" alt="Tyton" onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"%23daa520\"/><text x=\"50\" y=\"60\" text-anchor=\"middle\" fill=\"white\" font-size=\"40\" font-weight=\"bold\">T</text></svg>'">
+        <span>Tyton</span>
+      </a>
+      <nav>
+        <a href="/" class="btn">← Back to Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <a href="/#blog" class="btn back-link">← Back to Blog</a>
+    
+    <article class="blog-post">
+      <div class="blog-header">
+        <h1 class="blog-title" id="blog-title">Loading...</h1>
+        <div class="blog-meta">
+          <span class="author" id="blog-author">Tyton Systems</span>
+          <span>•</span>
+          <span id="blog-date">Loading...</span>
+          <span>•</span>
+          <span id="blog-read-time">0 min read</span>
+        </div>
+        <div class="blog-tags" id="blog-tags"></div>
+      </div>
+      
+      <div class="blog-content" id="blog-content">
+        <p>Loading blog post content...</p>
+      </div>
+    </article>
+  </main>
+
+  <script>
+    function formatDate(timestamp) {
+      return new Date(timestamp).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+
+    function loadBlogPost() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const postId = urlParams.get('id');
+      
+      if (!postId) {
+        window.location.href = '/';
+        return;
+      }
+
+      // Blog posts data (same as in main app)
+      const blogPosts = [
+        {
+          id: "google-willow-quantum-chip-2024",
+          title: "Google's Willow Quantum Chip Breaks Through Error Correction Barrier",
+          excerpt: "Google's latest quantum processor demonstrates exponential error reduction, marking a historic milestone in quantum computing development.",
+          content: `Google unveiled its revolutionary Willow quantum chip this December, achieving a breakthrough that has been decades in the making: quantum error correction that actually reduces errors as more qubits are added to the system.
+
+The 105-qubit superconducting processor represents a fundamental shift in quantum computing. Unlike previous systems where adding more qubits typically introduced more errors, Willow demonstrates "below threshold" error correction—each additional qubit actually makes the system more reliable rather than less.
+
+**A Historic Achievement**
+
+"This is the moment we've been working toward for 30 years," explained Dr. Hartmut Neven, head of Google Quantum AI. "We've crossed the threshold where quantum error correction becomes exponentially beneficial rather than exponentially costly."
+
+The breakthrough centers on Google's novel approach to logical qubits—virtual qubits made from multiple physical qubits that can detect and correct their own errors in real-time. Willow's logical qubits demonstrated error rates that decreased by a factor of 2 each time the system size doubled, achieving a 10^-6 error rate with their largest logical qubit arrays.
+
+**Real-World Implications**
+
+Perhaps most remarkably, Willow solved a computational benchmark problem in under 5 minutes that would take today's fastest supercomputers 10 septillion years—a number that exceeds the age of the universe. This demonstrates "quantum advantage" on a scale never before achieved.
+
+The technology has immediate implications for drug discovery, financial modeling, and climate simulation. Pharmaceutical companies including Roche and Biogen are already partnering with Google to explore molecular simulation applications that could accelerate drug development by decades.
+
+**Beyond Computing**
+
+Willow's error correction breakthrough also validates quantum computing's potential for artificial intelligence. The chip's ability to maintain quantum coherence while performing complex calculations opens pathways for quantum machine learning algorithms that could revolutionize how AI systems process information.
+
+The achievement earned recognition from Physics World as their 2024 Breakthrough of the Year, shared with MIT and Harvard researchers who demonstrated similar error correction breakthroughs on atomic processors.
+
+**Looking Forward**
+
+Google plans to scale Willow's architecture to 1,000+ logical qubits by 2030, targeting applications in fusion energy simulation, drug discovery, and optimization problems that are intractable for classical computers. The company estimates that practical quantum advantage for commercial applications is now just 3-5 years away rather than decades.
+
+As quantum computing transitions from laboratory curiosity to practical technology, Willow represents the foundation upon which the quantum future will be built.`,
+          publishedAt: Date.now() - 86400000 * 3,
+          readTime: 4,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["quantum computing", "Google", "error correction", "breakthrough"]
+        },
+        {
+          id: "china-zuchongzhi-quantum-2025",
+          title: "China Unveils Zuchongzhi 3.0: 105-Qubit Quantum Processor Achieves Quadrillion-Fold Speedup",
+          excerpt: "Chinese scientists demonstrate quantum supremacy with their latest superconducting processor, rivaling global quantum computing leaders.",
+          content: `Chinese researchers unveiled Zuchongzhi 3.0 this week, a 105-qubit superconducting quantum processor that achieved computational speeds quadrillions of times faster than leading supercomputers for quantum random circuit sampling tasks.
+
+The breakthrough, announced by a team from the University of Science and Technology of China (USTC), represents a significant leap in China's quantum computing capabilities and positions the nation as a major competitor in the global quantum race.
+
+**Technical Achievement**
+
+Zuchongzhi 3.0 builds upon previous iterations with dramatically improved coherence times and gate fidelities. The processor maintains quantum states for over 100 microseconds—sufficient for complex quantum algorithms that require thousands of quantum operations.
+
+"Our results demonstrate that China has achieved quantum computational advantage comparable to the world's leading systems," said Professor Pan Jianwei, who leads the quantum research team at USTC. The system performed quantum random circuit sampling in just 200 seconds, a task that would require classical supercomputers millions of years to complete.
+
+**Strategic Implications**
+
+The announcement comes as the United Nations declared 2025 the International Year of Quantum Science and Technology, highlighting the field's growing importance for national competitiveness. China's quantum achievements span multiple technological approaches, including superconducting circuits, trapped ions, and photonic systems.
+
+Unlike Google's Willow chip, which focuses on error correction, Zuchongzhi 3.0 prioritizes quantum advantage demonstrations through specialized sampling problems. This approach validates China's strategy of pursuing multiple quantum computing pathways simultaneously.
+
+**Applications and Partnerships**
+
+Chinese technology giants including Alibaba, Baidu, and Tencent are integrating quantum computing research into their cloud platforms. Early applications focus on optimization problems in logistics, financial modeling, and artificial intelligence training.
+
+The processor's architecture is particularly suited for machine learning applications, with quantum neural networks showing promise for pattern recognition tasks that exceed classical computer capabilities.
+
+**Global Competition**
+
+Zuchongzhi 3.0's capabilities place China alongside the United States and European Union in the quantum computing leadership tier. The achievement demonstrates that quantum computing development is increasingly becoming a multi-polar field rather than dominated by a single nation or company.
+
+International collaboration remains strong despite geopolitical tensions, with Chinese researchers continuing to publish in leading journals and participate in global quantum science conferences.
+
+**Future Roadmap**
+
+China plans to achieve fault-tolerant quantum computing by 2030 through its national quantum development strategy. Investment in quantum research exceeds $15 billion annually, supporting both fundamental research and practical application development.
+
+The Zuchongzhi series represents just one component of China's comprehensive quantum technology ecosystem, which includes quantum communication networks, quantum sensing systems, and quantum cryptography infrastructure already deployed in major cities.
+
+As the global quantum computing race intensifies, achievements like Zuchongzhi 3.0 ensure that quantum advantage will emerge from multiple technological approaches and international research communities.`,
+          publishedAt: Date.now() - 86400000 * 7,
+          readTime: 5,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["quantum computing", "China", "Zuchongzhi", "technology competition"]
+        },
+        {
+          id: "west-tokamak-fusion-record-2025",
+          title: "WEST Tokamak Achieves 1,337-Second Fusion Record, Bringing Clean Energy Closer to Reality",
+          excerpt: "French research facility maintains plasma for over 22 minutes, setting new world record and demonstrating fusion energy's commercial viability.",
+          content: `The WEST (Tungsten Environment in Steady-state Tokamak) facility in France achieved a groundbreaking milestone this month, maintaining nuclear fusion plasma for 1,337 seconds—over 22 minutes—setting a new world record for sustained fusion reactions.
+
+The achievement represents a 25% improvement over previous duration records and brings commercial fusion energy significantly closer to reality. WEST's success demonstrates that long-duration fusion reactions can be maintained with the stability and control necessary for power generation.
+
+**Technical Breakthrough**
+
+WEST's tokamak design uses superconducting magnets cooled to -269°C to contain plasma heated to 100 million degrees Celsius. The facility's tungsten-lined walls can withstand the extreme conditions while maintaining vacuum integrity for extended periods.
+
+"This result validates our approach to steady-state fusion operation," explained Dr. Jérôme Bucalossi, WEST project leader at CEA (French Alternative Energies and Atomic Energy Commission). "We've proven that fusion reactors can operate continuously rather than in short pulses."
+
+The 22-minute duration represents a critical threshold for commercial viability. Power plants require continuous operation to feed electricity into the grid, making WEST's achievement a crucial step toward practical fusion energy.
+
+**Engineering Excellence**
+
+WEST's success stems from advanced plasma control systems that use artificial intelligence to predict and counteract instabilities before they terminate the fusion reaction. Machine learning algorithms analyze plasma behavior in real-time, adjusting magnetic fields and heating systems with microsecond precision.
+
+The facility's tungsten divertor—components that handle exhaust heat and particles—demonstrated exceptional durability under prolonged fusion conditions. This addresses a major challenge for future power plants, which must operate continuously for years without component failure.
+
+**Global Impact**
+
+WEST's record directly benefits ITER, the international fusion project under construction in southern France. ITER aims to achieve 500 MW of fusion power output, and WEST's operational experience provides crucial data for ITER's design optimization.
+
+"WEST's achievements validate the physics and engineering approaches ITER will use," said Dr. Bernard Bigot, ITER Director-General. "This brings us confidence that ITER will achieve its goals when operations begin in 2036."
+
+**Commercial Applications**
+
+Private fusion companies are closely monitoring WEST's progress. Commonwealth Fusion Systems, TAE Technologies, and other ventures developing compact fusion reactors can apply WEST's control methodologies to their own designs.
+
+The record also demonstrates fusion's potential for grid-scale electricity generation. A commercial fusion plant based on WEST's technology could generate 400-600 MW of continuous power—enough electricity for 300,000-450,000 homes.
+
+**Future Milestones**
+
+WEST plans to extend operation duration to one hour by late 2025, with ultimate goals of 1000-second operations at higher power levels. These achievements would prove fusion's readiness for commercial deployment.
+
+France's fusion program, supported by €7 billion in government funding through 2030, positions Europe as a leader in fusion energy development alongside competitors in the United States, China, and Japan.
+
+**Clean Energy Revolution**
+
+Fusion energy produces no long-lived radioactive waste, no carbon emissions, and uses abundant fuel sources. WEST's record demonstrates that this clean energy source is transitioning from scientific curiosity to engineering reality.
+
+As climate change accelerates the need for clean baseload power, WEST's achievement provides hope that fusion energy can complement renewable sources to decarbonize global electricity generation within the next two decades.`,
+          publishedAt: Date.now() - 86400000 * 12,
+          readTime: 6,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["nuclear fusion", "WEST tokamak", "clean energy", "France"]
+        },
+        {
+          id: "k2-18b-biosignatures-2025",
+          title: "James Webb Space Telescope Discovers Potential Life Signatures on Exoplanet K2-18b",
+          excerpt: "Atmospheric analysis reveals dimethyl sulfide compounds that, on Earth, are only produced by living organisms, marking a potential breakthrough in astrobiology.",
+          content: `The James Webb Space Telescope has detected compelling evidence of potential biological activity on K2-18b, a sub-Neptune exoplanet located 124 light-years away in the habitable zone of its red dwarf star.
+
+Spectroscopic analysis of K2-18b's atmosphere revealed large quantities of dimethyl sulfide (DMS) and dimethyl disulfide (DMDS)—two compounds that, on Earth, are exclusively produced by living organisms. This discovery represents the strongest evidence yet for potential extraterrestrial life.
+
+**A Water World with Promise**
+
+K2-18b is 8.6 times more massive than Earth with an atmosphere rich in hydrogen and water vapor. Previous observations suggested the presence of water clouds and potentially a global ocean beneath its thick atmosphere—conditions that could support life as we know it.
+
+"The detection of these sulfur compounds is extraordinary," said Dr. Nikku Madhusudhan, lead researcher at Cambridge University's Institute of Astronomy. "On Earth, DMS is produced by phytoplankton, bacteria, and other microorganisms. Finding it on K2-18b suggests we may be looking at our first glimpse of extraterrestrial biology."
+
+**Biosignature Analysis**
+
+Webb's near-infrared spectrometer detected the characteristic absorption lines of dimethyl sulfide at multiple wavelengths, confirming its presence throughout K2-18b's atmosphere. The compound's abundance and distribution patterns align with biological production rather than geological processes.
+
+Computer models of K2-18b's atmospheric chemistry show that known non-biological processes cannot account for the observed DMS concentrations. This makes biological production the most plausible explanation for these compounds' presence.
+
+**Technical Achievement**
+
+The detection required Webb's unprecedented infrared sensitivity and spectral resolution. K2-18b's atmospheric signals are incredibly faint—the telescope had to observe the planet for over 40 hours across multiple transits to achieve sufficient signal-to-noise ratios.
+
+"This pushes Webb to its absolute limits," explained Dr. Sarah Seager, atmospheric scientist at MIT. "We're detecting trace gases in an alien atmosphere 124 light-years away with precision that seemed impossible just a decade ago."
+
+**Cautious Optimism**
+
+While the results are promising, researchers emphasize the need for additional observations and alternative explanations. Unknown atmospheric chemistry or geological processes could potentially produce these compounds without biology.
+
+The team plans follow-up observations with Webb's mid-infrared instrument to search for additional biosignatures including phosphine, methane, and oxygen. Confirming multiple biosignatures would strengthen the case for biological activity.
+
+**Broader Implications**
+
+K2-18b belongs to a class of exoplanets called "Hycean worlds"—hot, ocean-covered planets with hydrogen-rich atmospheres. These worlds are more common than Earth-like planets and may represent the most promising targets for detecting extraterrestrial life.
+
+If confirmed, K2-18b would become the first known inhabited world beyond our solar system, fundamentally changing our understanding of life's prevalence in the universe.
+
+**Next Steps**
+
+NASA and ESA are developing next-generation space telescopes specifically designed for atmospheric characterization of potentially habitable worlds. The Habitable Worlds Observatory, planned for the 2040s, will have the sensitivity to directly image Earth-like exoplanets and analyze their atmospheres for signs of life.
+
+**Scientific Revolution**
+
+The discovery comes as astrobiology transitions from theoretical science to observational discipline. Webb's capabilities enable systematic surveys of exoplanet atmospheres, transforming the search for extraterrestrial life from speculation to empirical investigation.
+
+Whether K2-18b harbors life remains to be definitively proven, but the detection of potential biosignatures represents a historic step toward answering one of humanity's most profound questions: Are we alone in the universe?
+
+As Webb continues its observations and new telescopes come online, the next decade may finally provide the answer.`,
+          publishedAt: Date.now() - 86400000 * 18,
+          readTime: 7,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["exoplanets", "astrobiology", "James Webb", "K2-18b", "biosignatures"]
+        },
+        {
+          id: "ligo-massive-black-hole-merger-2025",
+          title: "LIGO Detects Most Massive Black Hole Merger Ever Observed, Challenges Formation Models",
+          excerpt: "Gravitational wave detection reveals black hole collision producing final object of 225+ solar masses, providing new insights into cosmic evolution.",
+          content: `The LIGO-Virgo-KAGRA Collaboration announced the detection of the most massive black hole merger ever observed through gravitational waves, producing a final black hole exceeding 225 solar masses and challenging existing models of black hole formation.
+
+The detection, designated GW241205, was simultaneously observed by LIGO's two detectors in Louisiana and Washington, along with the European Virgo detector in Italy. The collision occurred approximately 8 billion years ago when the universe was roughly half its current age.
+
+**Unprecedented Scale**
+
+The merger involved two black holes with masses of approximately 100 and 85 solar masses—both in the "intermediate mass" category that has proven difficult to explain through conventional stellar evolution. Their collision released energy equivalent to 15 solar masses converted entirely to gravitational waves.
+
+"This detection pushes the boundaries of what we thought possible for black hole formation," said Professor Mark Hannam of Cardiff University, member of the LIGO Scientific Collaboration. "Objects this massive challenge our understanding of how stars live and die."
+
+**Formation Mystery**
+
+Traditional stellar evolution cannot easily produce black holes exceeding 50-60 solar masses. Stars massive enough to collapse into such black holes typically lose too much mass through stellar winds before their final collapse. This has created the "mass gap" problem in black hole physics.
+
+The detection of GW241205 suggests several possible formation mechanisms:
+- **Primordial black holes** formed in the early universe before star formation began
+- **Hierarchical mergers** where previous black hole collisions created these massive objects
+- **Population III stars** from the universe's first generation of stars, which may have been much more massive than modern stars
+
+**Technical Achievement**
+
+The detection required extraordinary sensitivity from the LIGO-Virgo network. The gravitational waves from GW241205 were among the faintest ever detected, stretching and compressing space by less than 1/10,000th the width of a proton.
+
+Advanced data analysis techniques using artificial intelligence helped extract the signal from background noise. Machine learning algorithms trained on thousands of simulated black hole mergers identified the characteristic "chirp" pattern as the two objects spiraled together over millions of years before their final collision.
+
+**Cosmic Archaeology**
+
+GW241205 provides a window into the early universe when black holes were forming through processes that no longer occur today. The 8-billion-year journey of these gravitational waves carries information about cosmic conditions when the universe was young and star formation was dramatically different.
+
+"We're using gravitational waves as a time machine," explained Dr. Gabriela González, LIGO spokesperson and professor at Louisiana State University. "These waves carry pristine information about events that occurred before Earth even existed."
+
+**Dark Matter Connections**
+
+Some theoretical models suggest that intermediate-mass black holes could form from dark matter accumulation in the early universe. If confirmed, objects like those in GW241205 could provide indirect evidence for specific dark matter models and help explain the mysterious substance that comprises 85% of all matter.
+
+**Future Observations**
+
+Next-generation gravitational wave detectors currently under development will detect similar mergers at much greater distances and with higher precision. The Einstein Telescope in Europe and Cosmic Explorer in the United States will observe the entire universe for black hole mergers, potentially detecting thousands annually.
+
+**Multimessenger Astronomy**
+
+While GW241205 produced no detectable electromagnetic radiation—as expected for black hole mergers—future observations may detect associated phenomena such as accretion disk disruption or relativistic jets. Coordinated observations across the electromagnetic spectrum will provide comprehensive views of these extreme events.
+
+**Fundamental Physics**
+
+The detection also tests Einstein's general theory of relativity under the most extreme conditions in the universe. The gravitational waves' properties precisely match Einstein's predictions, confirming relativity's validity even for objects 100+ times more massive than the Sun moving at significant fractions of light speed.
+
+**Scientific Impact**
+
+GW241205 represents a new class of gravitational wave sources that will help astronomers understand:
+- How the first black holes formed in the early universe
+- The role of black holes in galaxy evolution
+- The connection between dark matter and black hole formation
+- The ultimate fate of the most massive stars
+
+As gravitational wave astronomy matures from discovery science to precision measurement, detections like GW241205 open new chapters in our understanding of the cosmos and the extreme physics governing its most massive objects.`,
+          publishedAt: Date.now() - 86400000 * 25,
+          readTime: 8,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["gravitational waves", "LIGO", "black holes", "astrophysics", "cosmology"]
+        }
+      ];
+
+      const post = blogPosts.find(p => p.id === postId);
+      
+      if (!post) {
+        window.location.href = '/';
+        return;
+      }
+
+      // Update page content
+      document.getElementById('blog-title').textContent = post.title;
+      document.getElementById('blog-author').textContent = `${post.author} (${post.handle})`;
+      document.getElementById('blog-date').textContent = formatDate(post.publishedAt);
+      document.getElementById('blog-read-time').textContent = `${post.readTime} min read`;
+      
+      // Update tags
+      const tagsContainer = document.getElementById('blog-tags');
+      tagsContainer.innerHTML = post.tags.map(tag => 
+        `<span class="tag">${tag}</span>`
+      ).join('');
+      
+      // Update content with proper formatting
+      const contentContainer = document.getElementById('blog-content');
+      const formattedContent = post.content
+        .split('\n\n')
+        .map(paragraph => {
+          if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+            // Convert **text** to h3
+            return `<h3>${paragraph.slice(2, -2)}</h3>`;
+          } else if (paragraph.includes('**')) {
+            // Convert **text** to <strong>
+            return `<p>${paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`;
+          } else {
+            return `<p>${paragraph}</p>`;
+          }
+        })
+        .join('');
+      
+      contentContainer.innerHTML = formattedContent;
+      
+      // Update page title
+      document.title = `${post.title} - Tyton Blog`;
+    }
+
+    // Load blog post when page loads
+    document.addEventListener('DOMContentLoaded', loadBlogPost);
+  </script>
+</body>
+</html>

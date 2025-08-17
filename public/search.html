@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Search Results - Tyton</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root{
+      --navy:#0a0d1a; --gold:#daa520; --maroon:#7a263a; --ink:#050814; --muted:#a8c8ec; --bg:#060b16;
+      --card:#0e1425; --ring:#1a2847; --ring-focus:#daa520; --white:#f0f9ff; --shadow:rgba(0,0,0,.6);
+      --gradient-primary: linear-gradient(135deg, #b8860b 0%, #daa520 30%, #ffb627 70%, #ffd700 100%);
+      --gradient-secondary: linear-gradient(135deg, #00d4aa 0%, #0891b2 50%, #0284c7 100%);
+      --gradient-mystical: linear-gradient(135deg, #8b5cf6 0%, #a855f7 30%, #c084fc 70%, #e879f9 100%);
+      --glow-primary: rgba(218,165,32,.4);
+      --glow-secondary: rgba(8,145,178,.3);
+      --glow-mystical: rgba(168,85,247,.3);
+      --surface-elevated: rgba(14,20,37,.85);
+      --border-subtle: rgba(168,200,236,.12);
+      --border-accent: rgba(218,165,32,.5);
+      --atomic-cyan: #00d4aa;
+      --cosmic-purple: #8b5cf6;
+      --retro-orange: #daa520;
+    }
+    
+    html,body{
+      margin:0;padding:0;
+      background: 
+        radial-gradient(ellipse at 15% 20%, rgba(255,107,53,.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 30%, rgba(0,212,170,.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(139,92,246,.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 60%, rgba(255,182,39,.02) 0%, transparent 45%),
+        conic-gradient(from 0deg at 50% 50%, var(--bg) 0deg, #0a1121 120deg, #051018 240deg, var(--bg) 360deg);
+      color:var(--white); 
+      font:16px/1.7 'Space Grotesk', 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Atomic Age Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Exo 2', 'Orbitron', 'Rajdhani', 'Space Mono', 'Space Grotesk', monospace;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--white) 0%, #e2e8f0 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(218,165,32,0.3);
+      line-height: 1.3;
+    }
+    
+    html::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(2px 2px at 20% 30%, var(--atomic-cyan), transparent),
+        radial-gradient(2px 2px at 40% 70%, var(--retro-orange), transparent),
+        radial-gradient(1px 1px at 90% 40%, var(--cosmic-purple), transparent),
+        radial-gradient(1px 1px at 60% 10%, var(--atomic-cyan), transparent),
+        radial-gradient(2px 2px at 80% 80%, var(--retro-orange), transparent);
+      background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px, 180px 180px;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: -1;
+      animation: atomicFloat 20s linear infinite;
+    }
+    
+    @keyframes atomicFloat {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(-10px, -5px) rotate(120deg); }
+      66% { transform: translate(5px, -10px) rotate(240deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:10; 
+      backdrop-filter: blur(20px) saturate(180%);
+      background:
+        linear-gradient(180deg, var(--surface-elevated) 0%, rgba(15,22,41,.6) 100%);
+      box-shadow:
+        0 8px 32px rgba(0,0,0,.4),
+        0 1px 0 rgba(230,169,26,.1),
+        inset 0 1px 0 rgba(241,245,249,.05);
+      border-bottom: 1px solid var(--border-accent);
+      position: relative;
+    }
+    
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--gradient-primary);
+      opacity: 0.6;
+    }
+    
+    .bar{
+      max-width:1200px;margin:0 auto;
+      display:flex; justify-content: space-between;
+      align-items:center; gap:16px; padding:12px 20px;
+    }
+    
+    .brand{
+      display:flex; align-items:center; gap:12px; 
+      text-decoration:none; color:var(--white);
+      transition: transform 0.2s ease;
+    }
+    
+    .brand:hover { transform: scale(1.02); }
+    
+    .brand img{
+      width:52px;height:52px; border-radius:12px; 
+      display:block; 
+      box-shadow:
+        0 8px 25px rgba(0,0,0,.5),
+        0 0 0 1px rgba(230,169,26,.3),
+        0 0 20px var(--glow-primary);
+      border: 2px solid var(--border-accent);
+      object-fit: cover;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .brand:hover img {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 12px 35px rgba(0,0,0,.6),
+        0 0 0 1px rgba(230,169,26,.5),
+        0 0 30px var(--glow-primary);
+    }
+    
+    .brand span{
+      font-weight:700; letter-spacing:.8px; font-size: 18px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Enhanced Buttons */
+    .btn{
+      appearance:none; 
+      border:1px solid var(--border-subtle); 
+      background: rgba(241,245,249,.08);
+      color:var(--white); 
+      padding:10px 18px; 
+      border-radius:14px; 
+      cursor:pointer;
+      font-weight: 500; 
+      transition: all 0.3s ease;
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+      text-decoration: none;
+    }
+    
+    .btn:hover{
+      border-color:var(--border-accent); 
+      background:
+        linear-gradient(135deg, rgba(241,245,249,.15) 0%, rgba(241,245,249,.08) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,.2);
+    }
+
+    /* Search Bar */
+    .search-container {
+      position: relative;
+      margin-right: 16px;
+    }
+
+    .search-bar {
+      background: rgba(15,23,42,.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 10px 16px 10px 40px;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 14px;
+      width: 300px;
+      outline: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .search-bar:focus {
+      border-color: var(--border-accent);
+      box-shadow: 0 0 0 2px rgba(218,165,32,.3);
+      background: rgba(15,23,42,.9);
+    }
+
+    .search-bar::placeholder {
+      color: var(--muted);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .search-bar:focus + .search-icon {
+      color: var(--gold);
+    }
+
+    /* Main Content */
+    main{
+      max-width:1200px;
+      margin:40px auto; 
+      padding:0 20px 100px;
+    }
+
+    .search-header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .search-title {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin: 0 0 16px 0;
+      line-height: 1.2;
+    }
+
+    .search-meta {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .search-query {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .result-card {
+      background:
+        linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%),
+        linear-gradient(135deg, rgba(255,107,53,.08) 0%, rgba(139,92,246,.05) 50%, rgba(0,212,170,.07) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px; 
+      padding: 24px;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,.3),
+        0 8px 16px rgba(0,0,0,.2),
+        inset 0 1px 0 rgba(241,245,249,.08);
+      backdrop-filter: blur(16px) saturate(180%);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      transform: translateZ(0);
+      will-change: transform, box-shadow;
+      cursor: pointer;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b8860b, #daa520, #ffd700, transparent);
+      opacity: 0.8;
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+    }
+
+    .result-card:hover {
+      transform: translateY(-8px) scale(1.02) translateZ(0);
+      box-shadow:
+        0 32px 64px rgba(0,0,0,.4),
+        0 16px 32px rgba(0,0,0,.3),
+        0 0 0 1px #daa520,
+        0 0 20px rgba(218,165,32,0.6),
+        0 0 40px rgba(255,215,0,0.3),
+        0 6px 30px rgba(184,134,11,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+      border-color: #daa520;
+    }
+
+    .result-type {
+      background: rgba(218,165,32,.2);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .result-title {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    .result-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .result-excerpt {
+      color: rgba(255,255,255,.9);
+      line-height: 1.6;
+      margin: 0 0 16px 0;
+    }
+
+    .result-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      background: rgba(218,165,32,.15);
+      color: var(--gold);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .no-results h3 {
+      margin: 0 0 16px 0;
+      font-size: 24px;
+      color: var(--gold);
+    }
+
+    .back-link {
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 20px 16px 60px;
+      }
+
+      .results-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .search-bar {
+        width: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <a href="/" class="brand">
+        <img src="/assets/logo.png" alt="Tyton" onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"%23daa520\"/><text x=\"50\" y=\"60\" text-anchor=\"middle\" fill=\"white\" font-size=\"40\" font-weight=\"bold\">T</text></svg>'">
+        <span>Tyton</span>
+      </a>
+      <nav>
+        <div class="search-container">
+          <input type="text" class="search-bar" placeholder="Search projects, marketplace, blog..." id="search-input" onkeypress="handleSearchKeyPress(event)">
+          <span class="search-icon">🔍</span>
+        </div>
+        <a href="/" class="btn">← Back to Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <a href="/" class="btn back-link">← Back to Home</a>
+    
+    <div class="search-header">
+      <h1 class="search-title">Search Results</h1>
+      <div class="search-meta">
+        Showing results for <span class="search-query" id="search-query">""</span>
+        <span id="results-count"></span>
+      </div>
+    </div>
+    
+    <div class="results-grid" id="results-grid">
+      <div class="no-results">
+        <h3>🔍 Searching...</h3>
+        <p>Loading search results...</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function formatDate(timestamp) {
+      return new Date(timestamp).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+
+    function formatMeta(item) {
+      const date = formatDate(item.createdAt || item.publishedAt);
+      const author = item.author || item.owner || 'Unknown';
+      const likes = item.likes ? ` • ${item.likes} likes` : '';
+      const readTime = item.readTime ? ` • ${item.readTime} min read` : '';
+      return `${date} • ${author}${likes}${readTime}`;
+    }
+
+    function handleSearchKeyPress(event) {
+      if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        if (query) {
+          window.location.href = `/search.html?q=${encodeURIComponent(query)}`;
+        }
+      }
+    }
+
+    async function loadSearchResults() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get('q');
+      
+      if (!query) {
+        window.location.href = '/';
+        return;
+      }
+
+      // Update search input and query display
+      document.getElementById('search-input').value = query;
+      document.getElementById('search-query').textContent = `"${query}"`;
+      document.title = `Search: ${query} - Tyton`;
+
+      try {
+        // Fetch data from API
+        const response = await fetch('/api/data');
+        const data = await response.json();
+        
+        // Blog posts data (same as in main app)
+        const blogPosts = [
+          {
+            id: "google-willow-quantum-chip-2024",
+            title: "Google's Willow Quantum Chip Breaks Through Error Correction Barrier",
+            excerpt: "Google's latest quantum processor demonstrates exponential error reduction, marking a historic milestone in quantum computing development.",
+            publishedAt: Date.now() - 86400000 * 3,
+            readTime: 4,
+            author: "Tyton Systems",
+            handle: "@Tyton",
+            tags: ["quantum computing", "Google", "error correction", "breakthrough"],
+            type: "blog"
+          },
+          {
+            id: "china-zuchongzhi-quantum-2025",
+            title: "China Unveils Zuchongzhi 3.0: 105-Qubit Quantum Processor Achieves Quadrillion-Fold Speedup",
+            excerpt: "Chinese scientists demonstrate quantum supremacy with their latest superconducting processor, rivaling global quantum computing leaders.",
+            publishedAt: Date.now() - 86400000 * 7,
+            readTime: 5,
+            author: "Tyton Systems",
+            handle: "@Tyton",
+            tags: ["quantum computing", "China", "Zuchongzhi", "technology competition"],
+            type: "blog"
+          },
+          {
+            id: "west-tokamak-fusion-record-2025",
+            title: "WEST Tokamak Achieves 1,337-Second Fusion Record, Bringing Clean Energy Closer to Reality",
+            excerpt: "French research facility maintains plasma for over 22 minutes, setting new world record and demonstrating fusion energy's commercial viability.",
+            publishedAt: Date.now() - 86400000 * 12,
+            readTime: 6,
+            author: "Tyton Systems",
+            handle: "@Tyton",
+            tags: ["nuclear fusion", "WEST tokamak", "clean energy", "France"],
+            type: "blog"
+          },
+          {
+            id: "k2-18b-biosignatures-2025",
+            title: "James Webb Space Telescope Discovers Potential Life Signatures on Exoplanet K2-18b",
+            excerpt: "Atmospheric analysis reveals dimethyl sulfide compounds that, on Earth, are only produced by living organisms, marking a potential breakthrough in astrobiology.",
+            publishedAt: Date.now() - 86400000 * 18,
+            readTime: 7,
+            author: "Tyton Systems",
+            handle: "@Tyton",
+            tags: ["exoplanets", "astrobiology", "James Webb", "K2-18b", "biosignatures"],
+            type: "blog"
+          },
+          {
+            id: "ligo-massive-black-hole-merger-2025",
+            title: "LIGO Detects Most Massive Black Hole Merger Ever Observed, Challenges Formation Models",
+            excerpt: "Gravitational wave detection reveals black hole collision producing final object of 225+ solar masses, providing new insights into cosmic evolution.",
+            publishedAt: Date.now() - 86400000 * 25,
+            readTime: 8,
+            author: "Tyton Systems",
+            handle: "@Tyton",
+            tags: ["gravitational waves", "LIGO", "black holes", "astrophysics", "cosmology"],
+            type: "blog"
+          }
+        ];
+
+        // Combine all searchable content
+        const allContent = [
+          ...data.items.map(item => ({ ...item, type: item.type })),
+          ...blogPosts
+        ];
+
+        // Perform search
+        const searchQuery = query.toLowerCase();
+        const results = allContent.filter(item => {
+          const searchableText = [
+            item.title,
+            item.description || item.excerpt || '',
+            item.tags || '',
+            item.owner || item.author || '',
+            item.location || ''
+          ].join(' ').toLowerCase();
+          
+          return searchableText.includes(searchQuery);
+        });
+
+        // Display results
+        displayResults(results, query);
+
+      } catch (error) {
+        console.error('Search failed:', error);
+        displayNoResults('Failed to load search results. Please try again.');
+      }
+    }
+
+    function displayResults(results, query) {
+      const resultsGrid = document.getElementById('results-grid');
+      const resultsCount = document.getElementById('results-count');
+      
+      resultsCount.textContent = `(${results.length} result${results.length !== 1 ? 's' : ''} found)`;
+
+      if (results.length === 0) {
+        displayNoResults(`No results found for "${query}"`);
+        return;
+      }
+
+      resultsGrid.innerHTML = results.map(item => {
+        const typeLabel = item.type === 'blog' ? 'Blog Post' : 
+                         item.type === 'project' ? 'Project' : 
+                         item.type === 'equipment' ? 'Equipment' :
+                         'Marketplace';
+        
+        const onClick = item.type === 'blog' ? 
+          `onclick="window.location.href='/blog-post.html?id=${item.id}'"` :
+          item.type === 'project' ?
+          `onclick="window.location.href='/project.html?id=${item.id}'"` :
+          item.type === 'equipment' ?
+          `onclick="window.location.href='/marketplace.html?id=${item.id}'"` :
+          `onclick="window.location.href='/?item=${item.id}'"`;
+
+        return `
+          <div class="result-card" ${onClick}>
+            <div class="result-type">${typeLabel}</div>
+            <h3 class="result-title">${item.title}</h3>
+            <div class="result-meta">${formatMeta(item)}</div>
+            <p class="result-excerpt">${item.description || item.excerpt || 'No description available.'}</p>
+            ${item.tags ? `
+              <div class="result-tags">
+                ${(Array.isArray(item.tags) ? item.tags : item.tags.split(',')).map(tag => 
+                  `<span class="tag">${tag.trim()}</span>`
+                ).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function displayNoResults(message) {
+      const resultsGrid = document.getElementById('results-grid');
+      const resultsCount = document.getElementById('results-count');
+      
+      resultsCount.textContent = '';
+      resultsGrid.innerHTML = `
+        <div class="no-results">
+          <h3>🔍 No Results Found</h3>
+          <p>${message}</p>
+          <p style="margin-top: 20px; color: var(--muted); font-size: 14px;">
+            Try searching for:
+            <br>• Project names or descriptions
+            <br>• Equipment and marketplace items
+            <br>• Blog post topics
+            <br>• Tags and keywords
+          </p>
+        </div>
+      `;
+    }
+
+    // Load search results when page loads
+    document.addEventListener('DOMContentLoaded', loadSearchResults);
+  </script>
+</body>
+</html>

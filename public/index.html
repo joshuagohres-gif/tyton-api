@@ -1,0 +1,4310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tyton Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root{
+      --navy:#0a0d1a; --gold:#daa520; --maroon:#7a263a; --ink:#050814; --muted:#a8c8ec; --bg:#060b16;
+      --card:#0e1425; --ring:#1a2847; --ring-focus:#daa520; --white:#f0f9ff; --shadow:rgba(0,0,0,.6);
+      --gradient-primary: linear-gradient(135deg, #b8860b 0%, #daa520 30%, #ffb627 70%, #ffd700 100%);
+      --gradient-secondary: linear-gradient(135deg, #00d4aa 0%, #0891b2 50%, #0284c7 100%);
+      --gradient-mystical: linear-gradient(135deg, #8b5cf6 0%, #a855f7 30%, #c084fc 70%, #e879f9 100%);
+      --glow-primary: rgba(218,165,32,.2);
+      --glow-secondary: rgba(8,145,178,.15);
+      --glow-mystical: rgba(168,85,247,.15);
+      --surface-elevated: rgba(14,20,37,.85);
+      --border-subtle: rgba(168,200,236,.12);
+      --border-accent: rgba(218,165,32,.5);
+      --atomic-cyan: #00d4aa;
+      --cosmic-purple: #8b5cf6;
+      --retro-orange: #daa520;
+    }
+    
+    html,body{
+      margin:0;padding:0;
+      background: 
+        radial-gradient(ellipse at 15% 20%, rgba(255,107,53,.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 30%, rgba(0,212,170,.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(139,92,246,.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 60%, rgba(255,182,39,.02) 0%, transparent 45%),
+        conic-gradient(from 0deg at 50% 50%, var(--bg) 0deg, #0a1121 120deg, #051018 240deg, var(--bg) 360deg);
+      color:var(--white); 
+      font:14px/1.5 'Space Grotesk', 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Atomic Age Typography */
+    h1, h2, h3, h4, h5, h6, .page-title {
+      font-family: 'Exo 2', 'Orbitron', 'Rajdhani', 'Space Mono', 'Space Grotesk', monospace;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--white) 0%, #e2e8f0 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(218,165,32,0.15);
+    }
+
+    .page-title {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    
+    html::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(2px 2px at 20% 30%, var(--atomic-cyan), transparent),
+        radial-gradient(2px 2px at 40% 70%, var(--retro-orange), transparent),
+        radial-gradient(1px 1px at 90% 40%, var(--cosmic-purple), transparent),
+        radial-gradient(1px 1px at 60% 10%, var(--atomic-cyan), transparent),
+        radial-gradient(2px 2px at 80% 80%, var(--retro-orange), transparent);
+      background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px, 180px 180px;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: -1;
+      animation: atomicFloat 20s linear infinite;
+    }
+    
+    @keyframes atomicFloat {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(-10px, -5px) rotate(120deg); }
+      66% { transform: translate(5px, -10px) rotate(240deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+    
+    [x-cloak]{display:none!important;}
+
+    /* Enhanced Header */
+    header{
+      position:sticky; top:0; z-index:10; 
+      backdrop-filter: blur(20px) saturate(180%);
+      background:
+        linear-gradient(180deg, var(--surface-elevated) 0%, rgba(15,22,41,.6) 100%);
+      box-shadow:
+        0 8px 32px rgba(0,0,0,.4),
+        0 1px 0 rgba(230,169,26,.1),
+        inset 0 1px 0 rgba(241,245,249,.05);
+      border-bottom: 1px solid var(--border-accent);
+      position: relative;
+    }
+    
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--gradient-primary);
+      opacity: 0.6;
+    }
+    
+    .bar{
+      max-width:1200px;margin:0 auto;
+      display:flex; justify-content: space-between;
+      align-items:center; gap:16px; padding:12px 20px;
+    }
+    
+    .brand{
+      display:flex; align-items:center; gap:12px; 
+      text-decoration:none; color:var(--white);
+      transition: transform 0.2s ease;
+    }
+    
+    .brand:hover { transform: scale(1.02); }
+    
+    .brand img{
+      width:52px;height:52px; border-radius:12px; 
+      display:block; 
+      box-shadow:
+        0 8px 25px rgba(0,0,0,.5),
+        0 0 0 1px rgba(230,169,26,.3),
+        0 0 20px var(--glow-primary);
+      border: 2px solid var(--border-accent);
+      object-fit: cover;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .brand:hover img {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 12px 35px rgba(0,0,0,.6),
+        0 0 0 1px rgba(230,169,26,.5),
+        0 0 30px var(--glow-primary);
+    }
+    
+    .brand span{
+      font-weight:700; letter-spacing:.8px; font-size: 18px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .nav{display:flex; justify-content:center; gap:12px;}
+    .nav button{
+      appearance:none;border:1px solid transparent;background:transparent;
+      color:var(--white); padding:10px 16px;border-radius:25px; cursor:pointer;
+      font-weight: 500; transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+    }
+    
+    .nav button:hover { 
+      background: rgba(255,255,255,.1);
+      transform: translateY(-1px); 
+    }
+    
+    .nav button[aria-current="page"]{
+      background:rgba(218,165,32,.2); 
+      border-color:rgba(218,165,32,.5);
+      box-shadow: 0 0 0 2px rgba(218,165,32,.3);
+    }
+    
+    .right{display:flex; justify-content:end; align-items:center; gap:12px;}
+    .badge{
+      font-size:11px; color:#cbd5e1; border:1px solid #334155; 
+      padding:4px 12px; border-radius:20px; 
+      background:rgba(15,23,42,.8);
+      backdrop-filter: blur(4px);
+      font-weight: 500;
+    }
+
+    .badge.online { color: #22c55e; border-color: #16a34a; }
+    .badge.offline { color: #ef4444; border-color: #dc2626; }
+
+    /* Enhanced Main Content */
+    main{max-width:1200px;margin:24px auto; padding:0 20px 100px;}
+    
+    .page-title {
+      text-align: center;
+      margin: 0 0 40px 0;
+      font-size: 32px;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      letter-spacing: -0.5px;
+      filter: drop-shadow(0 0 20px var(--glow-primary));
+    }
+    
+    .page-title::before,
+    .page-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border-accent), transparent);
+      margin: 0 20px;
+      max-width: 100px;
+    }
+    
+    .grid{
+      display:grid; 
+      grid-template-columns: repeat(auto-fill,minmax(320px,1fr)); 
+      gap:20px;
+    }
+    
+    /* Enhanced Cards */
+    .card{
+      background:
+        linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%),
+        linear-gradient(135deg, rgba(255,107,53,.08) 0%, rgba(139,92,246,.05) 50%, rgba(0,212,170,.07) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px; 
+      padding: 24px;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,.3),
+        0 8px 16px rgba(0,0,0,.2),
+        inset 0 1px 0 rgba(241,245,249,.08);
+      backdrop-filter: blur(16px) saturate(180%);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      transform: translateZ(0);
+      will-change: transform, box-shadow;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b8860b, #daa520, #ffd700, transparent);
+      opacity: 0.8;
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(218, 165, 32, 0.2);
+    }
+    
+    .card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 25% 25%, rgba(255,107,53,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(139,92,246,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(0,212,170,0.12) 0%, transparent 45%);
+      animation: cosmic-drift 25s ease-in-out infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      transform: translateZ(0);
+    }
+    
+    
+    .card:hover {
+      transform: translateY(-8px) scale(1.02) translateZ(0);
+      box-shadow:
+        0 32px 64px rgba(0,0,0,.4),
+        0 16px 32px rgba(0,0,0,.3),
+        0 0 0 1px #daa520,
+        0 0 20px rgba(218,165,32,0.3),
+        0 0 40px rgba(255,215,0,0.15),
+        0 6px 30px rgba(184,134,11,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+      border-color: #daa520;
+    }
+    
+    .card:hover::after { 
+      opacity: 0.7;
+    }
+    
+    /* Profile Card - Keep effects contained within frame */
+    .profile-card {
+      background:
+        linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%),
+        linear-gradient(135deg, rgba(255,107,53,.08) 0%, rgba(139,92,246,.05) 50%, rgba(0,212,170,.07) 100%);
+      overflow: hidden !important;
+    }
+    
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b8860b, #daa520, #ffd700, transparent);
+      opacity: 0.8;
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(218, 165, 32, 0.2);
+      z-index: 1;
+    }
+    
+    .profile-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 25% 25%, rgba(255,107,53,0.06) 0%, transparent 40%),
+        radial-gradient(circle at 75% 75%, rgba(139,92,246,0.04) 0%, transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(0,212,170,0.08) 0%, transparent 35%);
+      animation: cosmic-drift 25s ease-in-out infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      transform: translateZ(0);
+      z-index: 0;
+    }
+    
+    .profile-card:hover {
+      transform: translateY(-4px) scale(1.01) translateZ(0);
+      box-shadow:
+        0 24px 48px rgba(0,0,0,.35),
+        0 12px 24px rgba(0,0,0,.25),
+        0 0 0 1px rgba(218,165,32,0.3),
+        0 0 16px rgba(218,165,32,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+      border-color: rgba(218,165,32,0.4);
+    }
+    
+    .profile-card:hover::after { 
+      opacity: 0.4;
+    }
+    
+    /* Ensure profile content stays above the background effects */
+    .profile-card .profile {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .card h3{
+      margin:0 0 8px 0; font-size:18px; font-weight: 600;
+      color: var(--white);
+      font-family: 'Exo 2', 'Orbitron', 'Space Grotesk', sans-serif;
+      letter-spacing: 0.5px;
+    }
+    
+    .card .meta{
+      color:var(--muted); font-size:12px; 
+      background: rgba(148,163,184,.1);
+      padding: 4px 8px; border-radius: 8px;
+      display: inline-block; margin-bottom: 12px;
+    }
+    
+    .card p { line-height: 1.6; color: rgba(255,255,255,.9); }
+    
+    /* Clickable project cards */
+    .clickable-project {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .clickable-project:hover {
+      transform: translateY(-12px) scale(1.03) translateZ(0);
+      box-shadow:
+        0 40px 80px rgba(0,0,0,.5),
+        0 20px 40px rgba(0,0,0,.4),
+        0 0 0 2px var(--gold),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    
+    .clickable-project h3 {
+      color: var(--gold);
+      transition: color 0.3s ease;
+    }
+
+    /* Clickable equipment cards */
+    .clickable-equipment {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .clickable-equipment:hover {
+      transform: translateY(-12px) scale(1.03) translateZ(0);
+      box-shadow:
+        0 40px 80px rgba(0,0,0,.5),
+        0 20px 40px rgba(0,0,0,.4),
+        0 0 0 2px var(--gold),
+        0 0 20px var(--glow-primary),
+        0 0 40px var(--glow-primary),
+        0 6px 30px rgba(184,134,11,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+      border-color: var(--gold);
+    }
+    
+    .clickable-equipment h3 {
+      color: var(--gold);
+      transition: color 0.3s ease;
+    }
+    
+    .actions{display:flex; gap:8px; margin-top:16px; flex-wrap: wrap;}
+    
+    /* Enhanced Buttons */
+    .btn{
+      appearance:none; 
+      border:1px solid var(--border-subtle); 
+      background: rgba(241,245,249,.08);
+      color:var(--white); 
+      padding:10px 18px; 
+      border-radius:14px; 
+      cursor:pointer;
+      font-weight: 500; 
+      transition: all 0.3s ease;
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    }
+    
+    
+    /* .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(241,245,249,.1), transparent);
+      transition: left 0.6s ease;
+      pointer-events: none;
+      z-index: -1;
+    } */
+    
+    .btn:hover{
+      border-color:var(--border-accent); 
+      background:
+        linear-gradient(135deg, rgba(241,245,249,.15) 0%, rgba(241,245,249,.08) 100%);
+      transform: translateY(-2px);
+      box-shadow:
+        0 8px 25px rgba(0,0,0,.2),
+        0 0 0 1px var(--border-accent),
+        inset 0 1px 0 rgba(241,245,249,.15);
+    }
+    
+    /* .btn:hover::before {
+      left: 100%;
+    } */
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.gold{
+      background:var(--gradient-primary); 
+      color:#0a0600; border-color:var(--border-accent);
+      font-weight: 600;
+      box-shadow: 
+        0 8px 25px var(--glow-primary),
+        0 4px 12px rgba(0,0,0,.2),
+        inset 0 1px 0 rgba(255,255,255,.2);
+      text-shadow: 0 1px 2px rgba(0,0,0,.3);
+    }
+    
+    /* .btn.gold::before {
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+      pointer-events: none;
+    } */
+    
+    .btn.gold:hover {
+      box-shadow: 
+        0 12px 35px var(--glow-primary),
+        0 6px 20px rgba(0,0,0,.3),
+        0 0 0 1px rgba(218,165,32,.6),
+        inset 0 1px 0 rgba(255,255,255,.3);
+      transform: translateY(-3px) scale(1.02);
+    }
+    
+    /* Profile Actions Container */
+    .profile-actions {
+      position: absolute !important;
+      bottom: 20px !important;
+      right: 24px !important;
+      top: auto !important;
+      left: auto !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      z-index: 10 !important;
+      width: auto;
+      height: auto;
+    }
+
+    /* Stylized Edit Profile Button */
+    .edit-profile-button {
+      position: relative;
+      background: linear-gradient(135deg, var(--gradient-primary) 0%, #ffb627 50%, #ffd700 100%);
+      border: 2px solid rgba(218,165,32,.8);
+      border-radius: 16px;
+      padding: 10px 16px;
+      color: var(--white);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 8px 25px rgba(218,165,32,.4),
+        0 4px 12px rgba(0,0,0,.2),
+        inset 0 1px 0 rgba(255,255,255,.3);
+      text-shadow: 0 1px 2px rgba(0,0,0,.8);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+      z-index: 1;
+      min-height: 40px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    
+    .edit-profile-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+      transition: left 0.6s ease;
+      pointer-events: none;
+    }
+    
+    .edit-profile-button:hover::before {
+      left: 100%;
+    }
+    
+    .edit-profile-button:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 
+        0 12px 35px rgba(218,165,32,.6),
+        0 8px 20px rgba(0,0,0,.3),
+        0 0 0 1px rgba(255,215,0,.8),
+        0 0 20px rgba(255,215,0,.4),
+        inset 0 1px 0 rgba(255,255,255,.4);
+      border-color: rgba(255,215,0,.9);
+      background: linear-gradient(135deg, #ff7a47 0%, #ff8c3e 30%, #ffb627 70%, #ffd700 100%);
+    }
+    
+    .edit-icon {
+      font-size: 16px;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
+      position: relative;
+      z-index: 1;
+    }
+    
+    .edit-text {
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.3px;
+    }
+    
+    /* Specific button positioning within container */
+    .profile-actions #edit-profile-btn {
+      order: 1;
+    }
+    
+    .profile-actions #post-btn {
+      order: 2;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .profile-actions {
+        bottom: 14px !important;
+        right: 16px !important;
+        gap: 8px;
+        flex-direction: row;
+      }
+      
+      .edit-profile-button {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      
+      .edit-icon {
+        font-size: 14px;
+      }
+    }
+    
+    .btn.ghost{
+      border-color:rgba(218,165,32,.4); 
+      color:#ffd700;
+      background: rgba(218,165,32,.1);
+    }
+    
+    .btn.ghost:hover {
+      background: rgba(218,165,32,.2);
+      box-shadow: 0 0 16px rgba(218,165,32,.3);
+    }
+
+    /* Enhanced Forms */
+    .field{display:grid; gap:8px; margin-bottom:16px}
+    .field label { font-weight: 500; color: var(--white); }
+    
+    .field input,.field textarea,.field select{
+      background:#0f172a; color:var(--white); 
+      border:1px solid var(--ring); border-radius:12px; 
+      padding:12px 14px; outline:none;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    /* Authentication Modal Styles */
+    .auth-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .auth-modal-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 20px;
+    }
+
+    .auth-card {
+      max-width: 400px;
+      width: 100%;
+      position: relative;
+    }
+
+    .auth-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 1;
+      transition: color 0.2s ease;
+    }
+
+    .auth-close:hover {
+      color: var(--white);
+    }
+
+    .auth-form {
+      display: none;
+    }
+
+    .auth-title {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 24px;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .auth-divider {
+      text-align: center;
+      margin: 16px 0;
+      color: var(--muted);
+    }
+
+    .auth-link-text {
+      text-align: center;
+      margin-top: 16px;
+      color: var(--muted);
+    }
+
+    .auth-link-btn {
+      background: none;
+      border: none;
+      color: var(--gold);
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: inherit;
+      transition: color 0.2s ease;
+    }
+
+    .auth-link-btn:hover {
+      color: #f3bd4b;
+    }
+
+    .btn-full {
+      width: 100%;
+      margin-bottom: 16px;
+      text-decoration: none;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .btn-google {
+      padding: 12px 16px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    /* Navigation Dropdown */
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .nav-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px var(--shadow);
+      backdrop-filter: blur(12px);
+      min-width: 180px;
+      z-index: 100;
+      display: none;
+      padding: 8px 0;
+      margin-top: 8px;
+    }
+
+    .nav-dropdown-menu::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 20px;
+      width: 12px;
+      height: 12px;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.08);
+      border-bottom: none;
+      border-right: none;
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+
+    .nav-dropdown-item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 14px 20px;
+      background: none;
+      border: none;
+      color: var(--white);
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-radius: 0;
+    }
+
+    .nav-dropdown-item:hover {
+      background: rgba(255,255,255,.1);
+      color: var(--gold);
+      transform: none;
+    }
+
+    .nav-dropdown-item img {
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-dropdown-item:hover img {
+      opacity: 1;
+    }
+
+    .nav-dropdown-item[aria-current="page"] {
+      background: rgba(218,165,32,.2);
+      color: var(--gold);
+      border-left: 3px solid var(--gold);
+    }
+
+    .nav-dropdown-item[aria-current="page"] img {
+      opacity: 1;
+    }
+
+    .brand-clickable {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .brand-clickable::after {
+      content: '▼';
+      font-size: 10px;
+      color: var(--muted);
+      margin-left: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .brand-clickable:hover::after {
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    /* Search Bar */
+    .search-container {
+      position: relative;
+      margin-right: 16px;
+    }
+
+    .search-bar {
+      background: rgba(15,23,42,.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 10px 16px 10px 40px;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 14px;
+      width: 200px;
+      outline: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .search-bar:focus {
+      border-color: var(--border-accent);
+      box-shadow: 0 0 0 2px rgba(218,165,32,.3);
+      background: rgba(15,23,42,.9);
+      width: 250px;
+    }
+
+    .search-bar::placeholder {
+      color: var(--muted);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .search-bar:focus + .search-icon {
+      color: var(--gold);
+    }
+
+    @media (max-width: 768px) {
+      .search-container {
+        margin-right: 8px;
+      }
+      
+      .search-bar {
+        width: 150px;
+        padding: 8px 12px 8px 32px;
+        font-size: 13px;
+      }
+      
+      .search-bar:focus {
+        width: 180px;
+      }
+      
+      .search-bar::placeholder {
+        font-size: 12px;
+      }
+    }
+    
+    .field input:focus,.field textarea:focus,.field select:focus{
+      border-color:var(--ring-focus); 
+      box-shadow: 0 0 0 2px rgba(61,79,138,.6);
+      background: rgba(15,23,42,.8);
+      outline: none;
+    }
+
+    /* Enhanced Tabs */
+    .tabs{display:flex; gap:12px; margin:16px 0; flex-wrap: wrap;}
+    .tabs button{
+      border:none; background:rgba(255,255,255,.08); 
+      color:var(--white); padding:8px 16px; 
+      border-radius:20px; cursor:pointer;
+      font-weight: 500; transition: all 0.3s ease;
+    }
+    
+    .tabs button[aria-selected="true"]{
+      background:rgba(218,165,32,.3); 
+      outline:1px solid rgba(218,165,32,.6);
+      box-shadow: 0 0 16px rgba(218,165,32,.3);
+    }
+    
+    .tabs button:hover:not([aria-selected="true"]) {
+      background: rgba(255,255,255,.15);
+    }
+
+    /* Enhanced Profile Section */
+    .profile{
+      display:grid; grid-template-columns: 120px 1fr; 
+      gap:20px; align-items:center;
+    }
+    
+    .avatar{
+      width:120px; height:120px; border-radius:50%; 
+      background:#111827; border:3px solid rgba(218,165,32,.3); 
+      object-fit:cover; transition: all 0.3s ease;
+    }
+    
+    .avatar:hover {
+      border-color: rgba(218,165,32,.6);
+      box-shadow: 0 0 24px rgba(218,165,32,.4);
+    }
+
+    /* Enhanced Marketplace Booking */
+    .booking-form {
+      background: rgba(15,23,42,.6);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 12px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .booking-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .booking-inputs .field {
+      margin-bottom: 0;
+    }
+
+    .booking-btn {
+      align-self: flex-start;
+      min-width: 120px;
+    }
+    
+    .booking-list {
+      background: rgba(15,23,42,.4);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+    }
+    
+    .booking-list ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+    
+    .booking-list li {
+      color: rgba(255,255,255,.8);
+      margin: 4px 0;
+    }
+
+    /* Enhanced Diagnostics */
+    pre.diag{
+      background:#0b1220; color:#cbd5e1; 
+      border:1px dashed #334155; padding:16px; 
+      border-radius:12px; overflow:auto;
+      font-size: 12px; line-height: 1.4;
+      max-height: 200px;
+    }
+
+    /* Create Form Enhancement */
+    .create-section {
+      background:
+        linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%),
+        linear-gradient(135deg, rgba(255,107,53,.12) 0%, rgba(139,92,246,.08) 50%, rgba(0,212,170,.10) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px; 
+      padding: 24px;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,.3),
+        0 8px 16px rgba(0,0,0,.2),
+        inset 0 1px 0 rgba(241,245,249,.08);
+      backdrop-filter: blur(16px) saturate(180%);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      transform: translateZ(0); /* Force hardware acceleration */
+      will-change: transform, box-shadow;
+    }
+
+    .create-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b8860b, #daa520, #ffd700, transparent);
+      opacity: 0.9;
+      pointer-events: none;
+      box-shadow: 0 0 12px rgba(218, 165, 32, 0.25);
+    }
+
+    .create-section::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(255,107,53,0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(139,92,246,0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(0,212,170,0.18) 0%, transparent 35%);
+      animation: cosmic-drift 20s ease-in-out infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      transform: translateZ(0);
+    }
+
+    .create-section:hover {
+      transform: translateY(-8px) scale(1.02) translateZ(0);
+      box-shadow:
+        0 32px 64px rgba(0,0,0,.4),
+        0 16px 32px rgba(0,0,0,.3),
+        0 0 0 1px #daa520,
+        0 0 25px rgba(218,165,32,0.35),
+        0 0 50px rgba(255,215,0,0.2),
+        0 8px 40px rgba(184,134,11,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+      border-color: #daa520;
+    }
+
+    .create-section:hover::after {
+      opacity: 1;
+    }
+
+    @keyframes cosmic-drift {
+      0%, 100% { 
+        transform: translateX(0) translateY(0) rotate(0deg) translateZ(0);
+      }
+      25% { 
+        transform: translateX(-10px) translateY(-15px) rotate(1deg) translateZ(0);
+      }
+      50% { 
+        transform: translateX(5px) translateY(-10px) rotate(-0.5deg) translateZ(0);
+      }
+      75% { 
+        transform: translateX(-5px) translateY(5px) rotate(0.8deg) translateZ(0);
+      }
+    }
+
+    /* Tag styling */
+    .tag {
+      display: inline-block; 
+      background: rgba(218,165,32,.2); 
+      color: #ffd700; 
+      padding: 2px 8px; 
+      border-radius: 12px; 
+      font-size: 11px; 
+      margin: 2px 4px 2px 0; 
+      border: 1px solid rgba(218,165,32,.3);
+    }
+
+    /* Empty State Styling */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-style: italic;
+      grid-column: 1 / -1;
+    }
+
+    /* Pagination Styling */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin: 40px 0;
+      padding: 20px;
+    }
+
+    .pagination-current {
+      color: var(--white);
+      font-weight: 600;
+      font-size: 16px;
+      padding: 8px 16px;
+      background: rgba(218,165,32,0.1);
+      border: 1px solid rgba(218,165,32,0.3);
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pagination .btn {
+      min-width: 120px;
+    }
+
+    .pagination .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .pagination-info {
+      font-size: 14px;
+      background: rgba(255,255,255,0.05);
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .pagination-info p {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    /* Loading States */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: var(--gold);
+      animation: spin 0.8s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      /* Tablet view - 2 columns for home grids */
+      #home-projects-grid,
+      #home-equipment-grid,
+      #home-blog-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .bar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        text-align: center;
+        gap: 8px;
+        padding: 12px;
+      }
+      
+      .bar > div:first-child {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+      
+      .search-container {
+        width: 100%;
+        order: 3;
+        margin-top: 8px;
+      }
+      
+      .search-bar {
+        width: 100%;
+        font-size: 14px;
+      }
+      
+      #auth-buttons, #user-menu {
+        order: 2;
+        margin-left: auto;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 12px;
+      }
+      
+      /* Override home page grids for mobile */
+      #home-projects-grid,
+      #home-equipment-grid,
+      #home-blog-grid {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .card {
+        padding: 16px;
+      }
+      
+      .profile {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 16px;
+      }
+      
+      .profile-avatar {
+        margin: 0 auto 16px;
+      }
+      
+      .booking-inputs {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .booking-btn {
+        align-self: stretch;
+        width: 100%;
+      }
+      
+      /* Fix modals on mobile */
+      .auth-modal-content,
+      .create-modal-content {
+        width: 90%;
+        max-width: 400px;
+        margin: 20px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      
+      /* Fix navigation */
+      .tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .tab {
+        padding: 8px 12px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+      
+      /* Fix buttons */
+      .btn {
+        padding: 10px 16px;
+        font-size: 14px;
+      }
+      
+      .btn-full {
+        width: 100%;
+      }
+      
+      /* Fix page sections */
+      .section {
+        padding: 16px;
+      }
+      
+      .page-title {
+        font-size: 24px;
+        margin-bottom: 12px;
+      }
+      
+      /* Fix toast on mobile */
+      .toast-container {
+        top: 60px;
+        right: 10px;
+        left: 10px;
+      }
+      
+      .toast {
+        min-width: auto;
+        width: 100%;
+      }
+      
+      /* Hide overflow on body to prevent horizontal scroll */
+      body {
+        overflow-x: hidden;
+      }
+      
+      /* Fix header spacing */
+      header {
+        padding: 0;
+      }
+      
+      /* Adjust font sizes for better readability */
+      h1 { font-size: 24px; }
+      h2 { font-size: 20px; }
+      h3 { font-size: 18px; }
+      
+      /* Fix create button position */
+      .create-section {
+        padding: 12px;
+      }
+    }
+
+    /* Loading States */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 8px;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+    
+    .loading-content {
+      text-align: center;
+      color: var(--white);
+    }
+    
+    .loading-content .loading-spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Error/Success Toasts */
+    .toast-container {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    
+    .toast {
+      background: var(--card);
+      border: 1px solid;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      animation: slideIn 0.3s ease-out;
+      pointer-events: auto;
+    }
+    
+    .toast.success {
+      border-color: #10b981;
+      background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+    }
+    
+    .toast.error {
+      border-color: #ef4444;
+      background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.05));
+    }
+    
+    .toast.warning {
+      border-color: #f59e0b;
+      background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05));
+    }
+    
+    .toast.info {
+      border-color: #3b82f6;
+      background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(37,99,235,0.05));
+    }
+    
+    .toast-icon {
+      font-size: 20px;
+    }
+    
+    .toast-message {
+      flex: 1;
+      color: var(--white);
+    }
+    
+    .toast-close {
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    
+    .toast-close:hover {
+      opacity: 1;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+    
+    /* Skeleton Loading */
+    .skeleton {
+      background: linear-gradient(90deg, var(--card) 25%, rgba(255,255,255,0.05) 50%, var(--card) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 8px;
+    }
+    
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    
+    .skeleton-text {
+      height: 16px;
+      margin: 8px 0;
+    }
+    
+    .skeleton-title {
+      height: 24px;
+      width: 60%;
+      margin: 12px 0;
+    }
+    
+    .skeleton-image {
+      height: 200px;
+      width: 100%;
+      margin: 12px 0;
+    }
+    
+    /* Button Loading State */
+    .btn.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    
+    .btn.loading::after {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-left: 8px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+  </style>
+
+  <!-- Favicon -->
+  <link id="ico" rel="icon" type="image/png" href="/assets/logo.png">
+</head>
+<body>
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+  
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div>Loading...</div>
+    </div>
+  </div>
+  <div id="app">
+    <header>
+      <div class="bar">
+        <div class="nav-dropdown">
+          <div class="brand brand-clickable" onclick="toggleNavDropdown()">
+            <img id="logo" src="/assets/logo.png" alt="Tyton" onerror="this.src=generateFallbackLogo()" />
+          </div>
+          
+          <div id="nav-dropdown-menu" class="nav-dropdown-menu">
+            <button id="nav-home" class="nav-dropdown-item" onclick="setRoute('home'); hideNavDropdown()">
+              <img src="/assets/tyton_home.png" alt="Home" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> Home
+            </button>
+            <button id="nav-projects" class="nav-dropdown-item" onclick="setRoute('projects'); hideNavDropdown()">
+              <img src="/assets/tyton_projects.png" alt="Projects" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> Projects
+            </button>
+            <button id="nav-equipment" class="nav-dropdown-item" onclick="setRoute('equipment'); hideNavDropdown()">
+              <img src="/assets/tyton_equipment.png" alt="Marketplace" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> Tyton Marketplace
+            </button>
+            <button id="nav-blog" class="nav-dropdown-item" onclick="setRoute('blog'); hideNavDropdown()">
+              <img src="/assets/tyton_blog.png" alt="News" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> News
+            </button>
+            <button id="nav-profile" class="nav-dropdown-item" onclick="setRoute('profile'); hideNavDropdown()">
+              <img src="/assets/tyton_profile.png" alt="Profile" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> Profile
+            </button>
+          </div>
+        </div>
+
+        <div class="right">
+          <span class="badge" id="status-badge">📡 Checking connection...</span>
+          <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search projects, marketplace, blog..." id="search-input" onkeypress="handleSearchKeyPress(event)">
+            <span class="search-icon">🔍</span>
+          </div>
+          <div id="auth-buttons" style="display: flex; gap: 8px;">
+            <!-- TODO: Replace 🔑 emoji with proper icon -->
+            <button class="btn" onclick="showAuthModal('login')">🔑 Login</button>
+            <button class="btn gold" onclick="showAuthModal('register')">
+              Sign Up
+            </button>
+          </div>
+          <div id="user-menu" style="display: none; position: relative;">
+            <button class="btn" id="user-menu-btn" onclick="toggleUserMenu()">
+              <img id="user-avatar" src="" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 6px;">
+              <span id="user-name">User</span>
+            </button>
+            <div id="user-dropdown" style="display: none; position: absolute; top: 100%; right: 0; background: var(--card); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 8px; min-width: 150px; z-index: 1000;">
+              <button class="btn" style="width: 100%; justify-content: flex-start; margin-bottom: 4px;" onclick="setRoute('profile'); toggleUserMenu();">👤 Profile</button>
+              <button class="btn" style="width: 100%; justify-content: flex-start;" onclick="logout()">🚪 Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="auth-modal">
+      <div class="auth-modal-content">
+        <div class="card auth-card">
+          <button onclick="hideAuthModal()" class="auth-close">×</button>
+          
+          <div id="login-form" class="auth-form">
+            <!-- TODO: Replace 🔑 emoji with proper icon -->
+            <h2 class="auth-title">🔑 Login to Tyton</h2>
+            <form onsubmit="handleLogin(event)">
+              <div class="field">
+                <label>Email</label>
+                <input name="email" type="email" required placeholder="your@email.com" 
+                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                       title="Please enter a valid email address">
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <input name="password" type="password" required placeholder="••••••••"
+                       minlength="6" title="Password must be at least 6 characters">
+              </div>
+              <!-- TODO: Replace 🔑 emoji with proper icon -->
+              <button class="btn gold btn-full" type="submit">🔑 Login</button>
+            </form>
+            
+            <div class="auth-divider">
+              <span>or</span>
+            </div>
+            
+            <!-- TODO: Replace 🔍 emoji with Google logo icon -->
+            <a href="/auth/google" class="btn btn-full btn-google">
+              🔍 Continue with Google
+            </a>
+            
+            <p class="auth-link-text">
+              Don't have an account? 
+              <button onclick="showAuthModal('register')" class="auth-link-btn">Sign up</button>
+            </p>
+          </div>
+
+          <div id="register-form" class="auth-form">
+            <h2 class="auth-title">
+              Join Tyton
+            </h2>
+            <form onsubmit="handleRegister(event)">
+              <div class="field">
+                <label>Full Name</label>
+                <input name="name" required placeholder="Your full name" 
+                       minlength="2" maxlength="100"
+                       pattern="[a-zA-Z\s]+" title="Name should only contain letters and spaces">
+              </div>
+              <div class="field">
+                <label>Email</label>
+                <input name="email" type="email" required placeholder="your@email.com"
+                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                       title="Please enter a valid email address">
+              </div>
+              <div class="field">
+                <label>Handle (optional)</label>
+                <input name="handle" placeholder="@username"
+                       pattern="@?[a-zA-Z0-9_]+" maxlength="30"
+                       title="Handle can contain letters, numbers, and underscores">
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <input name="password" type="password" required placeholder="••••••••" 
+                       minlength="6" maxlength="100"
+                       title="Password must be at least 6 characters">
+              </div>
+              <button class="btn gold btn-full" type="submit">
+                <img src="/assets/logo.png" alt="Tyton" style="width: 16px; height: 16px; margin-right: 6px;" onerror="this.style.display='none'">
+                Create Account
+              </button>
+            </form>
+            
+            <div class="auth-divider">
+              <span>or</span>
+            </div>
+            
+            <!-- TODO: Replace 🔍 emoji with Google logo icon -->
+            <a href="/auth/google" class="btn btn-full btn-google">
+              🔍 Continue with Google
+            </a>
+            
+            <p class="auth-link-text">
+              Already have an account? 
+              <button onclick="showAuthModal('login')" class="auth-link-btn">Login</button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main>
+
+
+      <!-- HOME PAGE -->
+      <section id="home-page">
+        <div style="text-align: center; margin-bottom: 40px;">
+          <h1 class="page-title" style="font-size: 36px; font-weight: 700; margin: 0 0 16px 0;">
+            Welcome to Tyton
+          </h1>
+          <p style="color: var(--muted); font-size: 18px; margin: 0;">
+            Discover recommended projects, marketplace items, and research opportunities
+          </p>
+        </div>
+
+        <!-- Recommended Projects Section -->
+        <section class="card" style="margin-bottom: 32px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 20px;">🔥 Trending Projects</h3>
+            <button class="btn" onclick="setRoute('projects')" style="font-size: 14px;">View All</button>
+          </div>
+          <div class="grid" id="home-projects-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div class="empty-state">
+              <div class="spinner"></div>
+              <p>Loading recommended projects...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recommended Marketplace Section -->
+        <section class="card" style="margin-bottom: 32px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 20px;">⚡ Featured Marketplace</h3>
+            <button class="btn" onclick="setRoute('equipment')" style="font-size: 14px;">View All</button>
+          </div>
+          <div class="grid" id="home-equipment-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div class="empty-state">
+              <div class="spinner"></div>
+              <p>Loading featured marketplace items...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent News Section -->
+        <section class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 20px;">📰 Latest News</h3>
+            <button class="btn" onclick="setRoute('blog')" style="font-size: 14px;">Read More</button>
+          </div>
+          <div class="grid" id="home-blog-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div class="empty-state">
+              <div class="spinner"></div>
+              <p>Loading recent blog posts...</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- PROJECTS PAGE -->
+      <section id="projects-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_projects.png" alt="Projects" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          Research Projects
+        </h2>
+        
+        <!-- Projects Stats -->
+        <div class="pagination-info" id="projects-info" style="text-align: center; margin-bottom: 20px; color: var(--muted);">
+          <p>Loading projects...</p>
+        </div>
+        
+        <div class="grid" id="projects-grid">
+          <div class="empty-state">
+            <div class="spinner"></div>
+            <p>Loading projects...</p>
+          </div>
+        </div>
+        
+        <!-- Projects Pagination -->
+        <div class="pagination" id="projects-pagination" style="display: none;">
+          <button class="btn" onclick="changePage('projects', -1)">← Previous</button>
+          <span class="pagination-current" id="projects-page-info">Page 1 of 1</span>
+          <button class="btn" onclick="changePage('projects', 1)">Next →</button>
+        </div>
+      </section>
+
+      <!-- EQUIPMENT PAGE -->
+      <section id="equipment-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_equipment.png" alt="Marketplace" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          Tyton Marketplace
+        </h2>
+        
+        <!-- Marketplace Stats -->
+        <div class="pagination-info" id="equipment-info" style="text-align: center; margin-bottom: 20px; color: var(--muted);">
+          <p>Loading marketplace items...</p>
+        </div>
+        
+        <div class="grid" id="equipment-grid">
+          <div class="empty-state">
+            <div class="spinner"></div>
+            <p>Loading marketplace items...</p>
+          </div>
+        </div>
+        
+        <!-- Marketplace Pagination -->
+        <div class="pagination" id="equipment-pagination" style="display: none;">
+          <button class="btn" onclick="changePage('equipment', -1)">← Previous</button>
+          <span class="pagination-current" id="equipment-page-info">Page 1 of 1</span>
+          <button class="btn" onclick="changePage('equipment', 1)">Next →</button>
+        </div>
+      </section>
+
+      <!-- PROFILE PAGE -->
+      <section id="profile-page" style="display:none;">
+        <!-- Page Title at Top -->
+        <h2 class="page-title">
+          <img src="/assets/tyton_profile.png" alt="Profile" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          User Profile
+        </h2>
+        
+        <!-- Profile Information Box -->
+        <section id="profile-info-section-content" style="margin-bottom:24px;">
+          <article class="card profile-card" style="position: relative !important; overflow: visible !important;">
+            <div class="profile">
+              <img class="avatar" id="profile-avatar" src="/assets/logo.png" alt="avatar" onerror="this.src=generateFallbackLogo()">
+              <div style="flex: 1; padding-right: 120px;">
+                <h3 id="profile-display-name">Loading...</h3>
+                <div class="meta" id="profile-display-handle">@loading</div>
+                <div class="meta" style="margin-top: 8px;">
+                  <span id="profile-display-institution"></span>
+                  <span id="profile-display-level"></span>
+                </div>
+                <p id="profile-display-bio" style="margin-top: 12px;">Loading bio...</p>
+                <div style="margin-top: 12px;">
+                  <span id="profile-display-research-area" class="tag"></span>
+                  <span id="profile-display-location" style="color: var(--muted); font-size: 12px;"></span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Profile Action Buttons -->
+            <div class="profile-actions">
+              <button id="edit-profile-btn" onclick="toggleEditMode()" class="edit-profile-button">
+                <span class="edit-icon">✏️</span>
+                <span class="edit-text">Edit Profile</span>
+              </button>
+              <button id="post-btn" onclick="showCreateModal()" class="edit-profile-button">
+                <span class="edit-icon">＋</span>
+                <span class="edit-text">Post</span>
+              </button>
+            </div>
+            
+            <hr id="profile-divider" style="border:none;border-top:1px solid rgba(255,255,255,.12); margin:20px 0; display: none;">
+            
+            <form id="profileForm" class="grid" style="grid-template-columns:1fr 1fr; gap:16px; display: none;">
+              <div class="field">
+                <label>First Name</label>
+                <input name="firstName" id="profile-first-name" placeholder="Enter your first name">
+              </div>
+              <div class="field">
+                <label>Last Name</label>
+                <input name="lastName" id="profile-last-name" placeholder="Enter your last name">
+              </div>
+              <div class="field">
+                <label>Handle</label>
+                <input name="handle" id="profile-handle" placeholder="@username">
+              </div>
+              <div class="field">
+                <label>Research Area</label>
+                <select name="researchArea" id="profile-research-area">
+                  <option value="">Select your primary research area</option>
+                  <option value="bioengineering">Bioengineering</option>
+                  <option value="computer-science">Computer Science</option>
+                  <option value="electrical-engineering">Electrical Engineering</option>
+                  <option value="mechanical-engineering">Mechanical Engineering</option>
+                  <option value="materials-science">Materials Science</option>
+                  <option value="chemistry">Chemistry</option>
+                  <option value="physics">Physics</option>
+                  <option value="mathematics">Mathematics</option>
+                  <option value="environmental-science">Environmental Science</option>
+                  <option value="neuroscience">Neuroscience</option>
+                  <option value="robotics">Robotics & Automation</option>
+                  <option value="ai-ml">AI & Machine Learning</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Institution</label>
+                <input name="institution" id="profile-institution" placeholder="University, Company, or Organization">
+              </div>
+              <div class="field">
+                <label>Academic Level</label>
+                <select name="academicLevel" id="profile-academic-level">
+                  <option value="">Select your current level</option>
+                  <option value="undergraduate">Undergraduate Student</option>
+                  <option value="graduate">Graduate Student</option>
+                  <option value="phd">PhD Student</option>
+                  <option value="postdoc">Postdoctoral Researcher</option>
+                  <option value="faculty">Faculty/Professor</option>
+                  <option value="industry">Industry Professional</option>
+                  <option value="independent">Independent Researcher</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="field" style="grid-column: span 2;">
+                <label>Bio</label>
+                <textarea name="bio" id="profile-bio" rows="3" placeholder="Tell others about your research interests"></textarea>
+              </div>
+              <div class="field">
+                <label>Location</label>
+                <input name="location" id="profile-location" placeholder="City, State/Country">
+              </div>
+              <div class="field">
+                <label>Photo URL</label>
+                <input name="photo" id="profile-photo" placeholder="https://example.com/avatar.jpg">
+              </div>
+              <div class="field" style="grid-column: span 2; display:flex; gap:12px; justify-content:flex-end;">
+                <button type="button" class="btn" onclick="cancelEditMode()">Cancel</button>
+                <button class="btn gold" type="submit" id="profile-save-btn">💾 Save Changes</button>
+              </div>
+            </form>
+          </article>
+        </section>
+        
+        <!-- Profile Posts/Listings/Following Tabs -->
+        <article class="card" style="margin-bottom:24px;">
+          <div class="tabs">
+            <!-- TODO: Replace 📊 emoji with proper icon -->
+            <button id="tab-posts" onclick="setProfileTab('posts')">📊 My Posts</button>
+            <!-- TODO: Replace 🔧 emoji with proper icon -->
+            <button id="tab-listings" onclick="setProfileTab('listings')">🔧 My Listings</button>
+            <!-- TODO: Replace 👁️ emoji with proper icon -->
+            <button id="tab-following" onclick="setProfileTab('following')">👁️ Following</button>
+          </div>
+          
+          <div class="grid" id="profile-content">
+            <div class="empty-state">Loading profile data...</div>
+          </div>
+        </article>
+        
+      </section>
+
+      <!-- NEWS PAGE -->
+      <section id="blog-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_blog.png" alt="News" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          Tyton News
+        </h2>
+        
+        <!-- News Stats -->
+        <div class="pagination-info" id="news-info" style="text-align: center; margin-bottom: 20px; color: var(--muted);">
+          <p>Loading news articles...</p>
+        </div>
+        
+        <button id="new-post-btn" class="btn gold" onclick="showCreatePostModal()" style="display: none; margin-bottom: 20px;">
+          ✍️ New Article
+        </button>
+
+        <!-- News Articles Grid -->
+        <div class="grid" id="blog-grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
+          <div class="empty-state">
+            <div class="spinner"></div>
+            <p>Loading news articles...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Create News Article Modal -->
+      <div id="create-post-modal" class="auth-modal">
+        <div class="auth-modal-content">
+          <div class="card auth-card" style="max-width: 600px;">
+            <button onclick="hideCreatePostModal()" class="auth-close">×</button>
+            
+            <h2 class="auth-title">✍️ Create News Article</h2>
+            <form id="create-post-form">
+              <div class="field">
+                <label>Title</label>
+                <input name="title" required placeholder="Enter post title">
+              </div>
+              <div class="field">
+                <label>Category</label>
+                <select name="category" required>
+                  <option value="">Select category</option>
+                  <option value="announcement">📢 Announcement</option>
+                  <option value="research">🔬 Research Update</option>
+                  <option value="team">👥 Team News</option>
+                  <option value="tutorial">📚 Tutorial</option>
+                  <option value="story">📖 User Story</option>
+                  <option value="technical">⚙️ Technical</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Content</label>
+                <textarea name="content" rows="12" required placeholder="Write your blog post content here... (Markdown supported)"></textarea>
+              </div>
+              <div class="field">
+                <label>Tags (optional)</label>
+                <input name="tags" placeholder="research, announcement, tutorial">
+              </div>
+              <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="button" class="btn" onclick="hideCreatePostModal()">Cancel</button>
+                <button type="submit" class="btn gold btn-full">Publish Post</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diagnostics -->
+      <section class="card" style="margin-top:32px;">
+        <!-- TODO: Replace 🔍 emoji with proper icon -->
+        <h3>🔍 System Diagnostics</h3>
+        <pre class="diag" id="diagnostics">System initializing...</pre>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // App State
+    let appState = {
+      route: 'home',
+      profileTab: 'posts',
+      createType: 'project',
+      items: [],
+      followers: {},
+      profile: {},
+      currentUser: null,
+      authToken: localStorage.getItem('tyton_auth_token'),
+      diag: [],
+      isOnline: false,
+      blogPosts: [],
+      // Pagination state
+      pagination: {
+        projects: { currentPage: 1, itemsPerPage: 8 },
+        equipment: { currentPage: 1, itemsPerPage: 8 }
+      }
+    };
+
+    // API Configuration
+    const API_BASE = window.location.origin + '/api';
+
+    // Toast Notification System
+    function showToast(message, type = 'info', duration = 4000) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+      };
+      
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type]}</span>
+        <span class="toast-message">${message}</span>
+        <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      // Auto-remove after duration
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+    
+    // Loading State Management
+    function showLoading(message = 'Loading...') {
+      const overlay = document.getElementById('loading-overlay');
+      const content = overlay.querySelector('.loading-content div:last-child');
+      content.textContent = message;
+      overlay.style.display = 'flex';
+    }
+    
+    function hideLoading() {
+      document.getElementById('loading-overlay').style.display = 'none';
+    }
+    
+    // Button Loading State
+    function setButtonLoading(button, loading = true) {
+      if (loading) {
+        button.classList.add('loading');
+        button.disabled = true;
+      } else {
+        button.classList.remove('loading');
+        button.disabled = false;
+      }
+    }
+    
+    // Form Validation Helper
+    function validateForm(form) {
+      const inputs = form.querySelectorAll('input[required]');
+      for (const input of inputs) {
+        if (!input.validity.valid) {
+          // Show custom validation message
+          if (input.validity.valueMissing) {
+            showToast(`${input.previousElementSibling?.textContent || 'Field'} is required`, 'warning');
+          } else if (input.validity.typeMismatch) {
+            showToast(`Please enter a valid ${input.type}`, 'warning');
+          } else if (input.validity.tooShort) {
+            showToast(`${input.previousElementSibling?.textContent || 'Field'} must be at least ${input.minLength} characters`, 'warning');
+          } else if (input.validity.patternMismatch) {
+            showToast(input.title || 'Please check the format', 'warning');
+          }
+          input.focus();
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    // Add real-time validation feedback
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add validation styling on blur
+      document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('blur', () => {
+          if (input.required && !input.validity.valid) {
+            input.style.borderColor = '#ef4444';
+          } else if (input.value) {
+            input.style.borderColor = '#10b981';
+          } else {
+            input.style.borderColor = '';
+          }
+        });
+        
+        // Clear error styling on input
+        input.addEventListener('input', () => {
+          if (input.validity.valid && input.value) {
+            input.style.borderColor = '#10b981';
+          } else {
+            input.style.borderColor = '';
+          }
+        });
+      });
+    });
+
+    // Fallback logo SVG for if the image file doesn't load
+    function generateFallbackLogo() {
+      return `data:image/svg+xml,` + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+          <defs>
+            <radialGradient id="bg" cx="50%" cy="30%">
+              <stop offset="0%" stop-color="#17233b"/>
+              <stop offset="100%" stop-color="#0e1a2b"/>
+            </radialGradient>
+            <linearGradient id="owl" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f3bd4b"/>
+              <stop offset="100%" stop-color="#d69c2f"/>
+            </linearGradient>
+            <linearGradient id="body" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#8B4513"/>
+              <stop offset="100%" stop-color="#7a263a"/>
+            </linearGradient>
+          </defs>
+          
+          <!-- Background -->
+          <rect width="400" height="400" rx="64" fill="url(#bg)"/>
+          
+          <!-- Owl Body -->
+          <ellipse cx="200" cy="250" rx="100" ry="120" fill="url(#body)"/>
+          
+          <!-- Owl Head -->
+          <circle cx="200" cy="150" r="80" fill="url(#owl)"/>
+          
+          <!-- Eyes -->
+          <circle cx="175" cy="135" r="25" fill="#0e1a2b"/>
+          <circle cx="225" cy="135" r="25" fill="#0e1a2b"/>
+          <circle cx="175" cy="135" r="15" fill="#d69c2f"/>
+          <circle cx="225" cy="135" r="15" fill="#d69c2f"/>
+          <circle cx="180" cy="130" r="6" fill="#0e1a2b"/>
+          <circle cx="230" cy="130" r="6" fill="#0e1a2b"/>
+          
+          <!-- Beak -->
+          <path d="M200 155 L190 170 L210 170 Z" fill="#7a263a"/>
+          
+          <!-- Ear Tufts -->
+          <path d="M140 90 Q150 60 170 70 Q160 85 150 100" fill="url(#owl)"/>
+          <path d="M260 90 Q250 60 230 70 Q240 85 250 100" fill="url(#owl)"/>
+          
+          <!-- Wings -->
+          <ellipse cx="150" cy="260" rx="30" ry="60" fill="#7a263a" opacity="0.8"/>
+          <ellipse cx="250" cy="260" rx="30" ry="60" fill="#7a263a" opacity="0.8"/>
+          
+          <!-- Chest -->
+          <ellipse cx="200" cy="230" rx="40" ry="30" fill="url(#owl)" opacity="0.6"/>
+        </svg>
+      `);
+    }
+
+    // API Functions
+    async function apiCall(endpoint, options = {}) {
+      try {
+        const headers = {
+          'Content-Type': 'application/json',
+          ...options.headers
+        };
+        
+        if (appState.authToken) {
+          headers.Authorization = `Bearer ${appState.authToken}`;
+        }
+        
+        const response = await fetch(API_BASE + endpoint, {
+          headers,
+          credentials: 'include', // This allows session-based auth to work
+          ...options
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          if (response.status === 401 && appState.authToken) {
+            // Token expired or invalid, try to refresh auth
+            await checkAuth();
+          }
+          throw new Error(error.error || 'API request failed');
+        }
+        
+        return await response.json();
+      } catch (error) {
+        log(`API Error: ${error.message}`);
+        throw error;
+      }
+    }
+
+    // Authentication API calls
+    async function authCall(endpoint, options = {}) {
+      try {
+        const response = await fetch(window.location.origin + endpoint, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+          },
+          credentials: 'include',
+          ...options
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          // Include status code information for better error handling
+          const errorMessage = error.error || 'Request failed';
+          if (response.status === 409 && error.code === 'EMAIL_EXISTS') {
+            throw new Error('EMAIL_EXISTS: ' + errorMessage);
+          }
+          throw new Error(errorMessage);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        log(`Auth Error: ${error.message}`);
+        throw error;
+      }
+    }
+
+    // Authentication Functions
+    async function checkAuth() {
+      // First try to get user info using session (works after OAuth redirect)
+      try {
+        const response = await authCall('/auth/me');
+        appState.currentUser = response.user;
+        
+        // Check if user needs to complete profile setup
+        if (appState.currentUser && !appState.currentUser.profileComplete) {
+          // Redirect to profile setup page for incomplete profiles
+          log(`User ${appState.currentUser.email || appState.currentUser.handle} needs profile completion`);
+          // Generate a token for the session if we don't have one
+          const token = appState.authToken || 'session-based'; 
+          window.location.href = `/profile-setup.html?token=${encodeURIComponent(token)}`;
+          return false;
+        }
+        
+        // If we got user data but don't have a token, we're likely in a session-based flow
+        if (appState.currentUser && !appState.authToken) {
+          // Generate or get token for API calls
+          log(`Authenticated via session as ${appState.currentUser.handle}`);
+        } else if (appState.authToken) {
+          log(`Authenticated via token as ${appState.currentUser.handle}`);
+        }
+        
+        updateAuthUI();
+        return true;
+      } catch (error) {
+        // If we have a token but the request failed, clear invalid token
+        if (appState.authToken) {
+          appState.authToken = null;
+          localStorage.removeItem('tyton_auth_token');
+          log('Invalid token cleared');
+        }
+        
+        appState.currentUser = null;
+        updateAuthUI();
+        return false;
+      }
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      
+      setButtonLoading(submitBtn, true);
+      
+      try {
+        const response = await authCall('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: formData.get('email'),
+            password: formData.get('password')
+          })
+        });
+        
+        appState.authToken = response.token;
+        appState.currentUser = response.user;
+        localStorage.setItem('tyton_auth_token', response.token);
+        
+        hideAuthModal();
+        
+        // Check if user needs to complete profile setup
+        if (!response.user.profileComplete) {
+          log(`Redirecting ${response.user.email} to profile setup`);
+          window.location.href = `/profile-setup.html?token=${encodeURIComponent(response.token)}`;
+          return;
+        }
+        
+        updateAuthUI();
+        await loadData();
+        showToast(`Welcome back, ${response.user.name || response.user.handle}!`, 'success');
+        log(`Logged in as ${response.user.handle}`);
+        
+      } catch (error) {
+        showToast(`Login failed: ${error.message}`, 'error');
+      } finally {
+        setButtonLoading(submitBtn, false);
+      }
+    }
+
+    async function handleRegister(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      
+      setButtonLoading(submitBtn, true);
+      
+      try {
+        const response = await authCall('/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: formData.get('name'),
+            email: formData.get('email'),
+            handle: formData.get('handle'),
+            password: formData.get('password')
+          })
+        });
+        
+        appState.authToken = response.token;
+        appState.currentUser = response.user;
+        localStorage.setItem('tyton_auth_token', response.token);
+        
+        hideAuthModal();
+        
+        // Check if user needs to complete profile setup
+        if (response.requiresProfileSetup || !response.user.profileComplete) {
+          log(`Redirecting ${response.user.email} to profile setup`);
+          window.location.href = `/profile-setup.html?token=${encodeURIComponent(response.token)}`;
+          return;
+        }
+        
+        updateAuthUI();
+        await loadData();
+        showToast(`Welcome to Tyton, ${response.user.name || response.user.handle}!`, 'success');
+        log(`Registered as ${response.user.handle}`);
+        
+      } catch (error) {
+        // Handle duplicate email error specifically
+        if (error.message.includes('already exists') || error.message.includes('EMAIL_EXISTS')) {
+          showToast('An account already exists with this email. Please login instead.', 'error');
+          // Switch to login form
+          showAuthModal('login');
+          // Pre-fill email in login form
+          const loginEmailField = document.querySelector('#login-form input[name="email"]');
+          if (loginEmailField) {
+            loginEmailField.value = formData.get('email');
+          }
+        } else {
+          showToast(`Registration failed: ${error.message}`, 'error');
+        }
+      } finally {
+        setButtonLoading(submitBtn, false);
+      }
+    }
+
+    async function logout() {
+      showLoading('Logging out...');
+      try {
+        await authCall('/auth/logout', { method: 'POST' });
+      } catch (error) {
+        // Ignore logout errors
+      } finally {
+        hideLoading();
+      }
+      
+      appState.authToken = null;
+      appState.currentUser = null;
+      localStorage.removeItem('tyton_auth_token');
+      
+      // Clear user-specific data
+      appState.followers = {};
+      appState.profile = {};
+      
+      updateAuthUI();
+      await loadData();
+      log('Logged out');
+    }
+
+    function showAuthModal(type) {
+      const modal = document.getElementById('auth-modal');
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      
+      modal.style.display = 'block';
+      loginForm.style.display = type === 'login' ? 'block' : 'none';
+      registerForm.style.display = type === 'register' ? 'block' : 'none';
+      
+      // Focus first input
+      setTimeout(() => {
+        const firstInput = document.querySelector(`#${type}-form input`);
+        if (firstInput) firstInput.focus();
+      }, 100);
+    }
+
+    function hideAuthModal() {
+      document.getElementById('auth-modal').style.display = 'none';
+    }
+
+    function toggleUserMenu() {
+      const dropdown = document.getElementById('user-dropdown');
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function toggleNavDropdown() {
+      const dropdown = document.getElementById('nav-dropdown-menu');
+      dropdown.style.display = dropdown.style.display === 'none' || dropdown.style.display === '' ? 'block' : 'none';
+    }
+
+    function hideNavDropdown() {
+      document.getElementById('nav-dropdown-menu').style.display = 'none';
+    }
+
+    function updateAuthUI() {
+      const authButtons = document.getElementById('auth-buttons');
+      const userMenu = document.getElementById('user-menu');
+      const profileActions = document.querySelector('.profile-actions');
+      
+      if (appState.currentUser) {
+        // Show user menu, hide auth buttons
+        authButtons.style.display = 'none';
+        userMenu.style.display = 'block';
+        
+        // Show profile actions when user is authenticated
+        if (profileActions) {
+          profileActions.style.display = 'flex';
+        }
+        
+        // Update user menu
+        document.getElementById('user-name').textContent = appState.currentUser.name || appState.currentUser.handle;
+        const userAvatar = document.getElementById('user-avatar');
+        userAvatar.src = appState.currentUser.photo || '/assets/logo.png';
+        userAvatar.onerror = () => userAvatar.src = generateFallbackLogo();
+        
+        // Update profile display
+        updateProfileDisplay();
+        
+      } else {
+        // Show auth buttons, hide user menu
+        authButtons.style.display = 'flex';
+        userMenu.style.display = 'none';
+        
+        // Hide profile actions when not authenticated
+        if (profileActions) {
+          profileActions.style.display = 'none';
+        }
+      }
+    }
+
+    async function loadData() {
+      try {
+        const data = await apiCall('/data');
+        appState.items = data.items || [];
+        appState.followers = data.followers || {};
+        appState.profile = data.profile || {};
+        appState.currentUser = data.currentUser;
+        appState.isOnline = true;
+        updateConnectionStatus();
+        log('Data loaded from server');
+      } catch (error) {
+        // Don't set offline if we're authenticated but just had a data loading issue
+        if (appState.currentUser) {
+          // We're authenticated, just use default empty data and stay online
+          appState.items = [];
+          appState.followers = {};
+          appState.profile = {};
+          appState.isOnline = true;
+          log('Authenticated user - using empty data, staying online');
+        } else {
+          // Fallback to localStorage if server is unavailable
+          try {
+            const localData = JSON.parse(localStorage.getItem('tyton_demo') || '{}');
+            if (localData.items) appState.items = localData.items;
+            if (localData.followers) appState.followers = localData.followers;
+            if (localData.profile) Object.assign(appState.profile, localData.profile);
+            log('Loaded data from localStorage (offline mode)');
+          } catch (e) {
+            log('Failed to load any data');
+          }
+          appState.isOnline = false;
+        }
+        updateConnectionStatus();
+      }
+    }
+
+    function getBookingSection(item) {
+      return `
+        <details class="booking-list">
+          <summary style="cursor: pointer; font-weight: 500; margin-bottom: 8px;">📅 View Bookings (${(item.bookings || []).length})</summary>
+          <ul style="margin:8px 0 0 16px;">
+            ${(item.bookings || []).map(b => 
+              `<li>${b.date} • ${b.slot} • ${b.by}</li>`
+            ).join('') || '<li style="color: var(--muted);">No bookings yet</li>'}
+          </ul>
+        </details>
+
+        <div style="margin: 16px 0;">
+          <button class="btn gold" onclick="window.location.href='/marketplace.html?id=${item.id}'" style="width: 100%;">
+            📋 View Details & Book
+          </button>
+        </div>
+      `;
+    }
+
+    function updateGrid(gridId, items) {
+      const grid = document.getElementById(gridId);
+      if (!grid) {
+        console.error('Grid element not found:', gridId);
+        return;
+      }
+      
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <h3>No items yet</h3>
+            <p>Items will appear here once they're loaded.</p>
+          </div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(item => `
+        <article class="card ${item.type === 'project' ? 'clickable-project' : item.type === 'equipment' ? 'clickable-equipment' : ''}" 
+                 ${item.type === 'project' ? `onclick="openProject('${item.id}')"` : 
+                   item.type === 'equipment' ? `onclick="openEquipment('${item.id}')"` : ''}>
+          <h3>${item.title}</h3>
+          <div class="meta">${formatMeta(item)}</div>
+          <p>${item.description || 'No description provided.'}</p>
+          ${item.tags ? `<div style="margin: 12px 0;">${formatTags(item.tags)}</div>` : ''}
+          
+          ${item.type === 'equipment' ? getBookingSection(item) : ''}
+          
+          <div class="actions" ${item.type === 'project' || item.type === 'equipment' ? 'onclick="event.stopPropagation()"' : ''}>
+            <button class="btn" onclick="handleLike('${item.id}')">
+              ❤️ ${item.likes || 0}
+            </button>
+            <button class="btn ghost" onclick="handleFollow('${item.id}')">
+              ${appState.followers[item.id] ? '👁️ Following' : '👀 Follow'}
+            </button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function loadHomeContent() {
+      // Load trending projects (top 3 by likes)
+      const trendingProjects = appState.items
+        .filter(item => item.type === 'project')
+        .sort((a, b) => (b.likes || 0) - (a.likes || 0))
+        .slice(0, 3);
+      updateGrid('home-projects-grid', trendingProjects);
+      
+      // Load featured marketplace items (top 3 by likes)
+      const featuredEquipment = appState.items
+        .filter(item => item.type === 'equipment')
+        .sort((a, b) => (b.likes || 0) - (a.likes || 0))
+        .slice(0, 3);
+      updateGrid('home-equipment-grid', featuredEquipment);
+      
+      // Load recent blog posts
+      const recentBlogPosts = appState.blogPosts ? appState.blogPosts.slice(0, 3) : [];
+      const blogGrid = document.getElementById('home-blog-grid');
+      
+      if (recentBlogPosts.length === 0) {
+        blogGrid.innerHTML = `
+          <div class="card" style="padding: 20px;">
+            <h4 style="margin: 0 0 12px 0; color: var(--gold);">Coming Soon!</h4>
+            <p style="margin: 0; color: var(--muted);">News articles will appear here once content is loaded.</p>
+          </div>
+        `;
+      } else {
+        blogGrid.innerHTML = recentBlogPosts.map(post => `
+          <article class="card" style="cursor: pointer; transition: transform 0.3s ease;" onclick="window.location.href='/blog-post.html?id=${post.id}'"
+            <h4 style="margin: 0 0 8px 0; font-size: 16px; color: var(--white);">
+              ${post.title}
+            </h4>
+            <div class="meta" style="margin-bottom: 8px; font-size: 11px;">
+              ${formatDate(post.publishedAt)} • ${post.readTime} min read • ${post.author} (${post.handle})
+            </div>
+            <p style="margin: 0; font-size: 14px; line-height: 1.4; color: var(--muted);">
+              ${post.excerpt}
+            </p>
+          </article>
+        `).join('');
+      }
+    }
+
+    function loadBlogContent() {
+      // Update news stats
+      const newsCount = appState.blogPosts ? appState.blogPosts.length : 0;
+      document.getElementById('news-info').innerHTML = `<p>Showing ${newsCount} news articles</p>`;
+      
+      // Show new post button for admin users (placeholder logic)
+      const newPostBtn = document.getElementById('new-post-btn');
+      if (appState.currentUser && appState.currentUser.isAdmin) {
+        newPostBtn.style.display = 'block';
+      } else {
+        newPostBtn.style.display = 'none';
+      }
+      
+      // Load blog posts
+      const blogGrid = document.getElementById('blog-grid');
+      
+      if (appState.blogPosts && appState.blogPosts.length > 0) {
+        blogGrid.innerHTML = appState.blogPosts.map(post => `
+          <article class="card" style="cursor: pointer; transition: transform 0.3s ease;" onclick="window.location.href='/blog-post.html?id=${post.id}'"
+            <h3 style="margin: 0 0 12px 0; font-size: 20px; line-height: 1.3; color: var(--white);">
+              ${post.title}
+            </h3>
+            <div class="meta" style="margin-bottom: 16px;">
+              ${formatDate(post.publishedAt)} • ${post.readTime} min read • ${post.author} (${post.handle})
+            </div>
+            <p style="margin: 0 0 16px 0; line-height: 1.6; color: var(--muted);">
+              ${post.excerpt}
+            </p>
+            <div style="margin-top: 16px;">
+              ${post.tags.map(tag => `<span class="tag" style="background: rgba(218,165,32,.2); color: var(--gold); padding: 4px 8px; border-radius: 6px; font-size: 12px; margin-right: 8px;">${tag}</span>`).join('')}
+            </div>
+          </article>
+        `).join('');
+      } else {
+        document.getElementById('news-info').innerHTML = `<p>No news articles available</p>`;
+        blogGrid.innerHTML = `
+          <div class="card" style="padding: 40px; text-align: center;">
+            <h3 style="margin: 0 0 16px 0; color: var(--gold);">No News Articles Yet</h3>
+            <p style="margin: 0; color: var(--muted);">News articles will appear here once content is loaded.</p>
+          </div>
+        `;
+      }
+    }
+
+    function showCreatePostModal() {
+      document.getElementById('create-post-modal').style.display = 'block';
+    }
+
+    function hideCreatePostModal() {
+      document.getElementById('create-post-modal').style.display = 'none';
+    }
+
+    async function createItem(itemData) {
+      if (appState.isOnline) {
+        try {
+          const newItem = await apiCall('/items', {
+            method: 'POST',
+            body: JSON.stringify(itemData)
+          });
+          appState.items.unshift(newItem);
+          log(`Created ${newItem.type}: ${newItem.title}`);
+          return newItem;
+        } catch (error) {
+          throw error;
+        }
+      } else {
+        // Offline fallback
+        const newItem = {
+          id: generateId(),
+          ...itemData,
+          owner: appState.profile.handle || '@anon',
+          likes: 0,
+          createdAt: Date.now()
+        };
+        if (itemData.type === 'equipment') {
+          newItem.bookings = [];
+        }
+        appState.items.unshift(newItem);
+        saveToLocalStorage();
+        log(`Created ${newItem.type} (offline): ${newItem.title}`);
+        return newItem;
+      }
+    }
+
+    async function likeItem(itemId) {
+      const item = appState.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      if (appState.isOnline) {
+        try {
+          const result = await apiCall(`/items/${itemId}/like`, { method: 'PUT' });
+          item.likes = result.likes;
+          log(`Liked item: ${item.title}`);
+        } catch (error) {
+          // Fallback to local update
+          item.likes = (item.likes || 0) + 1;
+          saveToLocalStorage();
+        }
+      } else {
+        item.likes = (item.likes || 0) + 1;
+        saveToLocalStorage();
+        log(`Liked item (offline): ${item.title}`);
+      }
+    }
+
+    async function toggleFollow(itemId) {
+      if (appState.isOnline) {
+        try {
+          const result = await apiCall(`/items/${itemId}/follow`, { method: 'PUT' });
+          if (result.following) {
+            appState.followers[itemId] = true;
+          } else {
+            delete appState.followers[itemId];
+          }
+          log(`Follow toggled for item: ${itemId}`);
+        } catch (error) {
+          // Fallback to local update
+          toggleFollowLocal(itemId);
+        }
+      } else {
+        toggleFollowLocal(itemId);
+      }
+    }
+
+    function toggleFollowLocal(itemId) {
+      if (appState.followers[itemId]) {
+        delete appState.followers[itemId];
+        log(`Unfollowed item (offline): ${itemId}`);
+      } else {
+        appState.followers[itemId] = true;
+        log(`Following item (offline): ${itemId}`);
+      }
+      saveToLocalStorage();
+    }
+
+    async function bookEquipment(itemId, bookingData) {
+      if (appState.isOnline) {
+        try {
+          await apiCall(`/equipment/${itemId}/book`, {
+            method: 'POST',
+            body: JSON.stringify(bookingData)
+          });
+          
+          const item = appState.items.find(i => i.id === itemId);
+          if (item) {
+            item.bookings = item.bookings || [];
+            item.bookings.push({
+              ...bookingData,
+              by: appState.profile.handle || '@anon'
+            });
+          }
+          log(`Booked equipment: ${bookingData.date} ${bookingData.slot}`);
+        } catch (error) {
+          throw error;
+        }
+      } else {
+        // Offline fallback
+        const item = appState.items.find(i => i.id === itemId);
+        if (item) {
+          item.bookings = item.bookings || [];
+          const hasConflict = item.bookings.some(b => 
+            b.date === bookingData.date && b.slot === bookingData.slot
+          );
+          if (hasConflict) {
+            throw new Error('Time slot is already booked');
+          }
+          item.bookings.push({
+            ...bookingData,
+            by: appState.profile.handle || '@anon'
+          });
+          saveToLocalStorage();
+          log(`Booked equipment (offline): ${bookingData.date} ${bookingData.slot}`);
+        }
+      }
+    }
+
+    async function saveProfile(profileData) {
+      if (appState.isOnline) {
+        try {
+          const updatedProfile = await apiCall('/profile', {
+            method: 'PUT',
+            body: JSON.stringify(profileData)
+          });
+          Object.assign(appState.profile, updatedProfile);
+          log(`Profile saved: ${appState.profile.handle}`);
+        } catch (error) {
+          throw error;
+        }
+      } else {
+        Object.assign(appState.profile, profileData);
+        saveToLocalStorage();
+        log(`Profile saved (offline): ${appState.profile.handle}`);
+      }
+    }
+
+    async function seedData() {
+      if (appState.isOnline) {
+        try {
+          const result = await apiCall('/seed', { method: 'POST' });
+          appState.items = [...result.items, ...appState.items];
+          log(`Seeded ${result.items.length} items from server`);
+        } catch (error) {
+          seedDataLocal();
+        }
+      } else {
+        seedDataLocal();
+      }
+    }
+
+    function seedDataLocal() {
+      const now = Date.now();
+      const sample = [
+        {
+          id: generateId(),
+          type: 'project',
+          title: 'Open Microfluidics Platform',
+          description: 'Developing parametric chip designs for affordable microfluidics research. Target cost: under $30 per kit with open-source CAD files.',
+          tags: 'bio,microfluidics,open-source',
+          owner: '@josh',
+          location: 'Remote',
+          likes: 12,
+          createdAt: now - 86400000 * 3
+        },
+        {
+          id: generateId(),
+          type: 'equipment',
+          title: 'CNC Mill (Tormach PCNC 770M)',
+          description: 'Precision CNC mill available for student projects. Includes automatic tool changer and coolant system.',
+          tags: 'cnc,machining,precision',
+          owner: '@makerspace',
+          location: 'On-site (Berkeley Lab)',
+          likes: 8,
+          bookings: [
+            { date: '2025-08-20', slot: '09:00–11:00', by: '@alice' },
+            { date: '2025-08-22', slot: '13:00–15:00', by: '@bob' }
+          ],
+          createdAt: now - 86400000 * 7
+        },
+        {
+          id: generateId(),
+          type: 'project',
+          title: 'Neural Network Hardware Accelerator',
+          description: 'Custom FPGA-based accelerator for edge AI applications. Focus on power efficiency and real-time inference.',
+          tags: 'ai,fpga,hardware,edge-computing',
+          owner: '@alex_researcher',
+          location: 'Hybrid',
+          likes: 24,
+          createdAt: now - 86400000 * 5
+        }
+      ];
+
+      appState.items = [...sample, ...appState.items];
+      saveToLocalStorage();
+      log(`Seeded ${sample.length} demo items (offline)`);
+    }
+
+    async function resetDemo() {
+      if (appState.isOnline) {
+        try {
+          await apiCall('/reset', { method: 'DELETE' });
+          appState.items = [];
+          appState.followers = {};
+          appState.profile = { name: '', handle: '@josh', bio: '', photo: '' };
+          log('Demo data reset on server');
+        } catch (error) {
+          resetDemoLocal();
+        }
+      } else {
+        resetDemoLocal();
+      }
+    }
+
+    function resetDemoLocal() {
+      localStorage.removeItem('tyton_demo');
+      appState.items = [];
+      appState.followers = {};
+      appState.profile = { name: '', handle: '@josh', bio: '', photo: '' };
+      log('Demo data reset (offline)');
+    }
+
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem('tyton_demo', JSON.stringify({
+          items: appState.items,
+          followers: appState.followers,
+          profile: appState.profile
+        }));
+      } catch(e) {
+        log('Failed to save to localStorage: ' + e.message);
+      }
+    }
+
+    function updateConnectionStatus() {
+      const badge = document.getElementById('status-badge');
+      if (appState.isOnline) {
+        badge.textContent = '🌐 Online';
+        badge.className = 'badge online';
+      } else {
+        badge.textContent = '📱 Offline mode';
+        badge.className = 'badge offline';
+      }
+    }
+
+    // Utility functions
+    function log(message) {
+      const timestamp = new Date().toLocaleTimeString();
+      appState.diag.push(`[${timestamp}] ${message}`);
+      const diagElement = document.getElementById('diagnostics');
+      if (diagElement) {
+        diagElement.textContent = appState.diag.slice(-10).join('\n'); // Keep last 10 messages
+      }
+    }
+
+    function generateId() {
+      return Math.random().toString(36).slice(2,11) + Date.now().toString(36);
+    }
+
+    function formatMeta(item) {
+      const ts = new Date(item.createdAt || Date.now()).toLocaleDateString();
+      const who = item.owner || '@anon';
+      const where = item.location ? ` • ${item.location}` : '';
+      return `${who} • ${ts}${where}`;
+    }
+
+    function formatTags(tagsStr) {
+      if (!tagsStr) return '';
+      return tagsStr.split(',').map(tag => 
+        `<span class="tag">${tag.trim()}</span>`
+      ).join('');
+    }
+
+    function formatDate(timestamp) {
+      return new Date(timestamp).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+
+    // Navigation
+    function setRoute(route) {
+      appState.route = route;
+      updateRoute();
+    }
+
+    function updateRoute() {
+      // Hide all pages
+      document.getElementById('home-page').style.display = 'none';
+      document.getElementById('projects-page').style.display = 'none';
+      document.getElementById('equipment-page').style.display = 'none';
+      document.getElementById('blog-page').style.display = 'none';
+      document.getElementById('profile-page').style.display = 'none';
+      
+      // Profile info section is now part of the profile page, so no separate handling needed
+      
+      // Update create section visibility based on route
+      updateAuthUI();
+      
+      // Show current page
+      document.getElementById(appState.route + '-page').style.display = 'block';
+      
+      // Load page-specific content
+      if (appState.route === 'home') {
+        loadHomeContent();
+      } else if (appState.route === 'blog') {
+        loadBlogContent();
+      }
+      
+      // Update nav buttons
+      document.querySelectorAll('.nav-dropdown-item').forEach(btn => {
+        btn.removeAttribute('aria-current');
+      });
+      
+      const activeNavButton = document.getElementById('nav-' + appState.route);
+      if (activeNavButton) {
+        activeNavButton.setAttribute('aria-current', 'page');
+      } else {
+        console.warn('Could not find nav button for route:', appState.route);
+      }
+      
+      // Update content
+      if (appState.route === 'projects') {
+        renderProjects();
+      } else if (appState.route === 'equipment') {
+        renderEquipment();
+      } else if (appState.route === 'profile') {
+        renderProfile();
+        updateProfileDisplay();
+      }
+    }
+
+    // Create form
+    // Modal functions
+    function showCreateModal() {
+      document.getElementById('createModal').style.display = 'flex';
+      // Reset form
+      document.getElementById('createModalForm').reset();
+      // Set default type to project
+      setCreateType('project');
+      // Focus on title field
+      setTimeout(() => {
+        document.querySelector('#createModalForm input[name="title"]').focus();
+      }, 100);
+    }
+
+    function hideCreateModal() {
+      document.getElementById('createModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('createModal');
+      if (event.target === modal) {
+        hideCreateModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        hideCreateModal();
+      }
+    });
+
+    function setCreateType(type) {
+      appState.createType = type;
+      updateCreateType();
+    }
+
+    function updateCreateType() {
+      // Update modal tab buttons
+      const projectTab = document.getElementById('modal-tab-project');
+      const equipmentTab = document.getElementById('modal-tab-equipment');
+      
+      if (projectTab && equipmentTab) {
+        projectTab.setAttribute('aria-selected', appState.createType === 'project');
+        equipmentTab.setAttribute('aria-selected', appState.createType === 'equipment');
+      }
+    }
+
+    async function handleCreateSubmit(e) {
+      e.preventDefault();
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span> Creating...';
+      btn.disabled = true;
+
+      try {
+        const formData = new FormData(e.target);
+        const title = formData.get('title').trim();
+        
+        if (!title) {
+          showToast('Title is required', 'warning');
+          return;
+        }
+
+        const itemData = {
+          type: appState.createType,
+          title: title,
+          description: formData.get('description').trim(),
+          tags: formData.get('tags').trim(),
+          location: formData.get('location').trim()
+        };
+
+        await createItem(itemData);
+        
+        // Reset form and close modal
+        e.target.reset();
+        hideCreateModal();
+        updateRoute(); // Refresh current view
+        
+        // Show success message
+        showToast('Item created successfully!', 'success');
+        
+      } catch (error) {
+        showToast(`Failed to create item: ${error.message}`, 'error');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // Pagination Functions
+    function changePage(type, direction) {
+      const paginationState = appState.pagination[type];
+      const newPage = paginationState.currentPage + direction;
+      const maxPage = Math.ceil(getItemsByType(type).length / paginationState.itemsPerPage);
+      
+      if (newPage >= 1 && newPage <= maxPage) {
+        paginationState.currentPage = newPage;
+        if (type === 'projects') {
+          renderProjects();
+        } else if (type === 'equipment') {
+          renderEquipment();
+        }
+      }
+    }
+
+    function getItemsByType(type) {
+      return appState.items.filter(item => item.type === (type === 'equipment' ? 'equipment' : 'project'));
+    }
+
+    function getPaginatedItems(type) {
+      const allItems = getItemsByType(type);
+      const paginationState = appState.pagination[type];
+      const startIndex = (paginationState.currentPage - 1) * paginationState.itemsPerPage;
+      const endIndex = startIndex + paginationState.itemsPerPage;
+      return allItems.slice(startIndex, endIndex);
+    }
+
+    function updatePaginationInfo(type, typeName) {
+      const allItems = getItemsByType(type);
+      const paginationState = appState.pagination[type];
+      const totalPages = Math.ceil(allItems.length / paginationState.itemsPerPage);
+      
+      // Update info section
+      const infoElement = document.getElementById(`${type}-info`);
+      const startItem = (paginationState.currentPage - 1) * paginationState.itemsPerPage + 1;
+      const endItem = Math.min(paginationState.currentPage * paginationState.itemsPerPage, allItems.length);
+      
+      infoElement.innerHTML = `<p>Showing ${startItem}-${endItem} of ${allItems.length} ${typeName.toLowerCase()}</p>`;
+      
+      // Update pagination controls
+      const paginationElement = document.getElementById(`${type}-pagination`);
+      const pageInfoElement = document.getElementById(`${type}-page-info`);
+      
+      if (totalPages > 1) {
+        paginationElement.style.display = 'flex';
+        pageInfoElement.textContent = `Page ${paginationState.currentPage} of ${totalPages}`;
+        
+        // Update button states
+        const prevBtn = paginationElement.querySelector('button:first-child');
+        const nextBtn = paginationElement.querySelector('button:last-child');
+        
+        prevBtn.disabled = paginationState.currentPage === 1;
+        nextBtn.disabled = paginationState.currentPage === totalPages;
+      } else {
+        paginationElement.style.display = 'none';
+      }
+    }
+
+    // Render functions
+    function renderProjects() {
+      const allProjects = appState.items.filter(item => item.type === 'project');
+      const projects = getPaginatedItems('projects');
+      const grid = document.getElementById('projects-grid');
+      
+      if (allProjects.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <h3>No projects yet</h3>
+            <p>Create your first project above to get started!</p>
+          </div>`;
+        document.getElementById('projects-pagination').style.display = 'none';
+        document.getElementById('projects-info').innerHTML = '<p>No projects available</p>';
+        return;
+      }
+
+      grid.innerHTML = projects.map(item => `
+        <article class="card clickable-project" onclick="openProject('${item.id}')">
+          <h3>${item.title}</h3>
+          <div class="meta">${formatMeta(item)}</div>
+          <p>${item.description || 'No description provided.'}</p>
+          ${item.tags ? `<div style="margin: 12px 0;">${formatTags(item.tags)}</div>` : ''}
+          <div class="actions" onclick="event.stopPropagation()">
+            <button class="btn" onclick="handleLike('${item.id}')">
+              ❤️ ${item.likes || 0}
+            </button>
+            <button class="btn ghost" onclick="handleFollow('${item.id}')">
+              ${appState.followers[item.id] ? '👁️ Following' : '👀 Follow'}
+            </button>
+          </div>
+        </article>
+      `).join('');
+      
+      updatePaginationInfo('projects', 'Projects');
+    }
+
+    function renderEquipment() {
+      const allEquipment = appState.items.filter(item => item.type === 'equipment');
+      const equipment = getPaginatedItems('equipment');
+      const grid = document.getElementById('equipment-grid');
+      
+      if (allEquipment.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <h3>No marketplace items yet</h3>
+            <p>Add marketplace items above to start sharing resources!</p>
+          </div>`;
+        document.getElementById('equipment-pagination').style.display = 'none';
+        document.getElementById('equipment-info').innerHTML = '<p>No marketplace items available</p>';
+        return;
+      }
+
+      grid.innerHTML = equipment.map(item => `
+        <article class="card">
+          <h3>${item.title}</h3>
+          <div class="meta">${formatMeta(item)}</div>
+          <p>${item.description || 'No description provided.'}</p>
+          ${item.tags ? `<div style="margin: 12px 0;">${formatTags(item.tags)}</div>` : ''}
+          
+          <details class="booking-list">
+            <summary style="cursor: pointer; font-weight: 500; margin-bottom: 8px;">📅 View Bookings (${(item.bookings || []).length})</summary>
+            <ul style="margin:8px 0 0 16px;">
+              ${(item.bookings || []).map(b => 
+                `<li>${b.date} • ${b.slot} • ${b.by}</li>`
+              ).join('') || '<li style="color: var(--muted);">No bookings yet</li>'}
+            </ul>
+          </details>
+
+          <div class="actions">
+            <button class="btn gold" onclick="window.location.href='/marketplace.html?id=${item.id}'">
+              📋 View Details & Book
+            </button>
+            <button class="btn" onclick="handleLike('${item.id}')">
+              ❤️ ${item.likes || 0}
+            </button>
+            <button class="btn ghost" onclick="handleFollow('${item.id}')">
+              ${appState.followers[item.id] ? '👁️ Following' : '👀 Follow'}
+            </button>
+          </div>
+        </article>
+      `).join('');
+      
+      updatePaginationInfo('equipment', 'Marketplace Items');
+    }
+
+    // Profile functions
+    function setProfileTab(tab) {
+      appState.profileTab = tab;
+      renderProfile();
+    }
+
+    function updateProfile() {
+      // Use currentUser data if available, otherwise fall back to profile data
+      const userData = appState.currentUser || appState.profile;
+      
+      document.getElementById('profile-display-name').textContent = userData.name || 'Your Name';
+      document.getElementById('profile-display-handle').textContent = userData.handle || '@handle';
+      document.getElementById('profile-display-bio').textContent = userData.bio || 'Add a short bio describing your research or making interests.';
+      
+      // Institution and level
+      const institution = userData.institution || '';
+      const level = userData.academicLevel || '';
+      document.getElementById('profile-display-institution').textContent = institution;
+      document.getElementById('profile-display-level').textContent = level ? ` • ${level}` : '';
+      
+      // Research area
+      const researchAreaEl = document.getElementById('profile-display-research-area');
+      if (userData.researchArea) {
+        researchAreaEl.textContent = userData.researchArea.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        researchAreaEl.style.display = 'inline-block';
+      } else {
+        researchAreaEl.style.display = 'none';
+      }
+      
+      // Location
+      const locationEl = document.getElementById('profile-display-location');
+      if (userData.location) {
+        locationEl.textContent = ` • ${userData.location}`;
+        locationEl.style.display = 'inline';
+      } else {
+        locationEl.style.display = 'none';
+      }
+      
+      const avatar = userData.photo || '/assets/logo.png';
+      const avatarEl = document.getElementById('profile-avatar');
+      avatarEl.src = avatar;
+      avatarEl.onerror = () => avatarEl.src = generateFallbackLogo();
+      
+      // Update form with current user data
+      const nameParts = (userData.name || '').split(' ');
+      document.getElementById('profile-first-name').value = nameParts[0] || '';
+      document.getElementById('profile-last-name').value = nameParts.slice(1).join(' ') || '';
+      document.getElementById('profile-handle').value = userData.handle || '';
+      document.getElementById('profile-research-area').value = userData.researchArea || '';
+      document.getElementById('profile-institution').value = userData.institution || '';
+      document.getElementById('profile-academic-level').value = userData.academicLevel || '';
+      document.getElementById('profile-bio').value = userData.bio || '';
+      document.getElementById('profile-location').value = userData.location || '';
+      document.getElementById('profile-photo').value = userData.photo || '';
+    }
+
+    function renderProfile() {
+      updateProfile();
+      
+      // Update tab buttons
+      document.querySelectorAll('#profile-page .tabs button').forEach(btn => {
+        btn.removeAttribute('aria-selected');
+      });
+      document.getElementById('tab-' + appState.profileTab).setAttribute('aria-selected', 'true');
+      
+      const content = document.getElementById('profile-content');
+      
+      if (appState.profileTab === 'posts') {
+        const myPosts = appState.items.filter(item => 
+          item.type === 'project' && item.owner === appState.profile.handle
+        );
+        
+        if (myPosts.length === 0) {
+          content.innerHTML = '<div class="empty-state">No posts yet. Create a project to see it here!</div>';
+        } else {
+          content.innerHTML = myPosts.map(item => `
+            <div class="card ${item.type === 'project' ? 'clickable-project' : ''}" 
+                 ${item.type === 'project' ? `onclick="openProject('${item.id}')"` : ''}>
+              <h3>${item.title}</h3>
+              <div class="meta">${formatMeta(item)}</div>
+              <p>${item.description || 'No description'}</p>
+            </div>
+          `).join('');
+        }
+      } else if (appState.profileTab === 'listings') {
+        const myListings = appState.items.filter(item => 
+          item.type === 'equipment' && item.owner === appState.profile.handle
+        );
+        
+        if (myListings.length === 0) {
+          content.innerHTML = '<div class="empty-state">No marketplace listings yet. Add marketplace items to see them here!</div>';
+        } else {
+          content.innerHTML = myListings.map(item => `
+            <div class="card">
+              <h3>${item.title}</h3>
+              <div class="meta">${formatMeta(item)}</div>
+              <p>${item.description || 'No description'}</p>
+            </div>
+          `).join('');
+        }
+      } else if (appState.profileTab === 'following') {
+        const following = appState.items.filter(item => appState.followers[item.id]);
+        
+        if (following.length === 0) {
+          content.innerHTML = '<div class="empty-state">You\'re not following anything yet. Follow projects or marketplace items to see them here!</div>';
+        } else {
+          content.innerHTML = following.map(item => `
+            <div class="card ${item.type === 'project' ? 'clickable-project' : ''}" 
+                 ${item.type === 'project' ? `onclick="openProject('${item.id}')"` : ''}>
+              <h3>${item.title}</h3>
+              <div class="meta">${formatMeta(item)}</div>
+              <p>${item.description || 'No description'}</p>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    function updateProfileDisplay() {
+      if (!appState.currentUser) return;
+      
+      const user = appState.currentUser;
+      
+      // Sync appState.profile with currentUser to ensure consistency
+      appState.profile = {
+        name: user.name || '',
+        handle: user.handle || '',
+        bio: user.bio || '',
+        photo: user.photo || '',
+        researchArea: user.researchArea || '',
+        institution: user.institution || '',
+        academicLevel: user.academicLevel || '',
+        location: user.location || ''
+      };
+      
+      // Update display elements
+      document.getElementById('profile-display-name').textContent = user.name || 'Unknown User';
+      document.getElementById('profile-display-handle').textContent = user.handle || '@user';
+      document.getElementById('profile-display-bio').textContent = user.bio || 'No bio provided yet.';
+      
+      // Institution and level
+      const institution = user.institution || '';
+      const level = user.academicLevel || '';
+      document.getElementById('profile-display-institution').textContent = institution;
+      document.getElementById('profile-display-level').textContent = level ? ` • ${level}` : '';
+      
+      // Research area tag
+      const researchAreaEl = document.getElementById('profile-display-research-area');
+      if (user.researchArea) {
+        researchAreaEl.textContent = user.researchArea.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        researchAreaEl.style.display = 'inline-block';
+      } else {
+        researchAreaEl.style.display = 'none';
+      }
+      
+      // Location
+      const locationEl = document.getElementById('profile-display-location');
+      if (user.location) {
+        locationEl.textContent = ` 📍 ${user.location}`;
+      } else {
+        locationEl.textContent = '';
+      }
+      
+      // Avatar
+      const avatar = document.getElementById('profile-avatar');
+      avatar.src = user.photo || '/assets/logo.png';
+      avatar.onerror = () => avatar.src = generateFallbackLogo();
+      
+      // Update form fields
+      document.getElementById('profile-first-name').value = user.firstName || '';
+      document.getElementById('profile-last-name').value = user.lastName || '';
+      document.getElementById('profile-handle').value = user.handle || '';
+      document.getElementById('profile-research-area').value = user.researchArea || '';
+      document.getElementById('profile-institution').value = user.institution || '';
+      document.getElementById('profile-academic-level').value = user.academicLevel || '';
+      document.getElementById('profile-bio').value = user.bio || '';
+      document.getElementById('profile-location').value = user.location || '';
+      document.getElementById('profile-photo').value = user.photo || '';
+    }
+
+    async function handleProfileSubmit(e) {
+      e.preventDefault();
+      
+      const btn = document.getElementById('profile-save-btn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span> Saving...';
+      btn.disabled = true;
+
+      try {
+        const formData = new FormData(e.target);
+        const firstName = formData.get('firstName').trim();
+        const lastName = formData.get('lastName').trim();
+        
+        const profileData = {
+          name: `${firstName} ${lastName}`.trim(),
+          firstName: firstName,
+          lastName: lastName,
+          handle: formData.get('handle').trim(),
+          researchArea: formData.get('researchArea'),
+          institution: formData.get('institution').trim(),
+          academicLevel: formData.get('academicLevel'),
+          bio: formData.get('bio').trim(),
+          location: formData.get('location').trim(),
+          photo: formData.get('photo').trim()
+        };
+        
+        // Ensure handle starts with @
+        if (profileData.handle && !profileData.handle.startsWith('@')) {
+          profileData.handle = '@' + profileData.handle;
+        }
+        
+        const response = await apiCall('/profile', {
+          method: 'PUT',
+          body: JSON.stringify(profileData)
+        });
+        
+        // Update current user data
+        appState.currentUser = response;
+        updateProfileDisplay();
+        
+        // Exit edit mode
+        isEditMode = false;
+        hideEditMode();
+        
+        showToast('Profile saved successfully!', 'success');
+      } catch (error) {
+        showToast(`Failed to save profile: ${error.message}`, 'error');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // Action handlers
+    async function handleLike(itemId) {
+      try {
+        await likeItem(itemId);
+        updateRoute();
+      } catch (error) {
+        showToast(`Failed to like item: ${error.message}`, 'error');
+      }
+    }
+
+    async function handleFollow(itemId) {
+      try {
+        await toggleFollow(itemId);
+        updateRoute();
+      } catch (error) {
+        showToast(`Failed to toggle follow: ${error.message}`, 'error');
+      }
+    }
+
+    function openProject(projectId) {
+      // Open project page in same tab
+      window.location.href = `/project.html?id=${projectId}`;
+    }
+
+    function openEquipment(equipmentId) {
+      // Open equipment page in same tab
+      window.location.href = `/marketplace.html?id=${equipmentId}`;
+    }
+
+    async function handleBooking(e, itemId) {
+      e.preventDefault();
+      
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner"></span> Booking...';
+      submitBtn.disabled = true;
+
+      try {
+        const formData = new FormData(e.target);
+        const date = formData.get('date');
+        const slot = formData.get('slot');
+        
+        if (!date || !slot) {
+          showToast('Please select both date and time slot', 'warning');
+          return;
+        }
+
+        await bookEquipment(itemId, { date, slot });
+        e.target.reset();
+        showToast('Marketplace item booked successfully!', 'success');
+        updateRoute();
+      } catch (error) {
+        showToast(`Failed to book marketplace item: ${error.message}`, 'error');
+      } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function handleCreatePost(e) {
+      e.preventDefault();
+      
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner"></span> Publishing...';
+      submitBtn.disabled = true;
+
+      try {
+        const formData = new FormData(e.target);
+        const postData = {
+          title: formData.get('title'),
+          category: formData.get('category'),
+          content: formData.get('content'),
+          tags: formData.get('tags')
+        };
+
+        // TODO: Implement blog post creation API
+        // const newPost = await apiCall('/blog/posts', {
+        //   method: 'POST',
+        //   body: JSON.stringify(postData)
+        // });
+
+        // For now, just show success message
+        showToast('News article created successfully! (Feature coming soon)', 'success');
+        hideCreatePostModal();
+        e.target.reset();
+        
+      } catch (error) {
+        showToast(`Failed to create blog post: ${error.message}`, 'error');
+      } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+
+    // Blog Posts Initialization
+    function initializeBlogPosts() {
+      appState.blogPosts = [
+        {
+          id: "google-willow-quantum-chip-2024",
+          title: "Google's Willow Quantum Chip Breaks Through Error Correction Barrier",
+          excerpt: "Google's latest quantum processor demonstrates exponential error reduction, marking a historic milestone in quantum computing development.",
+          content: `Google unveiled its revolutionary Willow quantum chip this December, achieving a breakthrough that has been decades in the making: quantum error correction that actually reduces errors as more qubits are added to the system.
+
+The 105-qubit superconducting processor represents a fundamental shift in quantum computing. Unlike previous systems where adding more qubits typically introduced more errors, Willow demonstrates "below threshold" error correction—each additional qubit actually makes the system more reliable rather than less.
+
+**A Historic Achievement**
+
+"This is the moment we've been working toward for 30 years," explained Dr. Hartmut Neven, head of Google Quantum AI. "We've crossed the threshold where quantum error correction becomes exponentially beneficial rather than exponentially costly."
+
+The breakthrough centers on Google's novel approach to logical qubits—virtual qubits made from multiple physical qubits that can detect and correct their own errors in real-time. Willow's logical qubits demonstrated error rates that decreased by a factor of 2 each time the system size doubled, achieving a 10^-6 error rate with their largest logical qubit arrays.
+
+**Real-World Implications**
+
+Perhaps most remarkably, Willow solved a computational benchmark problem in under 5 minutes that would take today's fastest supercomputers 10 septillion years—a number that exceeds the age of the universe. This demonstrates "quantum advantage" on a scale never before achieved.
+
+The technology has immediate implications for drug discovery, financial modeling, and climate simulation. Pharmaceutical companies including Roche and Biogen are already partnering with Google to explore molecular simulation applications that could accelerate drug development by decades.
+
+**Beyond Computing**
+
+Willow's error correction breakthrough also validates quantum computing's potential for artificial intelligence. The chip's ability to maintain quantum coherence while performing complex calculations opens pathways for quantum machine learning algorithms that could revolutionize how AI systems process information.
+
+The achievement earned recognition from Physics World as their 2024 Breakthrough of the Year, shared with MIT and Harvard researchers who demonstrated similar error correction breakthroughs on atomic processors.
+
+**Looking Forward**
+
+Google plans to scale Willow's architecture to 1,000+ logical qubits by 2030, targeting applications in fusion energy simulation, drug discovery, and optimization problems that are intractable for classical computers. The company estimates that practical quantum advantage for commercial applications is now just 3-5 years away rather than decades.
+
+As quantum computing transitions from laboratory curiosity to practical technology, Willow represents the foundation upon which the quantum future will be built.`,
+          publishedAt: Date.now() - 86400000 * 3,
+          readTime: 4,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["quantum computing", "Google", "error correction", "breakthrough"]
+        },
+        {
+          id: "china-zuchongzhi-quantum-2025",
+          title: "China Unveils Zuchongzhi 3.0: 105-Qubit Quantum Processor Achieves Quadrillion-Fold Speedup",
+          excerpt: "Chinese scientists demonstrate quantum supremacy with their latest superconducting processor, rivaling global quantum computing leaders.",
+          content: `Chinese researchers unveiled Zuchongzhi 3.0 this week, a 105-qubit superconducting quantum processor that achieved computational speeds quadrillions of times faster than leading supercomputers for quantum random circuit sampling tasks.
+
+The breakthrough, announced by a team from the University of Science and Technology of China (USTC), represents a significant leap in China's quantum computing capabilities and positions the nation as a major competitor in the global quantum race.
+
+**Technical Achievement**
+
+Zuchongzhi 3.0 builds upon previous iterations with dramatically improved coherence times and gate fidelities. The processor maintains quantum states for over 100 microseconds—sufficient for complex quantum algorithms that require thousands of quantum operations.
+
+"Our results demonstrate that China has achieved quantum computational advantage comparable to the world's leading systems," said Professor Pan Jianwei, who leads the quantum research team at USTC. The system performed quantum random circuit sampling in just 200 seconds, a task that would require classical supercomputers millions of years to complete.
+
+**Strategic Implications**
+
+The announcement comes as the United Nations declared 2025 the International Year of Quantum Science and Technology, highlighting the field's growing importance for national competitiveness. China's quantum achievements span multiple technological approaches, including superconducting circuits, trapped ions, and photonic systems.
+
+Unlike Google's Willow chip, which focuses on error correction, Zuchongzhi 3.0 prioritizes quantum advantage demonstrations through specialized sampling problems. This approach validates China's strategy of pursuing multiple quantum computing pathways simultaneously.
+
+**Applications and Partnerships**
+
+Chinese technology giants including Alibaba, Baidu, and Tencent are integrating quantum computing research into their cloud platforms. Early applications focus on optimization problems in logistics, financial modeling, and artificial intelligence training.
+
+The processor's architecture is particularly suited for machine learning applications, with quantum neural networks showing promise for pattern recognition tasks that exceed classical computer capabilities.
+
+**Global Competition**
+
+Zuchongzhi 3.0's capabilities place China alongside the United States and European Union in the quantum computing leadership tier. The achievement demonstrates that quantum computing development is increasingly becoming a multi-polar field rather than dominated by a single nation or company.
+
+International collaboration remains strong despite geopolitical tensions, with Chinese researchers continuing to publish in leading journals and participate in global quantum science conferences.
+
+**Future Roadmap**
+
+China plans to achieve fault-tolerant quantum computing by 2030 through its national quantum development strategy. Investment in quantum research exceeds $15 billion annually, supporting both fundamental research and practical application development.
+
+The Zuchongzhi series represents just one component of China's comprehensive quantum technology ecosystem, which includes quantum communication networks, quantum sensing systems, and quantum cryptography infrastructure already deployed in major cities.
+
+As the global quantum computing race intensifies, achievements like Zuchongzhi 3.0 ensure that quantum advantage will emerge from multiple technological approaches and international research communities.`,
+          publishedAt: Date.now() - 86400000 * 7,
+          readTime: 5,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["quantum computing", "China", "Zuchongzhi", "technology competition"]
+        },
+        {
+          id: "west-tokamak-fusion-record-2025",
+          title: "WEST Tokamak Achieves 1,337-Second Fusion Record, Bringing Clean Energy Closer to Reality",
+          excerpt: "French research facility maintains plasma for over 22 minutes, setting new world record and demonstrating fusion energy's commercial viability.",
+          content: `The WEST (Tungsten Environment in Steady-state Tokamak) facility in France achieved a groundbreaking milestone this month, maintaining nuclear fusion plasma for 1,337 seconds—over 22 minutes—setting a new world record for sustained fusion reactions.
+
+The achievement represents a 25% improvement over previous duration records and brings commercial fusion energy significantly closer to reality. WEST's success demonstrates that long-duration fusion reactions can be maintained with the stability and control necessary for power generation.
+
+**Technical Breakthrough**
+
+WEST's tokamak design uses superconducting magnets cooled to -269°C to contain plasma heated to 100 million degrees Celsius. The facility's tungsten-lined walls can withstand the extreme conditions while maintaining vacuum integrity for extended periods.
+
+"This result validates our approach to steady-state fusion operation," explained Dr. Jérôme Bucalossi, WEST project leader at CEA (French Alternative Energies and Atomic Energy Commission). "We've proven that fusion reactors can operate continuously rather than in short pulses."
+
+The 22-minute duration represents a critical threshold for commercial viability. Power plants require continuous operation to feed electricity into the grid, making WEST's achievement a crucial step toward practical fusion energy.
+
+**Engineering Excellence**
+
+WEST's success stems from advanced plasma control systems that use artificial intelligence to predict and counteract instabilities before they terminate the fusion reaction. Machine learning algorithms analyze plasma behavior in real-time, adjusting magnetic fields and heating systems with microsecond precision.
+
+The facility's tungsten divertor—components that handle exhaust heat and particles—demonstrated exceptional durability under prolonged fusion conditions. This addresses a major challenge for future power plants, which must operate continuously for years without component failure.
+
+**Global Impact**
+
+WEST's record directly benefits ITER, the international fusion project under construction in southern France. ITER aims to achieve 500 MW of fusion power output, and WEST's operational experience provides crucial data for ITER's design optimization.
+
+"WEST's achievements validate the physics and engineering approaches ITER will use," said Dr. Bernard Bigot, ITER Director-General. "This brings us confidence that ITER will achieve its goals when operations begin in 2036."
+
+**Commercial Applications**
+
+Private fusion companies are closely monitoring WEST's progress. Commonwealth Fusion Systems, TAE Technologies, and other ventures developing compact fusion reactors can apply WEST's control methodologies to their own designs.
+
+The record also demonstrates fusion's potential for grid-scale electricity generation. A commercial fusion plant based on WEST's technology could generate 400-600 MW of continuous power—enough electricity for 300,000-450,000 homes.
+
+**Future Milestones**
+
+WEST plans to extend operation duration to one hour by late 2025, with ultimate goals of 1000-second operations at higher power levels. These achievements would prove fusion's readiness for commercial deployment.
+
+France's fusion program, supported by €7 billion in government funding through 2030, positions Europe as a leader in fusion energy development alongside competitors in the United States, China, and Japan.
+
+**Clean Energy Revolution**
+
+Fusion energy produces no long-lived radioactive waste, no carbon emissions, and uses abundant fuel sources. WEST's record demonstrates that this clean energy source is transitioning from scientific curiosity to engineering reality.
+
+As climate change accelerates the need for clean baseload power, WEST's achievement provides hope that fusion energy can complement renewable sources to decarbonize global electricity generation within the next two decades.`,
+          publishedAt: Date.now() - 86400000 * 12,
+          readTime: 6,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["nuclear fusion", "WEST tokamak", "clean energy", "France"]
+        },
+        {
+          id: "k2-18b-biosignatures-2025",
+          title: "James Webb Space Telescope Discovers Potential Life Signatures on Exoplanet K2-18b",
+          excerpt: "Atmospheric analysis reveals dimethyl sulfide compounds that, on Earth, are only produced by living organisms, marking a potential breakthrough in astrobiology.",
+          content: `The James Webb Space Telescope has detected compelling evidence of potential biological activity on K2-18b, a sub-Neptune exoplanet located 124 light-years away in the habitable zone of its red dwarf star.
+
+Spectroscopic analysis of K2-18b's atmosphere revealed large quantities of dimethyl sulfide (DMS) and dimethyl disulfide (DMDS)—two compounds that, on Earth, are exclusively produced by living organisms. This discovery represents the strongest evidence yet for potential extraterrestrial life.
+
+**A Water World with Promise**
+
+K2-18b is 8.6 times more massive than Earth with an atmosphere rich in hydrogen and water vapor. Previous observations suggested the presence of water clouds and potentially a global ocean beneath its thick atmosphere—conditions that could support life as we know it.
+
+"The detection of these sulfur compounds is extraordinary," said Dr. Nikku Madhusudhan, lead researcher at Cambridge University's Institute of Astronomy. "On Earth, DMS is produced by phytoplankton, bacteria, and other microorganisms. Finding it on K2-18b suggests we may be looking at our first glimpse of extraterrestrial biology."
+
+**Biosignature Analysis**
+
+Webb's near-infrared spectrometer detected the characteristic absorption lines of dimethyl sulfide at multiple wavelengths, confirming its presence throughout K2-18b's atmosphere. The compound's abundance and distribution patterns align with biological production rather than geological processes.
+
+Computer models of K2-18b's atmospheric chemistry show that known non-biological processes cannot account for the observed DMS concentrations. This makes biological production the most plausible explanation for these compounds' presence.
+
+**Technical Achievement**
+
+The detection required Webb's unprecedented infrared sensitivity and spectral resolution. K2-18b's atmospheric signals are incredibly faint—the telescope had to observe the planet for over 40 hours across multiple transits to achieve sufficient signal-to-noise ratios.
+
+"This pushes Webb to its absolute limits," explained Dr. Sarah Seager, atmospheric scientist at MIT. "We're detecting trace gases in an alien atmosphere 124 light-years away with precision that seemed impossible just a decade ago."
+
+**Cautious Optimism**
+
+While the results are promising, researchers emphasize the need for additional observations and alternative explanations. Unknown atmospheric chemistry or geological processes could potentially produce these compounds without biology.
+
+The team plans follow-up observations with Webb's mid-infrared instrument to search for additional biosignatures including phosphine, methane, and oxygen. Confirming multiple biosignatures would strengthen the case for biological activity.
+
+**Broader Implications**
+
+K2-18b belongs to a class of exoplanets called "Hycean worlds"—hot, ocean-covered planets with hydrogen-rich atmospheres. These worlds are more common than Earth-like planets and may represent the most promising targets for detecting extraterrestrial life.
+
+If confirmed, K2-18b would become the first known inhabited world beyond our solar system, fundamentally changing our understanding of life's prevalence in the universe.
+
+**Next Steps**
+
+NASA and ESA are developing next-generation space telescopes specifically designed for atmospheric characterization of potentially habitable worlds. The Habitable Worlds Observatory, planned for the 2040s, will have the sensitivity to directly image Earth-like exoplanets and analyze their atmospheres for signs of life.
+
+**Scientific Revolution**
+
+The discovery comes as astrobiology transitions from theoretical science to observational discipline. Webb's capabilities enable systematic surveys of exoplanet atmospheres, transforming the search for extraterrestrial life from speculation to empirical investigation.
+
+Whether K2-18b harbors life remains to be definitively proven, but the detection of potential biosignatures represents a historic step toward answering one of humanity's most profound questions: Are we alone in the universe?
+
+As Webb continues its observations and new telescopes come online, the next decade may finally provide the answer.`,
+          publishedAt: Date.now() - 86400000 * 18,
+          readTime: 7,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["exoplanets", "astrobiology", "James Webb", "K2-18b", "biosignatures"]
+        },
+        {
+          id: "ligo-massive-black-hole-merger-2025",
+          title: "LIGO Detects Most Massive Black Hole Merger Ever Observed, Challenges Formation Models",
+          excerpt: "Gravitational wave detection reveals black hole collision producing final object of 225+ solar masses, providing new insights into cosmic evolution.",
+          content: `The LIGO-Virgo-KAGRA Collaboration announced the detection of the most massive black hole merger ever observed through gravitational waves, producing a final black hole exceeding 225 solar masses and challenging existing models of black hole formation.
+
+The detection, designated GW241205, was simultaneously observed by LIGO's two detectors in Louisiana and Washington, along with the European Virgo detector in Italy. The collision occurred approximately 8 billion years ago when the universe was roughly half its current age.
+
+**Unprecedented Scale**
+
+The merger involved two black holes with masses of approximately 100 and 85 solar masses—both in the "intermediate mass" category that has proven difficult to explain through conventional stellar evolution. Their collision released energy equivalent to 15 solar masses converted entirely to gravitational waves.
+
+"This detection pushes the boundaries of what we thought possible for black hole formation," said Professor Mark Hannam of Cardiff University, member of the LIGO Scientific Collaboration. "Objects this massive challenge our understanding of how stars live and die."
+
+**Formation Mystery**
+
+Traditional stellar evolution cannot easily produce black holes exceeding 50-60 solar masses. Stars massive enough to collapse into such black holes typically lose too much mass through stellar winds before their final collapse. This has created the "mass gap" problem in black hole physics.
+
+The detection of GW241205 suggests several possible formation mechanisms:
+- **Primordial black holes** formed in the early universe before star formation began
+- **Hierarchical mergers** where previous black hole collisions created these massive objects
+- **Population III stars** from the universe's first generation of stars, which may have been much more massive than modern stars
+
+**Technical Achievement**
+
+The detection required extraordinary sensitivity from the LIGO-Virgo network. The gravitational waves from GW241205 were among the faintest ever detected, stretching and compressing space by less than 1/10,000th the width of a proton.
+
+Advanced data analysis techniques using artificial intelligence helped extract the signal from background noise. Machine learning algorithms trained on thousands of simulated black hole mergers identified the characteristic "chirp" pattern as the two objects spiraled together over millions of years before their final collision.
+
+**Cosmic Archaeology**
+
+GW241205 provides a window into the early universe when black holes were forming through processes that no longer occur today. The 8-billion-year journey of these gravitational waves carries information about cosmic conditions when the universe was young and star formation was dramatically different.
+
+"We're using gravitational waves as a time machine," explained Dr. Gabriela González, LIGO spokesperson and professor at Louisiana State University. "These waves carry pristine information about events that occurred before Earth even existed."
+
+**Dark Matter Connections**
+
+Some theoretical models suggest that intermediate-mass black holes could form from dark matter accumulation in the early universe. If confirmed, objects like those in GW241205 could provide indirect evidence for specific dark matter models and help explain the mysterious substance that comprises 85% of all matter.
+
+**Future Observations**
+
+Next-generation gravitational wave detectors currently under development will detect similar mergers at much greater distances and with higher precision. The Einstein Telescope in Europe and Cosmic Explorer in the United States will observe the entire universe for black hole mergers, potentially detecting thousands annually.
+
+**Multimessenger Astronomy**
+
+While GW241205 produced no detectable electromagnetic radiation—as expected for black hole mergers—future observations may detect associated phenomena such as accretion disk disruption or relativistic jets. Coordinated observations across the electromagnetic spectrum will provide comprehensive views of these extreme events.
+
+**Fundamental Physics**
+
+The detection also tests Einstein's general theory of relativity under the most extreme conditions in the universe. The gravitational waves' properties precisely match Einstein's predictions, confirming relativity's validity even for objects 100+ times more massive than the Sun moving at significant fractions of light speed.
+
+**Scientific Impact**
+
+GW241205 represents a new class of gravitational wave sources that will help astronomers understand:
+- How the first black holes formed in the early universe
+- The role of black holes in galaxy evolution
+- The connection between dark matter and black hole formation
+- The ultimate fate of the most massive stars
+
+As gravitational wave astronomy matures from discovery science to precision measurement, detections like GW241205 open new chapters in our understanding of the cosmos and the extreme physics governing its most massive objects.`,
+          publishedAt: Date.now() - 86400000 * 25,
+          readTime: 8,
+          author: "Tyton Systems",
+          handle: "@Tyton",
+          tags: ["gravitational waves", "LIGO", "black holes", "astrophysics", "cosmology"]
+        }
+      ];
+    }
+
+    // Initialize
+    async function init() {
+      log('System initializing...');
+      
+      // Initialize blog posts first
+      initializeBlogPosts();
+      
+      // Check authentication first
+      await checkAuth();
+      
+      // Set up event listeners
+      document.getElementById('createModalForm').addEventListener('submit', handleCreateSubmit);
+      document.getElementById('profileForm').addEventListener('submit', handleProfileSubmit);
+      document.getElementById('create-post-form').addEventListener('submit', handleCreatePost);
+      
+      // Close menus when clicking outside
+      document.addEventListener('click', (e) => {
+        // Close user menu
+        const userMenu = document.getElementById('user-menu');
+        const userDropdown = document.getElementById('user-dropdown');
+        if (userMenu && userDropdown && !userMenu.contains(e.target)) {
+          userDropdown.style.display = 'none';
+        }
+
+        // Close navigation dropdown
+        const navDropdown = document.querySelector('.nav-dropdown');
+        const navDropdownMenu = document.getElementById('nav-dropdown-menu');
+        if (navDropdown && navDropdownMenu && !navDropdown.contains(e.target)) {
+          navDropdownMenu.style.display = 'none';
+        }
+      });
+      
+      // Handle auth redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('auth') === 'success') {
+        // Google auth success, reload to get session
+        window.history.replaceState({}, document.title, window.location.pathname);
+        await checkAuth();
+      } else if (urlParams.get('error') === 'auth_failed') {
+        showToast('Authentication failed. Please try again.', 'error');
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (urlParams.get('welcome') === 'true') {
+        // User just completed profile setup
+        window.history.replaceState({}, document.title, window.location.pathname);
+        // Show welcome message or highlight features
+        setTimeout(() => {
+          showToast('Welcome to Tyton! Your profile has been set up successfully. You can now create projects and share marketplace items!', 'success', 6000);
+        }, 500);
+      }
+      
+      // Load data and update UI
+      await loadData();
+      
+      // Ensure DOM is ready before updating route
+      setTimeout(() => {
+        updateRoute();
+      }, 10);
+      
+      updateCreateType();
+      updateProfile();
+      updateAuthUI();
+      
+      log(`System initialized - Items: ${appState.items.length}, Following: ${Object.keys(appState.followers).length}`);
+    }
+
+    // Profile Edit Mode Functions
+    let isEditMode = false;
+
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      
+      if (isEditMode) {
+        showEditMode();
+      } else {
+        hideEditMode();
+      }
+    }
+
+    function showEditMode() {
+      // Show form and divider
+      const profileForm = document.getElementById('profileForm');
+      const profileDivider = document.getElementById('profile-divider');
+      const profileActions = document.querySelector('.profile-actions');
+      
+      if (profileForm) profileForm.style.display = 'grid';
+      if (profileDivider) profileDivider.style.display = 'block';
+      
+      // Hide all profile action buttons during edit
+      if (profileActions) {
+        profileActions.style.setProperty('display', 'none', 'important');
+        console.log('Profile actions hidden during edit mode');
+      } else {
+        console.log('Warning: profile-actions container not found');
+      }
+      
+      // Populate form with current user data
+      populateEditForm();
+    }
+
+    function hideEditMode() {
+      // Hide form and divider
+      const profileForm = document.getElementById('profileForm');
+      const profileDivider = document.getElementById('profile-divider');
+      const profileActions = document.querySelector('.profile-actions');
+      
+      if (profileForm) profileForm.style.display = 'none';
+      if (profileDivider) profileDivider.style.display = 'none';
+      
+      // Show all profile action buttons again
+      if (profileActions) profileActions.style.setProperty('display', 'flex', 'important');
+    }
+
+    function cancelEditMode() {
+      isEditMode = false;
+      hideEditMode();
+    }
+
+    function populateEditForm() {
+      if (!appState.currentUser) return;
+      
+      const user = appState.currentUser;
+      
+      // Split name into first and last
+      const nameParts = (user.name || '').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      // Populate form fields
+      document.getElementById('profile-first-name').value = firstName;
+      document.getElementById('profile-last-name').value = lastName;
+      document.getElementById('profile-handle').value = user.handle || '';
+      document.getElementById('profile-research-area').value = user.researchArea || '';
+      document.getElementById('profile-institution').value = user.institution || '';
+      document.getElementById('profile-academic-level').value = user.academicLevel || '';
+      document.getElementById('profile-bio').value = user.bio || '';
+      document.getElementById('profile-location').value = user.location || '';
+      document.getElementById('profile-photo').value = user.photo || '';
+    }
+
+    // Search functionality
+    async function handleSearchKeyPress(event) {
+      if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        if (query) {
+          await performSearch(query);
+        }
+      }
+    }
+    
+    async function performSearch(query) {
+      showLoading('Searching...');
+      try {
+        const response = await apiCall(`/search?q=${encodeURIComponent(query)}`);
+        
+        if (response.count === 0) {
+          showToast('No results found', 'info');
+        } else {
+          // Display search results
+          displaySearchResults(response);
+          showToast(`Found ${response.count} results`, 'success');
+        }
+      } catch (error) {
+        showToast('Search failed: ' + error.message, 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    function displaySearchResults(searchResponse) {
+      // Switch to search view
+      appState.route = 'search';
+      appState.searchResults = searchResponse.results;
+      
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+      
+      // Create or update search results page
+      let searchPage = document.getElementById('search-page');
+      if (!searchPage) {
+        searchPage = document.createElement('div');
+        searchPage.id = 'search-page';
+        searchPage.className = 'page';
+        document.getElementById('app').appendChild(searchPage);
+      }
+      
+      searchPage.innerHTML = `
+        <div class="section">
+          <h2 class="page-title">Search Results</h2>
+          <p style="color: var(--muted); margin-bottom: 24px;">
+            Found ${searchResponse.count} results for "${searchResponse.query}"
+          </p>
+          <div class="grid">
+            ${searchResponse.results.map(item => `
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-type ${item.type}">${item.type === 'project' ? '📊' : '🔧'} ${item.type}</span>
+                  <span class="card-meta">${item.owner}</span>
+                </div>
+                <h3>${item.title}</h3>
+                <p>${item.description}</p>
+                ${item.tags ? `
+                  <div class="tags">
+                    ${item.tags.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('')}
+                  </div>
+                ` : ''}
+                <div class="card-footer">
+                  <button class="btn" onclick="likeItem('${item.id}')">
+                    ${item.likedBy?.includes(appState.currentUser?.id) ? '❤️' : '🤍'} ${item.likes || 0}
+                  </button>
+                  <button class="btn" onclick="toggleFollow('${item.id}')">
+                    ${appState.followers[item.id] ? '✓ Following' : '+ Follow'}
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      
+      searchPage.style.display = 'block';
+      
+      // Clear search input
+      document.getElementById('search-input').value = '';
+    }
+
+    // Demo data seeding
+    async function seedDemoData() {
+      showLoading('Loading demo data...');
+      try {
+        const response = await apiCall('/seed', { method: 'POST' });
+        await loadData();
+        updateRoute();
+        showToast('Demo data loaded successfully! Explore projects and equipment.', 'success', 5000);
+        
+        // Hide the welcome screen if it exists
+        const welcomeScreen = document.getElementById('welcome-screen');
+        if (welcomeScreen) {
+          welcomeScreen.style.display = 'none';
+        }
+      } catch (error) {
+        showToast('Failed to load demo data: ' + error.message, 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // Check if this is a new user (no data)
+    async function checkNewUser() {
+      const data = await loadData();
+      if ((!data.items || data.items.length === 0) && !appState.currentUser) {
+        showWelcomeScreen();
+      }
+    }
+    
+    // Show welcome screen for new users
+    function showWelcomeScreen() {
+      const welcomeScreen = document.createElement('div');
+      welcomeScreen.id = 'welcome-screen';
+      welcomeScreen.className = 'modal-overlay';
+      welcomeScreen.style.display = 'flex';
+      welcomeScreen.style.background = 'linear-gradient(135deg, rgba(10,13,26,0.95) 0%, rgba(26,35,56,0.95) 100%)';
+      
+      welcomeScreen.innerHTML = `
+        <div class="modal-content" style="max-width: 600px; text-align: center;">
+          <img src="/assets/logo.png" alt="Tyton" style="width: 120px; height: 120px; margin-bottom: 24px;" 
+               onerror="this.src='${generateFallbackLogo()}'">
+          
+          <h1 style="font-size: 36px; margin-bottom: 16px;">Welcome to Tyton</h1>
+          <p style="font-size: 18px; color: var(--muted); margin-bottom: 32px;">
+            A modern research collaboration platform for projects and equipment sharing
+          </p>
+          
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px;">
+            <div>
+              <div style="font-size: 32px; margin-bottom: 8px;">📊</div>
+              <h3>Share Projects</h3>
+              <p style="color: var(--muted); font-size: 14px;">Collaborate on research initiatives</p>
+            </div>
+            <div>
+              <div style="font-size: 32px; margin-bottom: 8px;">🔧</div>
+              <h3>Book Equipment</h3>
+              <p style="color: var(--muted); font-size: 14px;">Access shared lab resources</p>
+            </div>
+            <div>
+              <div style="font-size: 32px; margin-bottom: 8px;">👥</div>
+              <h3>Connect</h3>
+              <p style="color: var(--muted); font-size: 14px;">Build your research network</p>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 16px; justify-content: center;">
+            <button class="btn gold" onclick="showAuthModal('register'); document.getElementById('welcome-screen').remove();">
+              Get Started
+            </button>
+            <button class="btn" onclick="seedDemoData(); document.getElementById('welcome-screen').remove();">
+              Explore Demo
+            </button>
+            <button class="btn" onclick="document.getElementById('welcome-screen').remove();">
+              Skip
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(welcomeScreen);
+    }
+    
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', async () => {
+      await init();
+      // Check if new user after a short delay
+      setTimeout(checkNewUser, 1000);
+    });
+  </script>
+
+  <!-- Create Item Modal -->
+  <div id="createModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create New Item</h3>
+        <button class="modal-close" onclick="hideCreateModal()">×</button>
+      </div>
+      
+      <form id="createModalForm">
+        <div class="tabs">
+          <button type="button" id="modal-tab-project" onclick="setCreateType('project')">
+            📊 Project
+          </button>
+          <button type="button" id="modal-tab-equipment" onclick="setCreateType('equipment')">
+            🔧 Equipment
+          </button>
+        </div>
+        
+        <div class="modal-form-grid">
+          <div class="field">
+            <label>Title</label>
+            <input name="title" placeholder="Name your project or equipment" required>
+          </div>
+          <div class="field">
+            <label>Location</label>
+            <input name="location" placeholder="Lab, building, or remote">
+          </div>
+          <div class="field field-full">
+            <label>Description</label>
+            <textarea name="description" rows="4" placeholder="Describe your project goals, methodology, or equipment specifications" required></textarea>
+          </div>
+          <div class="field field-full">
+            <label>Tags</label>
+            <input name="tags" placeholder="Separate with commas: quantum, AI, biotech">
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="hideCreateModal()">Cancel</button>
+          <button class="btn gold" type="submit">🚀 Create Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: 
+        linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.95) 100%),
+        linear-gradient(135deg, rgba(255,107,53,.08) 0%, rgba(139,92,246,.05) 50%, rgba(0,212,170,.07) 100%);
+      border: 1px solid var(--border-accent);
+      border-radius: 20px;
+      padding: 0;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow:
+        0 25px 50px rgba(0,0,0,.5),
+        0 10px 20px rgba(0,0,0,.3),
+        0 0 0 1px rgba(218,165,32,.3),
+        inset 0 1px 0 rgba(241,245,249,.08);
+      position: relative;
+    }
+
+    .modal-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b8860b, #daa520, #ffd700, transparent);
+      opacity: 0.8;
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(218, 165, 32, 0.2);
+    }
+
+    .modal-header {
+      padding: 24px 32px 0 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 24px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 32px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .modal-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 0 32px;
+      margin-bottom: 24px;
+    }
+
+    .field-full {
+      grid-column: span 2;
+    }
+
+    .modal-actions {
+      padding: 24px 32px 32px 32px;
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* Modal form tabs */
+    #createModalForm .tabs {
+      margin: 0 32px 24px 32px;
+      padding-bottom: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .modal-content {
+        margin: 10px;
+        max-height: 95vh;
+      }
+      
+      .modal-header,
+      .modal-form-grid,
+      .modal-actions {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      
+      .modal-form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .field-full {
+        grid-column: span 1;
+      }
+      
+      .modal-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+  
+  <!-- Footer with Quick Actions -->
+  <footer style="margin-top: 60px; padding: 24px; background: var(--card); border-top: 1px solid rgba(255,255,255,0.1);">
+    <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+      <p style="color: var(--muted); margin-bottom: 16px;">
+        Tyton Demo - Research Collaboration Platform
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button class="btn" onclick="seedDemoData()" title="Load sample projects and equipment">
+          🎭 Load Demo Data
+        </button>
+        <button class="btn" onclick="if(confirm('This will reset all data. Are you sure?')) { apiCall('/reset', {method:'DELETE'}).then(() => location.reload()) }">
+          🔄 Reset Data
+        </button>
+        <button class="btn" onclick="showToast('API Docs: GET /api/data, POST /api/items, GET /api/search', 'info', 6000)">
+          📖 API Info
+        </button>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
