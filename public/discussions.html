@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Discussions - Tyton</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root{
+      --navy:#0a0d1a; --gold:#daa520; --maroon:#7a263a; --ink:#050814; --muted:#a8c8ec; --bg:#060b16;
+      --card:#0e1425; --ring:#1a2847; --ring-focus:#daa520; --white:#f0f9ff; --shadow:rgba(0,0,0,.6);
+      --gradient-primary: linear-gradient(135deg, #b8860b 0%, #daa520 30%, #ffb627 70%, #ffd700 100%);
+      --gradient-secondary: linear-gradient(135deg, #00d4aa 0%, #0891b2 50%, #0284c7 100%);
+      --gradient-mystical: linear-gradient(135deg, #8b5cf6 0%, #a855f7 30%, #c084fc 70%, #e879f9 100%);
+      --glow-primary: rgba(218,165,32,.4);
+      --glow-secondary: rgba(8,145,178,.3);
+      --glow-mystical: rgba(168,85,247,.3);
+      --surface-elevated: rgba(14,20,37,.85);
+      --border-subtle: rgba(168,200,236,.12);
+      --border-accent: rgba(218,165,32,.5);
+      --atomic-cyan: #00d4aa;
+      --cosmic-purple: #8b5cf6;
+      --retro-orange: #daa520;
+    }
+    
+    html,body{
+      margin:0;padding:0;
+      background: 
+        radial-gradient(ellipse at 15% 20%, rgba(255,107,53,.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 30%, rgba(0,212,170,.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(139,92,246,.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 60%, rgba(255,182,39,.02) 0%, transparent 45%),
+        conic-gradient(from 0deg at 50% 50%, var(--bg) 0deg, #0a1121 120deg, #051018 240deg, var(--bg) 360deg);
+      color:var(--white); 
+      font:16px/1.7 'Space Grotesk', 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Atomic Age Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Exo 2', 'Orbitron', 'Rajdhani', 'Space Mono', 'Space Grotesk', monospace;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--white) 0%, #e2e8f0 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    body {
+      padding: 100px 40px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .header p {
+      color: var(--muted);
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .create-discussion-btn {
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: 12px;
+      padding: 16px 32px;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 32px auto;
+      display: block;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px var(--glow-primary);
+    }
+
+    .create-discussion-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px var(--glow-primary);
+    }
+
+    .discussions-grid {
+      display: grid;
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .discussion-card {
+      background: var(--card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .discussion-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 64px var(--shadow);
+    }
+
+    .discussion-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .discussion-card:hover::before {
+      opacity: 1;
+    }
+
+    .discussion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .discussion-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      margin: 0 0 8px 0;
+      line-height: 1.4;
+    }
+
+    .discussion-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .discussion-author {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .discussion-time {
+      color: var(--muted);
+    }
+
+    .discussion-content {
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .discussion-stats {
+      display: flex;
+      gap: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .discussion-tags {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      background: rgba(218,165,32,.15);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(218,165,32,.3);
+    }
+
+    /* Create Discussion Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,.7);
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card);
+      border: 1px solid var(--border-accent);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 32px;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--ring);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--ring-focus);
+      box-shadow: 0 0 0 3px var(--glow-primary);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+      margin-top: 32px;
+    }
+
+    .btn-secondary {
+      background: var(--ring);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 12px 24px;
+      color: var(--white);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-subtle);
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px var(--glow-primary);
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      background: var(--card);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .back-btn:hover {
+      background: var(--ring);
+      transform: translateY(-2px);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state h3 {
+      margin-bottom: 16px;
+      color: var(--white);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 80px 20px 20px;
+      }
+      
+      .header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .modal-content {
+        padding: 24px;
+        margin: 20px;
+      }
+      
+      .discussion-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .discussion-stats {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="/" class="back-btn">← Back to Home</a>
+  
+  <div class="header">
+    <h1>Discussions</h1>
+    <p>Join the conversation with researchers and academics. Share ideas, ask questions, and collaborate on important topics.</p>
+    <button class="create-discussion-btn" onclick="openCreateModal()">+ Start New Discussion</button>
+  </div>
+
+  <div class="discussions-grid" id="discussions-grid">
+    <!-- Discussions will be loaded here -->
+  </div>
+
+  <div class="empty-state" id="empty-state" style="display: none;">
+    <h3>No discussions yet</h3>
+    <p>Be the first to start a discussion! Click the button above to get the conversation started.</p>
+  </div>
+
+  <!-- Create Discussion Modal -->
+  <div class="modal" id="create-modal">
+    <div class="modal-content">
+      <h2>Start New Discussion</h2>
+      <form id="create-discussion-form">
+        <div class="form-group">
+          <label for="discussion-title">Title</label>
+          <input type="text" id="discussion-title" required placeholder="What would you like to discuss?">
+        </div>
+        
+        <div class="form-group">
+          <label for="discussion-content">Content</label>
+          <textarea id="discussion-content" required placeholder="Share your thoughts, questions, or ideas..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="discussion-tags">Tags (optional)</label>
+          <input type="text" id="discussion-tags" placeholder="research, AI, collaboration (comma-separated)">
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Post Discussion</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let discussions = [];
+
+    // Load discussions on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDiscussions();
+    });
+
+    async function loadDiscussions() {
+      try {
+        const response = await fetch('/api/discussions');
+        if (response.ok) {
+          discussions = await response.json();
+          renderDiscussions();
+        } else {
+          console.error('Failed to load discussions');
+          showEmptyState();
+        }
+      } catch (error) {
+        console.error('Error loading discussions:', error);
+        showEmptyState();
+      }
+    }
+
+    function renderDiscussions() {
+      const grid = document.getElementById('discussions-grid');
+      const emptyState = document.getElementById('empty-state');
+      
+      if (discussions.length === 0) {
+        showEmptyState();
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      grid.innerHTML = discussions.map(discussion => `
+        <div class="discussion-card" onclick="viewDiscussion('${discussion.id}')">
+          <div class="discussion-header">
+            <div>
+              <h3 class="discussion-title">${discussion.title}</h3>
+              <div class="discussion-meta">
+                <span class="discussion-author">@${discussion.owner}</span>
+                <span class="discussion-time">${formatTime(discussion.createdAt)}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="discussion-content">
+            ${discussion.content.substring(0, 200)}${discussion.content.length > 200 ? '...' : ''}
+          </div>
+          
+          <div class="discussion-stats">
+            <div class="stat-item">
+              <span>💬</span>
+              <span>${discussion.replies || 0} replies</span>
+            </div>
+            <div class="stat-item">
+              <span>👁️</span>
+              <span>${discussion.views || 0} views</span>
+            </div>
+            <div class="stat-item">
+              <span>👍</span>
+              <span>${discussion.likes || 0} likes</span>
+            </div>
+          </div>
+          
+          ${discussion.tags ? `
+            <div class="discussion-tags">
+              ${discussion.tags.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function showEmptyState() {
+      document.getElementById('discussions-grid').innerHTML = '';
+      document.getElementById('empty-state').style.display = 'block';
+    }
+
+    function openCreateModal() {
+      document.getElementById('create-modal').style.display = 'block';
+    }
+
+    function closeCreateModal() {
+      document.getElementById('create-modal').style.display = 'none';
+      document.getElementById('create-discussion-form').reset();
+    }
+
+    document.getElementById('create-discussion-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('discussion-title').value;
+      const content = document.getElementById('discussion-content').value;
+      const tags = document.getElementById('discussion-tags').value;
+      
+      try {
+        const response = await fetch('/api/discussions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title,
+            content,
+            tags: tags || undefined
+          })
+        });
+        
+        if (response.ok) {
+          closeCreateModal();
+          loadDiscussions(); // Reload discussions
+        } else {
+          const error = await response.json();
+          showToast('Failed to create discussion: ' + (error.error || 'Unknown error'), 'error');
+        }
+      } catch (error) {
+        console.error('Error creating discussion:', error);
+        showToast('Failed to create discussion. Please try again.', 'error');
+      }
+    });
+
+    function viewDiscussion(discussionId) {
+      window.location.href = `/discussion-thread.html?id=${discussionId}`;
+    }
+
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) return 'just now';
+      if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+      if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+      if (diff < 604800000) return Math.floor(diff / 86400000) + 'd ago';
+      
+      return date.toLocaleDateString();
+    }
+
+    // Simple toast notification function
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 10000;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white; padding: 12px 20px; border-radius: 8px;
+        font-family: system-ui, sans-serif; font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-in forwards';
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 3000);
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('create-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeCreateModal();
+      }
+    });
+
+    // Handle ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCreateModal();
+      }
+    });
+  </script>
+</body>
+</html>

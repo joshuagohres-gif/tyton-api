@@ -529,13 +529,14 @@
     </article>
   </main>
 
+  <script src="/auth-utils.js"></script>
+  <script src="/error-handling.js"></script>
   <script>
     // Get equipment ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const equipmentId = urlParams.get('id');
     
     let currentEquipment = null;
-    let authToken = localStorage.getItem('tyton_auth_token');
 
     function formatDate(timestamp) {
       if (!timestamp) return 'Unknown';
@@ -668,10 +669,10 @@
       }
     }
 
-    function updateButtonStates() {
-      // This would check user authentication and update like/follow button states
-      // For now, we'll keep it simple
-      if (authToken) {
+    async function updateButtonStates() {
+      // Check user authentication and update like/follow button states
+      const user = await tytonAuth.getCurrentUser();
+      if (user) {
         document.getElementById('like-text').textContent = 'Like Equipment';
         document.getElementById('follow-text').textContent = 'Follow Updates';
       }
@@ -685,8 +686,13 @@
     async function handleBooking(event) {
       event.preventDefault();
       
-      if (!currentEquipment || !authToken) {
-        alert('Please log in to book equipment');
+      if (!currentEquipment) {
+        showToast('Equipment not loaded', 'error');
+        return;
+      }
+
+      if (!tytonAuth.isAuthenticated()) {
+        tytonAuth.showAuthError('Please log in to book equipment');
         return;
       }
 
@@ -698,10 +704,9 @@
       };
 
       try {
-        const response = await fetch(`/api/equipment/${currentEquipment.id}/book`, {
+        const response = await tytonAuth.authFetch(`/api/equipment/${currentEquipment.id}/book`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${authToken}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(bookingData)
@@ -709,30 +714,39 @@
 
         if (response.ok) {
           const result = await response.json();
-          alert('Equipment booked successfully!');
           
-          // Refresh the page to show updated bookings
-          window.location.reload();
+          // Show success message with toast instead of alert
+          showToast('Equipment booked successfully!', 'success');
+          
+          // Dynamically update the bookings display instead of page reload
+          await refreshBookingsDisplay();
+          
+          // Close the booking modal
+          document.getElementById('booking-modal').style.display = 'none';
         } else {
           throw new Error('Booking failed');
         }
       } catch (error) {
         console.error('Error booking equipment:', error);
-        alert('Failed to book equipment. Please try again.');
+        showToast('Failed to book equipment. Please try again.', 'error');
       }
     }
 
     async function handleLike() {
-      if (!currentEquipment || !authToken) {
-        alert('Please log in to like equipment');
+      if (!currentEquipment) {
+        showToast('Equipment not loaded', 'error');
+        return;
+      }
+
+      if (!tytonAuth.isAuthenticated()) {
+        tytonAuth.showAuthError('Please log in to like equipment');
         return;
       }
 
       try {
-        const response = await fetch(`/api/items/${currentEquipment.id}/like`, {
+        const response = await tytonAuth.authFetch(`/api/items/${currentEquipment.id}/like`, {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${authToken}`,
             'Content-Type': 'application/json'
           }
         });
@@ -744,21 +758,25 @@
         }
       } catch (error) {
         console.error('Error liking equipment:', error);
-        alert('Failed to like equipment. Please try again.');
+        showToast('Failed to like equipment. Please try again.', 'error');
       }
     }
 
     async function handleFollow() {
-      if (!currentEquipment || !authToken) {
-        alert('Please log in to follow equipment');
+      if (!currentEquipment) {
+        showToast('Equipment not loaded', 'error');
+        return;
+      }
+
+      if (!tytonAuth.isAuthenticated()) {
+        tytonAuth.showAuthError('Please log in to follow equipment');
         return;
       }
 
       try {
-        const response = await fetch(`/api/items/${currentEquipment.id}/follow`, {
+        const response = await tytonAuth.authFetch(`/api/items/${currentEquipment.id}/follow`, {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${authToken}`,
             'Content-Type': 'application/json'
           }
         });
@@ -769,7 +787,7 @@
         }
       } catch (error) {
         console.error('Error following equipment:', error);
-        alert('Failed to follow equipment. Please try again.');
+        showToast('Failed to follow equipment. Please try again.', 'error');
       }
     }
 
@@ -780,6 +798,57 @@
       const body = encodeURIComponent(`Hi ${currentEquipment.owner},\n\nI'm interested in booking your equipment "${currentEquipment.title}". Could we discuss availability and requirements?\n\nBest regards`);
       
       window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    }
+
+    // Simple toast notification function
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 10000;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white; padding: 12px 20px; border-radius: 8px;
+        font-family: system-ui, sans-serif; font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-in forwards';
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 3000);
+    }
+
+    // Refresh bookings display without page reload
+    async function refreshBookingsDisplay() {
+      if (!currentEquipment) return;
+      
+      try {
+        // Re-fetch equipment data to get updated bookings
+        const response = await fetch(`/api/data`);
+        if (response.ok) {
+          const data = await response.json();
+          const equipment = data.items.find(item => item.id === currentEquipment.id);
+          
+          if (equipment) {
+            currentEquipment = equipment;
+            // Update the bookings list in the DOM
+            const bookingsList = document.getElementById('current-bookings');
+            if (bookingsList) {
+              if (!equipment.bookings || equipment.bookings.length === 0) {
+                bookingsList.innerHTML = '<li style="color: var(--muted);">No current bookings - equipment available!</li>';
+              } else {
+                bookingsList.innerHTML = equipment.bookings.map(booking => 
+                  `<li><strong>${booking.date}</strong> at ${booking.slot} - ${booking.by}</li>`
+                ).join('');
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error refreshing bookings:', error);
+      }
     }
 
     // Load equipment when page loads

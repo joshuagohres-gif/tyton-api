@@ -395,13 +395,14 @@
     </article>
   </main>
 
+  <script src="/auth-utils.js"></script>
+  <script src="/error-handling.js"></script>
   <script>
     // Get project ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
     
     let currentProject = null;
-    let authToken = localStorage.getItem('tyton_auth_token');
 
     function formatDate(timestamp) {
       if (!timestamp) return 'Unknown';
@@ -412,7 +413,7 @@
       });
     }
 
-    // Load project data
+    // Load project data with error handling
     async function loadProject() {
       if (!projectId) {
         showError();
@@ -420,21 +421,18 @@
       }
 
       try {
-        // Fetch project data from API
+        // Use regular fetch for now to avoid dependency issues
         const response = await fetch('/api/data');
         const data = await response.json();
         
-        // Find the specific project
         const project = data.items.find(item => item.id === projectId && item.type === 'project');
-        
         if (!project) {
           showError();
           return;
         }
-
+        
         currentProject = project;
         displayProject(project);
-        
       } catch (error) {
         console.error('Error loading project:', error);
         showError();
@@ -519,10 +517,10 @@
       `;
     }
 
-    function updateButtonStates() {
-      // This would check user authentication and update like/follow button states
-      // For now, we'll keep it simple
-      if (authToken) {
+    async function updateButtonStates() {
+      // Check user authentication and update like/follow button states
+      const user = await tytonAuth.getCurrentUser();
+      if (user) {
         document.getElementById('like-text').textContent = 'Like Project';
         document.getElementById('follow-text').textContent = 'Follow Updates';
       }
@@ -534,16 +532,20 @@
     }
 
     async function handleLike() {
-      if (!currentProject || !authToken) {
-        alert('Please log in to like projects');
+      if (!currentProject) {
+        showToast('Project not loaded', 'error');
+        return;
+      }
+
+      if (!tytonAuth.isAuthenticated()) {
+        tytonAuth.showAuthError('Please log in to like projects');
         return;
       }
 
       try {
-        const response = await fetch(`/api/items/${currentProject.id}/like`, {
+        const response = await tytonAuth.authFetch(`/api/items/${currentProject.id}/like`, {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${authToken}`,
             'Content-Type': 'application/json'
           }
         });
@@ -552,24 +554,30 @@
           const result = await response.json();
           document.getElementById('project-likes').textContent = result.likes;
           document.getElementById('like-text').textContent = result.liked ? 'Liked!' : 'Like Project';
+        } else {
+          throw new Error('Failed to like project');
         }
       } catch (error) {
         console.error('Error liking project:', error);
-        alert('Failed to like project. Please try again.');
+        showToast('Failed to like project. Please try again.', 'error');
       }
     }
 
     async function handleFollow() {
-      if (!currentProject || !authToken) {
-        alert('Please log in to follow projects');
+      if (!currentProject) {
+        showToast('Project not loaded', 'error');
+        return;
+      }
+
+      if (!tytonAuth.isAuthenticated()) {
+        tytonAuth.showAuthError('Please log in to follow projects');
         return;
       }
 
       try {
-        const response = await fetch(`/api/items/${currentProject.id}/follow`, {
+        const response = await tytonAuth.authFetch(`/api/items/${currentProject.id}/follow`, {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${authToken}`,
             'Content-Type': 'application/json'
           }
         });
@@ -577,10 +585,12 @@
         if (response.ok) {
           const result = await response.json();
           document.getElementById('follow-text').textContent = result.following ? 'Following!' : 'Follow Updates';
+        } else {
+          throw new Error('Failed to follow project');
         }
       } catch (error) {
         console.error('Error following project:', error);
-        alert('Failed to follow project. Please try again.');
+        showToast('Failed to follow project. Please try again.', 'error');
       }
     }
 
@@ -591,6 +601,26 @@
       const body = encodeURIComponent(`Hi ${currentProject.owner},\n\nI'm interested in learning more about your project "${currentProject.title}". Could we discuss potential collaboration opportunities?\n\nBest regards`);
       
       window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    }
+
+    // Simple toast notification function
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 10000;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white; padding: 12px 20px; border-radius: 8px;
+        font-family: system-ui, sans-serif; font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-in forwards';
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 3000);
     }
 
     // Load project when page loads

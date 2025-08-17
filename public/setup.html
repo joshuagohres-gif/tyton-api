@@ -393,23 +393,18 @@
     </div>
   </div>
 
+  <script src="/auth-utils.js"></script>
+  <script src="/error-handling.js"></script>
   <script>
-    // Get token from URL or use session-based auth
+    // Handle URL token and initialize auth
+    tytonAuth.handleUrlToken();
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
     // Load user data
     async function loadUserData() {
       try {
-        const headers = {};
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-        
-        const response = await fetch('/auth/me', {
-          headers,
-          credentials: 'include' // For session-based auth
-        });
+        const response = await tytonAuth.authFetch('/auth/me');
         
         if (response.ok) {
           const data = await response.json();
@@ -465,25 +460,19 @@
           location: formData.get('location').trim()
         };
 
-        const headers = {
-          'Content-Type': 'application/json'
-        };
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-        
-        const response = await fetch('/auth/complete-profile', {
+        const response = await tytonAuth.authFetch('/auth/complete-profile', {
           method: 'POST',
-          headers,
-          credentials: 'include', // For session-based auth
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(profileData)
         });
 
         if (response.ok) {
           const data = await response.json();
-          // Store token if we have one and redirect to main app
-          if (token) {
-            localStorage.setItem('tyton_auth_token', token);
+          // Store token if response includes one
+          if (data.token) {
+            tytonAuth.setToken(data.token);
           }
           window.location.href = '/?welcome=true';
         } else {
@@ -491,12 +480,32 @@
           throw new Error(error.error || 'Failed to complete profile setup');
         }
       } catch (error) {
-        alert('❌ Setup failed: ' + error.message);
+        showToast('❌ Setup failed: ' + error.message, 'error');
       } finally {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
       }
     });
+
+    // Simple toast notification function
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 10000;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white; padding: 12px 20px; border-radius: 8px;
+        font-family: system-ui, sans-serif; font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-in forwards';
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 3000);
+    }
 
     // Handle input validation
     document.getElementById('handle').addEventListener('input', (e) => {

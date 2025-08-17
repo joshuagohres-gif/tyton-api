@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Discussion Thread - Tyton</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root{
+      --navy:#0a0d1a; --gold:#daa520; --maroon:#7a263a; --ink:#050814; --muted:#a8c8ec; --bg:#060b16;
+      --card:#0e1425; --ring:#1a2847; --ring-focus:#daa520; --white:#f0f9ff; --shadow:rgba(0,0,0,.6);
+      --gradient-primary: linear-gradient(135deg, #b8860b 0%, #daa520 30%, #ffb627 70%, #ffd700 100%);
+      --gradient-secondary: linear-gradient(135deg, #00d4aa 0%, #0891b2 50%, #0284c7 100%);
+      --gradient-mystical: linear-gradient(135deg, #8b5cf6 0%, #a855f7 30%, #c084fc 70%, #e879f9 100%);
+      --glow-primary: rgba(218,165,32,.4);
+      --glow-secondary: rgba(8,145,178,.3);
+      --glow-mystical: rgba(168,85,247,.3);
+      --surface-elevated: rgba(14,20,37,.85);
+      --border-subtle: rgba(168,200,236,.12);
+      --border-accent: rgba(218,165,32,.5);
+      --atomic-cyan: #00d4aa;
+      --cosmic-purple: #8b5cf6;
+      --retro-orange: #daa520;
+    }
+    
+    html,body{
+      margin:0;padding:0;
+      background: 
+        radial-gradient(ellipse at 15% 20%, rgba(255,107,53,.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 30%, rgba(0,212,170,.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(139,92,246,.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 60%, rgba(255,182,39,.02) 0%, transparent 45%),
+        conic-gradient(from 0deg at 50% 50%, var(--bg) 0deg, #0a1121 120deg, #051018 240deg, var(--bg) 360deg);
+      color:var(--white); 
+      font:16px/1.7 'Space Grotesk', 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Atomic Age Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Exo 2', 'Orbitron', 'Rajdhani', 'Space Mono', 'Space Grotesk', monospace;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--white) 0%, #e2e8f0 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    body {
+      padding: 100px 40px 40px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      background: var(--card);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .back-btn:hover {
+      background: var(--ring);
+      transform: translateY(-2px);
+    }
+
+    .thread-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .thread-title {
+      font-size: 2.5rem;
+      margin: 0 0 16px 0;
+      line-height: 1.2;
+    }
+
+    .thread-meta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--muted);
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+
+    .thread-author {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .thread-stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .thread-tags {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      background: rgba(218,165,32,.15);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(218,165,32,.3);
+    }
+
+    .original-post {
+      background: var(--card);
+      border: 1px solid var(--border-accent);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .original-post::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+      border-radius: 16px 16px 0 0;
+    }
+
+    .post-content {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .action-btn {
+      background: none;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      border-color: var(--border-accent);
+      color: var(--gold);
+    }
+
+    .action-btn.liked {
+      border-color: var(--border-accent);
+      color: var(--gold);
+      background: rgba(218,165,32,.1);
+    }
+
+    .replies-section {
+      margin-top: 40px;
+    }
+
+    .replies-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .replies-count {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .reply-btn {
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .reply-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px var(--glow-primary);
+    }
+
+    .reply-card {
+      background: var(--card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .reply-card:hover {
+      border-color: var(--border-accent);
+    }
+
+    .reply-thread {
+      margin-left: 32px;
+      border-left: 2px solid var(--border-subtle);
+      padding-left: 20px;
+      margin-top: 16px;
+    }
+
+    .reply-thread .reply-card {
+      margin-bottom: 12px;
+    }
+
+    .reply-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .reply-author {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .reply-time {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .reply-content {
+      color: var(--white);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .reply-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .reply-form {
+      background: var(--card);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 24px;
+      display: none;
+    }
+
+    .reply-form.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--ring);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 16px;
+      min-height: 100px;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--ring-focus);
+      box-shadow: 0 0 0 3px var(--glow-primary);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn-secondary {
+      background: var(--ring);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: var(--white);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-subtle);
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--glow-primary);
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--muted);
+      padding: 40px;
+    }
+
+    .error {
+      background: rgba(239,68,68,.1);
+      border: 1px solid rgba(239,68,68,.3);
+      border-radius: 12px;
+      padding: 24px;
+      color: #fca5a5;
+      text-align: center;
+      margin: 40px 0;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 80px 20px 20px;
+      }
+      
+      .thread-title {
+        font-size: 2rem;
+      }
+      
+      .thread-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      
+      .original-post,
+      .reply-card,
+      .reply-form {
+        padding: 20px;
+      }
+      
+      .replies-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      
+      .reply-thread {
+        margin-left: 16px;
+        padding-left: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="/discussions.html" class="back-btn">← Back to Discussions</a>
+  
+  <div id="loading" class="loading">
+    Loading discussion...
+  </div>
+  
+  <div id="error" class="error" style="display: none;">
+    Failed to load discussion. Please try again.
+  </div>
+  
+  <div id="thread-content" style="display: none;">
+    <div class="thread-header">
+      <h1 class="thread-title" id="thread-title"></h1>
+      <div class="thread-meta">
+        <span class="thread-author" id="thread-author"></span>
+        <span class="thread-time" id="thread-time"></span>
+        <div class="thread-stats" id="thread-stats"></div>
+      </div>
+      <div class="thread-tags" id="thread-tags"></div>
+    </div>
+
+    <div class="original-post">
+      <div class="post-content" id="post-content"></div>
+      <div class="post-actions">
+        <button class="action-btn" id="like-btn" onclick="toggleLike()">
+          <span>👍</span>
+          <span id="like-count">0</span>
+        </button>
+        <button class="action-btn" onclick="shareDiscussion()">
+          <span>🔗</span>
+          <span>Share</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="replies-section">
+      <div class="replies-header">
+        <div class="replies-count" id="replies-count">0 replies</div>
+        <button class="reply-btn" onclick="showReplyForm()">Reply to Discussion</button>
+      </div>
+      
+      <div class="reply-form" id="reply-form">
+        <form id="reply-form-element">
+          <div class="form-group">
+            <label for="reply-content">Your Reply</label>
+            <textarea id="reply-content" required placeholder="Share your thoughts..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="hideReplyForms()">Cancel</button>
+            <button type="submit" class="btn-primary">Post Reply</button>
+          </div>
+        </form>
+      </div>
+      
+      <div id="replies-container"></div>
+    </div>
+  </div>
+
+  <script src="/auth-utils.js"></script>
+  <script src="/error-handling.js"></script>
+  <script>
+    let discussionId = null;
+    let discussion = null;
+    let replies = [];
+
+    // Security Functions for XSS Prevention
+    function escapeHtml(unsafe) {
+      if (typeof unsafe !== 'string') return '';
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(unsafe) {
+      if (typeof unsafe !== 'string') return '';
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#x27;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    // Get discussion ID from URL
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      discussionId = urlParams.get('id');
+      
+      if (!discussionId) {
+        showError('No discussion ID provided');
+        return;
+      }
+      
+      loadDiscussion();
+      loadReplies();
+    });
+
+    async function loadDiscussion() {
+      try {
+        const response = await fetch(`/api/discussions/${discussionId}`);
+        if (response.ok) {
+          discussion = await response.json();
+          renderDiscussion();
+        } else {
+          showError('Discussion not found');
+        }
+      } catch (error) {
+        console.error('Error loading discussion:', error);
+        showError('Failed to load discussion');
+      }
+    }
+
+    async function loadReplies() {
+      try {
+        const response = await fetch(`/api/discussions/${discussionId}/replies`);
+        if (response.ok) {
+          replies = await response.json();
+          renderReplies();
+        }
+      } catch (error) {
+        console.error('Error loading replies:', error);
+      }
+    }
+
+    function renderDiscussion() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('thread-content').style.display = 'block';
+      
+      document.getElementById('thread-title').textContent = discussion.title;
+      document.getElementById('thread-author').textContent = '@' + discussion.owner;
+      document.getElementById('thread-time').textContent = formatTime(discussion.createdAt);
+      document.getElementById('post-content').textContent = discussion.content;
+      document.getElementById('like-count').textContent = discussion.likes || 0;
+      
+      // Update stats
+      const statsContainer = document.getElementById('thread-stats');
+      statsContainer.innerHTML = `
+        <div class="stat-item">
+          <span>💬</span>
+          <span>${discussion.replies || 0} replies</span>
+        </div>
+        <div class="stat-item">
+          <span>👁️</span>
+          <span>${discussion.views || 0} views</span>
+        </div>
+      `;
+      
+      // Update tags
+      const tagsContainer = document.getElementById('thread-tags');
+      if (discussion.tags) {
+        tagsContainer.innerHTML = discussion.tags.split(',').map(tag => 
+          `<span class="tag">${escapeHtml(tag.trim())}</span>`
+        ).join('');
+      }
+      
+      // Update page title (safe for document.title as it doesn't render HTML)
+      document.title = discussion.title + ' - Tyton Discussions';
+    }
+
+    function renderReplies() {
+      const container = document.getElementById('replies-container');
+      const countElement = document.getElementById('replies-count');
+      
+      // Count total replies (including nested ones)
+      function countAllReplies(replies) {
+        let count = replies.length;
+        replies.forEach(reply => {
+          if (reply.children) {
+            count += countAllReplies(reply.children);
+          }
+        });
+        return count;
+      }
+      
+      const totalReplies = countAllReplies(replies);
+      countElement.textContent = `${totalReplies} ${totalReplies === 1 ? 'reply' : 'replies'}`;
+      
+      if (replies.length === 0) {
+        container.innerHTML = '<div class="loading">No replies yet. Be the first to reply!</div>';
+        return;
+      }
+      
+      function renderReplyWithChildren(reply, depth = 0) {
+        let html = `
+          <div class="reply-card" data-reply-id="${escapeAttribute(reply.id)}">
+            <div class="reply-header">
+              <span class="reply-author">@${escapeHtml(reply.owner)}</span>
+              <span class="reply-time">${formatTime(reply.createdAt)}</span>
+            </div>
+            <div class="reply-content">${escapeHtml(reply.content)}</div>
+            <div class="reply-actions">
+              <button class="action-btn" onclick="toggleReplyLike('${escapeAttribute(reply.id)}')">
+                <span>👍</span>
+                <span>${reply.likes || 0}</span>
+              </button>
+              <button class="action-btn" onclick="showReplyForm('${escapeAttribute(reply.id)}')">
+                <span>💬</span>
+                <span>Reply</span>
+              </button>
+            </div>
+            <div class="reply-form-container" id="reply-form-${escapeAttribute(reply.id)}"></div>
+          </div>
+        `;
+        
+        // Render children with threading
+        if (reply.children && reply.children.length > 0) {
+          html += '<div class="reply-thread">';
+          reply.children.forEach(child => {
+            html += renderReplyWithChildren(child, depth + 1);
+          });
+          html += '</div>';
+        }
+        
+        return html;
+      }
+      
+      container.innerHTML = replies.map(reply => renderReplyWithChildren(reply)).join('');
+    }
+
+    function toggleReplyForm() {
+      const form = document.getElementById('reply-form');
+      form.classList.toggle('active');
+      
+      if (form.classList.contains('active')) {
+        document.getElementById('reply-content').focus();
+      } else {
+        document.getElementById('reply-form-element').reset();
+      }
+    }
+
+    let currentReplyParentId = null;
+
+    function showReplyForm(parentId = null) {
+      // Hide any existing reply forms
+      document.querySelectorAll('.reply-form-container .reply-form').forEach(form => {
+        form.remove();
+      });
+      
+      currentReplyParentId = parentId;
+      
+      const replyFormHtml = `
+        <div class="reply-form active" style="margin-top: 16px;">
+          <form class="reply-form-element">
+            <div class="form-group">
+              <label for="reply-content-${parentId || 'main'}">Your Reply</label>
+              <textarea id="reply-content-${parentId || 'main'}" required placeholder="Share your thoughts..."></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" onclick="hideReplyForms()">Cancel</button>
+              <button type="submit" class="btn-primary">Post Reply</button>
+            </div>
+          </form>
+        </div>
+      `;
+      
+      if (parentId) {
+        // Show form below the specific reply
+        const container = document.getElementById(`reply-form-${parentId}`);
+        if (container) {
+          container.innerHTML = replyFormHtml;
+          document.getElementById(`reply-content-${parentId}`).focus();
+        }
+      } else {
+        // Show main reply form
+        const mainForm = document.getElementById('reply-form');
+        mainForm.classList.add('active');
+        document.getElementById('reply-content').focus();
+      }
+    }
+
+    function hideReplyForms() {
+      // Hide main form
+      const mainForm = document.getElementById('reply-form');
+      mainForm.classList.remove('active');
+      document.getElementById('reply-form-element').reset();
+      
+      // Hide all inline reply forms
+      document.querySelectorAll('.reply-form-container .reply-form').forEach(form => {
+        form.remove();
+      });
+      
+      currentReplyParentId = null;
+    }
+
+    function toggleReplyForm() {
+      showReplyForm(null);
+    }
+
+    // Handle form submissions for both main and inline reply forms
+    document.addEventListener('submit', async function(e) {
+      if (e.target.classList.contains('reply-form-element') || e.target.id === 'reply-form-element') {
+        e.preventDefault();
+        
+        if (!tytonAuth.isAuthenticated()) {
+          tytonAuth.showAuthError('Please log in to post replies');
+          return;
+        }
+        
+        let content;
+        let parentId = currentReplyParentId;
+        
+        if (e.target.id === 'reply-form-element') {
+          // Main form
+          content = document.getElementById('reply-content').value;
+          parentId = null;
+        } else {
+          // Inline form
+          const textarea = e.target.querySelector('textarea');
+          content = textarea.value;
+          parentId = currentReplyParentId;
+        }
+        
+        try {
+          const response = await tytonAuth.authFetch(`/api/discussions/${discussionId}/replies`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content, parentId })
+          });
+          
+          if (response.ok) {
+            hideReplyForms();
+            loadReplies(); // Reload replies
+          } else {
+            const error = await response.json();
+            showToast('Failed to post reply: ' + (error.error || 'Unknown error'), 'error');
+          }
+        } catch (error) {
+          console.error('Error posting reply:', error);
+          showToast('Failed to post reply. Please try again.', 'error');
+        }
+      }
+    });
+
+    async function toggleLike() {
+      if (!tytonAuth.isAuthenticated()) {
+        tytonAuth.showAuthError('Please log in to like discussions');
+        return;
+      }
+
+      try {
+        const response = await tytonAuth.authFetch(`/api/discussions/${discussionId}/like`, {
+          method: 'PUT'
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          document.getElementById('like-count').textContent = result.likes;
+          
+          const likeBtn = document.getElementById('like-btn');
+          if (result.liked) {
+            likeBtn.classList.add('liked');
+          } else {
+            likeBtn.classList.remove('liked');
+          }
+        }
+      } catch (error) {
+        console.error('Error toggling like:', error);
+      }
+    }
+
+    async function toggleReplyLike(replyId) {
+      if (!tytonAuth.isAuthenticated()) {
+        tytonAuth.showAuthError('Please log in to like replies');
+        return;
+      }
+
+      try {
+        const response = await tytonAuth.authFetch(`/api/discussions/${discussionId}/replies/${replyId}/like`, {
+          method: 'PUT'
+        });
+        
+        if (response.ok) {
+          loadReplies(); // Reload to update like count
+        }
+      } catch (error) {
+        console.error('Error toggling reply like:', error);
+      }
+    }
+
+    function shareDiscussion() {
+      if (navigator.share) {
+        navigator.share({
+          title: discussion.title,
+          text: discussion.content.substring(0, 100) + '...',
+          url: window.location.href
+        });
+      } else {
+        // Fallback to copying URL
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          showToast('Discussion link copied to clipboard!', 'success');
+        });
+      }
+    }
+
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) return 'just now';
+      if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+      if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+      if (diff < 604800000) return Math.floor(diff / 86400000) + 'd ago';
+      
+      return date.toLocaleDateString();
+    }
+
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error').textContent = message;
+    }
+
+    // Simple toast notification function
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 10000;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white; padding: 12px 20px; border-radius: 8px;
+        font-family: system-ui, sans-serif; font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-in forwards';
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

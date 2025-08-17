@@ -7,8 +7,10 @@ const path = require('path');
 const multer = require('multer');
 const session = require('express-session');
 const passport = require('passport');
+const crypto = require('crypto');
 const AuthManager = require('./auth');
 const UserStore = require('./userStore');
+const InputValidator = require('./validation');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +19,7 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 // Initialize stores and auth
 const userStore = new UserStore();
 const authManager = new AuthManager(userStore);
+const validator = new InputValidator();
 
 // CORS configuration
 app.use(cors({
@@ -43,12 +46,21 @@ app.get('/setup', (req, res) => {
 });
 
 // Session configuration
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret || sessionSecret.includes('demo') || sessionSecret.length < 32) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('SESSION_SECRET must be set to a secure value (32+ characters) in production');
+  }
+  console.warn('⚠️  WARNING: Using insecure SESSION_SECRET. Set a secure SESSION_SECRET in production!');
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'tyton-demo-session-secret',
+  secret: sessionSecret || 'tyton-demo-session-secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
+    httpOnly: true, // Prevent XSS access to session cookie
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   }
 }));
@@ -68,22 +80,59 @@ const storage = multer.diskStorage({
   }
 });
 
+// Enhanced file upload with security checks
 const upload = multer({ 
   storage: storage,
   limits: { 
     fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024, // 5MB default
-    files: 1 // Only allow 1 file per upload
+    files: 1, // Only allow 1 file per upload
+    fieldSize: 1024, // Limit field size
+    fields: 10 // Limit number of fields
   },
   fileFilter: function (req, file, cb) {
-    // Allowed image types
-    const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error(`Invalid file type. Only ${allowedMimes.join(', ')} are allowed!`));
+    // Allowed image types - stricter validation
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    
+    // Check MIME type
+    if (!allowedMimes.includes(file.mimetype)) {
+      return cb(new Error(`Invalid file type. Only ${allowedMimes.join(', ')} are allowed!`));
     }
+    
+    // Check file extension
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      return cb(new Error(`Invalid file extension. Only ${allowedExtensions.join(', ')} are allowed!`));
+    }
+    
+    // Sanitize filename
+    const sanitizedFilename = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+    file.originalname = sanitizedFilename;
+    
+    cb(null, true);
   }
 });
+
+// Rate limiting for file uploads (simple in-memory store)
+const uploadAttempts = new Map();
+const UPLOAD_RATE_LIMIT = 5; // Max 5 uploads per hour per IP
+const UPLOAD_WINDOW = 60 * 60 * 1000; // 1 hour
+
+function checkUploadRateLimit(ip) {
+  const now = Date.now();
+  const attempts = uploadAttempts.get(ip) || [];
+  
+  // Remove old attempts
+  const recentAttempts = attempts.filter(time => now - time < UPLOAD_WINDOW);
+  
+  if (recentAttempts.length >= UPLOAD_RATE_LIMIT) {
+    return false;
+  }
+  
+  recentAttempts.push(now);
+  uploadAttempts.set(ip, recentAttempts);
+  return true;
+}
 
 async function loadData() {
   try {
@@ -99,7 +148,11 @@ async function loadData() {
     return {
       items: Array.isArray(parsed.items) ? parsed.items : [],
       userFollowers: parsed.userFollowers || {},
-      userProfiles: parsed.userProfiles || {}
+      userProfiles: parsed.userProfiles || {},
+      communities: Array.isArray(parsed.communities) ? parsed.communities : [],
+      discussions: Array.isArray(parsed.discussions) ? parsed.discussions : [],
+      discussionReplies: parsed.discussionReplies || {},
+      journalPapers: Array.isArray(parsed.journalPapers) ? parsed.journalPapers : []
     };
   } catch (error) {
     if (error.code === 'ENOENT') {
@@ -117,7 +170,7 @@ async function loadData() {
     }
     
     // Return default structure
-    const defaultData = { items: [], userFollowers: {}, userProfiles: {} };
+    const defaultData = { items: [], userFollowers: {}, userProfiles: {}, communities: [], discussions: [], discussionReplies: {}, journalPapers: [] };
     await saveData(defaultData);
     return defaultData;
   }
@@ -151,7 +204,8 @@ async function saveData(data) {
 }
 
 function generateId() {
-  return Math.random().toString(36).slice(2,11) + Date.now().toString(36);
+  // Use crypto.randomUUID() for secure ID generation
+  return crypto.randomUUID();
 }
 
 // Ensure uploads directory exists
@@ -175,16 +229,19 @@ app.post('/auth/register', async (req, res) => {
   try {
     const { email, password, name, handle } = req.body;
     
-    if (!email || !password || !name) {
-      return res.status(400).json({ error: 'Email, password, and name are required' });
+    // Comprehensive input validation
+    const validationResult = validator.validateUserRegistration({ email, password, name, handle });
+    if (!validationResult.valid) {
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: validationResult.errors 
+      });
     }
 
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
-    }
+    const { email: validEmail, password: validPassword, name: validName, handle: validHandle } = validationResult.sanitized;
 
     // Check if user already exists with this email
-    const existingUser = await userStore.findByEmail(email.toLowerCase());
+    const existingUser = await userStore.findByEmail(validEmail);
     if (existingUser) {
       return res.status(409).json({ 
         error: 'An account already exists with this email address. Please log in instead.',
@@ -192,13 +249,13 @@ app.post('/auth/register', async (req, res) => {
       });
     }
 
-    const hashedPassword = await authManager.hashPassword(password);
+    const hashedPassword = await authManager.hashPassword(validPassword);
     
     const userData = {
       id: authManager.generateUserId(),
-      email: email.toLowerCase(),
-      name: name.trim(),
-      handle: handle ? handle.trim() : '@' + email.split('@')[0].toLowerCase(),
+      email: validEmail,
+      name: validName,
+      handle: validHandle || '@' + validEmail.split('@')[0],
       bio: '',
       photo: '',
       hashedPassword,
@@ -353,6 +410,14 @@ app.post('/auth/complete-profile', authManager.requireAuth, async (req, res) => 
 
 // File upload endpoint (requires authentication)
 app.post('/api/upload', authManager.requireAuth, (req, res, next) => {
+  // Apply rate limiting before processing upload
+  const userId = req.user?.id || req.ip;
+  if (!checkUploadRateLimit(userId)) {
+    return res.status(429).json({ 
+      error: 'Upload rate limit exceeded. Please wait before uploading again.' 
+    });
+  }
+
   upload.single('file')(req, res, function(err) {
     if (err instanceof multer.MulterError) {
       // Multer-specific errors
@@ -399,7 +464,8 @@ app.get('/api/data', authManager.optionalAuth, async (req, res) => {
         items: data.items,
         followers: userFollowers,
         profile: userProfile,
-        currentUser: currentUser
+        currentUser: currentUser,
+        communities: data.communities
       });
     } else {
       // Return public data only
@@ -407,7 +473,8 @@ app.get('/api/data', authManager.optionalAuth, async (req, res) => {
         items: data.items,
         followers: {},
         profile: {},
-        currentUser: null
+        currentUser: null,
+        communities: data.communities
       });
     }
   } catch (error) {
@@ -419,20 +486,28 @@ app.post('/api/items', authManager.requireAuth, async (req, res) => {
   try {
     const { type, title, description, tags, location } = req.body;
     
-    if (!title || !title.trim()) {
-      return res.status(400).json({ error: 'Title is required' });
+    // Comprehensive input validation
+    const validationResult = validator.validateItemData({ type, title, description, tags, location });
+    if (!validationResult.valid) {
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: validationResult.errors 
+      });
     }
+
+    const { type: validType, title: validTitle, description: validDescription, 
+            tags: validTags, location: validLocation } = validationResult.sanitized;
 
     const data = await loadData();
     const newItem = {
       id: generateId(),
-      type: type || 'project',
-      title: title.trim(),
-      description: description?.trim() || '',
-      tags: tags?.trim() || '',
+      type: validType,
+      title: validTitle,
+      description: validDescription,
+      tags: validTags,
       owner: req.user.handle,
       ownerId: req.user.id,
-      location: location?.trim() || '',
+      location: validLocation,
       likes: 0,
       likedBy: [],
       createdAt: Date.now()
@@ -595,6 +670,428 @@ app.put('/api/profile', authManager.requireAuth, async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Communities endpoints
+app.get('/api/communities', authManager.optionalAuth, async (req, res) => {
+  try {
+    const data = await loadData();
+    const { q, type, location } = req.query;
+    
+    let communities = data.communities || [];
+    
+    // Apply filters if provided
+    if (q) {
+      const query = q.toLowerCase();
+      communities = communities.filter(community => 
+        community.name?.toLowerCase().includes(query) ||
+        community.description?.toLowerCase().includes(query) ||
+        community.tags?.toLowerCase().includes(query)
+      );
+    }
+    
+    if (type) {
+      communities = communities.filter(community => community.type === type);
+    }
+    
+    if (location) {
+      communities = communities.filter(community => community.location === location);
+    }
+    
+    res.json({
+      count: communities.length,
+      communities: communities
+    });
+  } catch (error) {
+    console.error('Communities fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch communities' });
+  }
+});
+
+app.post('/api/communities', authManager.requireAuth, async (req, res) => {
+  try {
+    const { name, description, type, location, tags, avatar } = req.body;
+    
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Community name is required' });
+    }
+
+    const data = await loadData();
+    const newCommunity = {
+      id: generateId(),
+      name: name.trim(),
+      description: description?.trim() || '',
+      type: type || 'research',
+      location: location?.trim() || 'global',
+      tags: tags?.trim() || '',
+      avatar: avatar?.trim() || '',
+      createdBy: req.user.handle,
+      createdById: req.user.id,
+      memberCount: 1,
+      members: [req.user.id],
+      createdAt: Date.now(),
+      public: true
+    };
+
+    if (!data.communities) {
+      data.communities = [];
+    }
+    data.communities.unshift(newCommunity);
+    
+    if (await saveData(data)) {
+      res.status(201).json(newCommunity);
+    } else {
+      res.status(500).json({ error: 'Failed to save community' });
+    }
+  } catch (error) {
+    console.error('Create community error:', error);
+    res.status(500).json({ error: 'Failed to create community' });
+  }
+});
+
+app.put('/api/communities/:id/join', authManager.requireAuth, async (req, res) => {
+  try {
+    const data = await loadData();
+    const community = data.communities?.find(c => c.id === req.params.id);
+    
+    if (!community) {
+      return res.status(404).json({ error: 'Community not found' });
+    }
+
+    community.members = community.members || [];
+    const isMember = community.members.includes(req.user.id);
+    
+    if (isMember) {
+      // Leave community
+      community.members = community.members.filter(id => id !== req.user.id);
+      community.memberCount = Math.max(0, (community.memberCount || 0) - 1);
+    } else {
+      // Join community
+      community.members.push(req.user.id);
+      community.memberCount = (community.memberCount || 0) + 1;
+    }
+    
+    if (await saveData(data)) {
+      res.json({ 
+        joined: !isMember,
+        memberCount: community.memberCount
+      });
+    } else {
+      res.status(500).json({ error: 'Failed to update membership' });
+    }
+  } catch (error) {
+    console.error('Join community error:', error);
+    res.status(500).json({ error: 'Failed to join/leave community' });
+  }
+});
+
+// Discussions endpoints
+app.get('/api/discussions', authManager.optionalAuth, async (req, res) => {
+  try {
+    const data = await loadData();
+    
+    // Sort discussions by creation date (newest first)
+    const discussions = data.discussions.sort((a, b) => b.createdAt - a.createdAt);
+    
+    // Add reply count to each discussion
+    const discussionsWithCounts = discussions.map(discussion => ({
+      ...discussion,
+      replies: data.discussionReplies[discussion.id] ? data.discussionReplies[discussion.id].length : 0
+    }));
+    
+    res.json(discussionsWithCounts);
+  } catch (error) {
+    console.error('Error loading discussions:', error);
+    res.status(500).json({ error: 'Failed to load discussions' });
+  }
+});
+
+app.post('/api/discussions', authManager.requireAuth, async (req, res) => {
+  try {
+    const { title, content, tags } = req.body;
+    
+    if (!title || !content) {
+      return res.status(400).json({ error: 'Title and content are required' });
+    }
+    
+    const data = await loadData();
+    
+    // Get user from session/token
+    const user = req.user;
+    const userHandle = user.handle || user.email?.split('@')[0] || 'anonymous';
+    
+    const discussion = {
+      id: generateId(),
+      title: title.trim(),
+      content: content.trim(),
+      tags: tags ? tags.trim() : null,
+      owner: userHandle,
+      ownerId: user.id,
+      likes: 0,
+      likedBy: [],
+      views: 0,
+      createdAt: Date.now()
+    };
+    
+    data.discussions.push(discussion);
+    
+    const success = await saveData(data);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to save discussion' });
+    }
+    
+    res.status(201).json({ 
+      message: 'Discussion created successfully',
+      discussion: discussion
+    });
+  } catch (error) {
+    console.error('Error creating discussion:', error);
+    res.status(500).json({ error: 'Failed to create discussion' });
+  }
+});
+
+app.get('/api/discussions/:id', authManager.optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await loadData();
+    
+    const discussion = data.discussions.find(d => d.id === id);
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found' });
+    }
+    
+    // Increment view count
+    discussion.views = (discussion.views || 0) + 1;
+    await saveData(data);
+    
+    // Add reply count
+    const replies = data.discussionReplies[id] ? data.discussionReplies[id].length : 0;
+    
+    res.json({
+      ...discussion,
+      replies
+    });
+  } catch (error) {
+    console.error('Error loading discussion:', error);
+    res.status(500).json({ error: 'Failed to load discussion' });
+  }
+});
+
+app.put('/api/discussions/:id/like', authManager.requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await loadData();
+    const user = req.user;
+    
+    const discussion = data.discussions.find(d => d.id === id);
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found' });
+    }
+    
+    if (!discussion.likedBy) {
+      discussion.likedBy = [];
+    }
+    
+    const userIndex = discussion.likedBy.indexOf(user.id);
+    let liked = false;
+    
+    if (userIndex === -1) {
+      // User hasn't liked, so add like
+      discussion.likedBy.push(user.id);
+      discussion.likes = discussion.likedBy.length;
+      liked = true;
+    } else {
+      // User has liked, so remove like
+      discussion.likedBy.splice(userIndex, 1);
+      discussion.likes = discussion.likedBy.length;
+      liked = false;
+    }
+    
+    const success = await saveData(data);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to update like' });
+    }
+    
+    res.json({ 
+      likes: discussion.likes,
+      liked: liked
+    });
+  } catch (error) {
+    console.error('Error toggling discussion like:', error);
+    res.status(500).json({ error: 'Failed to update like' });
+  }
+});
+
+app.get('/api/discussions/:id/replies', authManager.optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await loadData();
+    
+    const discussion = data.discussions.find(d => d.id === id);
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found' });
+    }
+    
+    const replies = data.discussionReplies[id] || [];
+    
+    // Build threaded structure
+    function buildThreadedReplies(replies) {
+      const repliesMap = new Map();
+      const topLevelReplies = [];
+      
+      // First pass: create a map of all replies and identify top-level replies
+      replies.forEach(reply => {
+        const replyWithChildren = { ...reply, children: [] };
+        repliesMap.set(reply.id, replyWithChildren);
+        
+        if (!reply.parentId) {
+          topLevelReplies.push(replyWithChildren);
+        }
+      });
+      
+      // Second pass: attach children to their parents
+      replies.forEach(reply => {
+        if (reply.parentId) {
+          const parent = repliesMap.get(reply.parentId);
+          if (parent) {
+            parent.children.push(repliesMap.get(reply.id));
+          }
+        }
+      });
+      
+      // Sort top-level replies by creation date (oldest first)
+      topLevelReplies.sort((a, b) => a.createdAt - b.createdAt);
+      
+      // Recursively sort children
+      function sortChildren(reply) {
+        reply.children.sort((a, b) => a.createdAt - b.createdAt);
+        reply.children.forEach(sortChildren);
+      }
+      
+      topLevelReplies.forEach(sortChildren);
+      
+      return topLevelReplies;
+    }
+    
+    const threadedReplies = buildThreadedReplies(replies);
+    
+    res.json(threadedReplies);
+  } catch (error) {
+    console.error('Error loading replies:', error);
+    res.status(500).json({ error: 'Failed to load replies' });
+  }
+});
+
+app.post('/api/discussions/:id/replies', authManager.requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content, parentId } = req.body;
+    
+    if (!content) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    
+    const data = await loadData();
+    
+    const discussion = data.discussions.find(d => d.id === id);
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found' });
+    }
+    
+    // If parentId is provided, verify the parent reply exists
+    if (parentId) {
+      const replies = data.discussionReplies[id] || [];
+      const parentReply = replies.find(r => r.id === parentId);
+      if (!parentReply) {
+        return res.status(404).json({ error: 'Parent reply not found' });
+      }
+    }
+    
+    const user = req.user;
+    const userHandle = user.handle || user.email?.split('@')[0] || 'anonymous';
+    
+    const reply = {
+      id: generateId(),
+      content: content.trim(),
+      owner: userHandle,
+      ownerId: user.id,
+      likes: 0,
+      likedBy: [],
+      createdAt: Date.now(),
+      parentId: parentId || null
+    };
+    
+    // Initialize replies array if it doesn't exist
+    if (!data.discussionReplies[id]) {
+      data.discussionReplies[id] = [];
+    }
+    
+    data.discussionReplies[id].push(reply);
+    
+    const success = await saveData(data);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to save reply' });
+    }
+    
+    res.status(201).json({ 
+      message: 'Reply posted successfully',
+      reply: reply
+    });
+  } catch (error) {
+    console.error('Error creating reply:', error);
+    res.status(500).json({ error: 'Failed to create reply' });
+  }
+});
+
+app.put('/api/discussions/:id/replies/:replyId/like', authManager.requireAuth, async (req, res) => {
+  try {
+    const { id, replyId } = req.params;
+    const data = await loadData();
+    const user = req.user;
+    
+    const discussion = data.discussions.find(d => d.id === id);
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found' });
+    }
+    
+    const replies = data.discussionReplies[id] || [];
+    const reply = replies.find(r => r.id === replyId);
+    if (!reply) {
+      return res.status(404).json({ error: 'Reply not found' });
+    }
+    
+    if (!reply.likedBy) {
+      reply.likedBy = [];
+    }
+    
+    const userIndex = reply.likedBy.indexOf(user.id);
+    let liked = false;
+    
+    if (userIndex === -1) {
+      // User hasn't liked, so add like
+      reply.likedBy.push(user.id);
+      reply.likes = reply.likedBy.length;
+      liked = true;
+    } else {
+      // User has liked, so remove like
+      reply.likedBy.splice(userIndex, 1);
+      reply.likes = reply.likedBy.length;
+      liked = false;
+    }
+    
+    const success = await saveData(data);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to update like' });
+    }
+    
+    res.json({ 
+      likes: reply.likes,
+      liked: liked
+    });
+  } catch (error) {
+    console.error('Error toggling reply like:', error);
+    res.status(500).json({ error: 'Failed to update like' });
   }
 });
 
@@ -929,12 +1426,110 @@ app.post('/api/seed', async (req, res) => {
       }
     ];
 
+    const sampleCommunities = [
+      {
+        id: generateId(), name: 'MIT Quantum Computing Research',
+        description: 'Collaborative research group focused on advancing quantum computing technologies and applications.',
+        type: 'university', location: 'north-america', tags: 'quantum,computing,research,physics',
+        avatar: '⚛️', memberCount: 156, members: [], createdAt: now - 86400000 * 5
+      },
+      {
+        id: generateId(), name: 'Stanford AI Ethics Forum',
+        description: 'Interdisciplinary community discussing ethical implications of artificial intelligence development.',
+        type: 'university', location: 'north-america', tags: 'ai,ethics,philosophy,technology',
+        avatar: '🤖', memberCount: 234, members: [], createdAt: now - 86400000 * 8
+      },
+      {
+        id: generateId(), name: 'Berkeley Open Science Initiative',
+        description: 'Promoting open access research and collaborative scientific methodologies across disciplines.',
+        type: 'university', location: 'north-america', tags: 'open-science,collaboration,research',
+        avatar: '🔬', memberCount: 189, members: [], createdAt: now - 86400000 * 12
+      },
+      {
+        id: generateId(), name: 'European Fusion Energy Consortium',
+        description: 'International collaboration advancing fusion energy research and development across European institutions.',
+        type: 'professional', location: 'europe', tags: 'fusion,energy,physics,collaboration',
+        avatar: '⚡', memberCount: 312, members: [], createdAt: now - 86400000 * 15
+      },
+      {
+        id: generateId(), name: 'Global Climate Research Network',
+        description: 'Worldwide network of climate scientists sharing data, methodologies, and research findings.',
+        type: 'professional', location: 'global', tags: 'climate,environment,data,research',
+        avatar: '🌍', memberCount: 478, members: [], createdAt: now - 86400000 * 20
+      },
+      {
+        id: generateId(), name: 'Bioengineering Innovation Hub',
+        description: 'Community of bioengineers developing revolutionary medical devices and therapeutic solutions.',
+        type: 'research', location: 'north-america', tags: 'bioengineering,medical,innovation,devices',
+        avatar: '🧬', memberCount: 145, members: [], createdAt: now - 86400000 * 18
+      },
+      {
+        id: generateId(), name: 'Asian Nanotechnology Alliance',
+        description: 'Collaborative network advancing nanotechnology research and applications across Asian institutions.',
+        type: 'professional', location: 'asia', tags: 'nanotechnology,materials,research,innovation',
+        avatar: '🔬', memberCount: 267, members: [], createdAt: now - 86400000 * 25
+      },
+      {
+        id: generateId(), name: 'Space Technology Enthusiasts',
+        description: 'Community of researchers, engineers, and enthusiasts passionate about space exploration technologies.',
+        type: 'hobby', location: 'global', tags: 'space,technology,exploration,engineering',
+        avatar: '🚀', memberCount: 423, members: [], createdAt: now - 86400000 * 30
+      },
+      {
+        id: generateId(), name: 'Renewable Energy Makers',
+        description: 'DIY community focused on building and testing renewable energy solutions and sustainable technologies.',
+        type: 'hobby', location: 'global', tags: 'renewable,energy,diy,sustainability',
+        avatar: '⚡', memberCount: 198, members: [], createdAt: now - 86400000 * 22
+      },
+      {
+        id: generateId(), name: 'Open Source Hardware Initiative',
+        description: 'Global community developing open-source hardware designs for scientific research and education.',
+        type: 'nonprofit', location: 'global', tags: 'open-source,hardware,education,research',
+        avatar: '⚙️', memberCount: 356, members: [], createdAt: now - 86400000 * 28
+      },
+      {
+        id: generateId(), name: 'Neural Interface Research Collective',
+        description: 'Interdisciplinary group researching brain-computer interfaces and neural augmentation technologies.',
+        type: 'research', location: 'north-america', tags: 'neural,interface,brain,augmentation',
+        avatar: '🧠', memberCount: 134, members: [], createdAt: now - 86400000 * 35
+      },
+      {
+        id: generateId(), name: 'Synthetic Biology Collaborative',
+        description: 'International network of synthetic biology researchers designing biological systems for various applications.',
+        type: 'professional', location: 'global', tags: 'synthetic-biology,design,systems,applications',
+        avatar: '🔬', memberCount: 289, members: [], createdAt: now - 86400000 * 14
+      },
+      {
+        id: generateId(), name: 'Quantum Biology Study Group',
+        description: 'Research community exploring quantum effects in biological systems and their potential applications.',
+        type: 'research', location: 'europe', tags: 'quantum,biology,systems,research',
+        avatar: '🌱', memberCount: 167, members: [], createdAt: now - 86400000 * 40
+      },
+      {
+        id: generateId(), name: 'Materials Science Innovation Lab',
+        description: 'Collaborative laboratory developing next-generation materials for aerospace and electronics applications.',
+        type: 'university', location: 'north-america', tags: 'materials,aerospace,electronics,innovation',
+        avatar: '⚗️', memberCount: 112, members: [], createdAt: now - 86400000 * 10
+      },
+      {
+        id: generateId(), name: 'Citizen Science Network',
+        description: 'Community enabling public participation in scientific research projects across multiple disciplines.',
+        type: 'nonprofit', location: 'global', tags: 'citizen-science,public,participation,research',
+        avatar: '👥', memberCount: 567, members: [], createdAt: now - 86400000 * 32
+      }
+    ];
+
     const sampleItems = [...sampleProjects, ...sampleMarketplace];
 
     data.items = [...sampleItems, ...data.items];
+    data.communities = [...sampleCommunities, ...(data.communities || [])];
     
     if (await saveData(data)) {
-      res.json({ message: `Seeded ${sampleItems.length} items`, items: sampleItems });
+      res.json({ 
+        message: `Seeded ${sampleItems.length} items and ${sampleCommunities.length} communities`, 
+        items: sampleItems,
+        communities: sampleCommunities
+      });
     } else {
       res.status(500).json({ error: 'Failed to seed data' });
     }
@@ -948,8 +1543,12 @@ app.delete('/api/reset', authManager.optionalAuth, async (req, res) => {
   try {
     const defaultData = {
       items: [],
-      followers: {},
-      profile: { name: '', handle: '@josh', bio: '', photo: '' }
+      userFollowers: {},
+      userProfiles: {},
+      communities: [],
+      discussions: [],
+      discussionReplies: {},
+      journalPapers: []
     };
     
     if (await saveData(defaultData)) {
@@ -959,6 +1558,155 @@ app.delete('/api/reset', authManager.optionalAuth, async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: 'Failed to reset data' });
+  }
+});
+
+// =================
+// JOURNAL PAPERS API
+// =================
+
+// Get all journal papers
+app.get('/api/journal', authManager.optionalAuth, async (req, res) => {
+  try {
+    const data = await loadData();
+    const { category, status, search } = req.query;
+    
+    let papers = data.journalPapers || [];
+    
+    // Apply filters
+    if (category && category !== '') {
+      papers = papers.filter(paper => paper.category === category);
+    }
+    
+    if (status && status !== '') {
+      papers = papers.filter(paper => paper.status === status);
+    }
+    
+    if (search && search.trim() !== '') {
+      const searchTerm = search.toLowerCase();
+      papers = papers.filter(paper => 
+        paper.title.toLowerCase().includes(searchTerm) ||
+        paper.abstract.toLowerCase().includes(searchTerm) ||
+        paper.authors.some(author => author.toLowerCase().includes(searchTerm)) ||
+        (paper.keywords && paper.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm)))
+      );
+    }
+    
+    // Sort papers by creation date (newest first)
+    papers.sort((a, b) => b.createdAt - a.createdAt);
+    
+    res.json(papers);
+  } catch (error) {
+    console.error('Error loading journal papers:', error);
+    res.status(500).json({ error: 'Failed to load journal papers' });
+  }
+});
+
+// Create new journal paper
+app.post('/api/journal', authManager.requireAuth, async (req, res) => {
+  try {
+    const { title, abstract, authors, category, status, keywords, fileUrl } = req.body;
+    
+    // Comprehensive input validation
+    const validationResult = validator.validateJournalPaper({ title, abstract, authors, category, status, keywords, fileUrl });
+    if (!validationResult.valid) {
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: validationResult.errors 
+      });
+    }
+
+    const { title: validTitle, abstract: validAbstract, authors: validAuthors, 
+            category: validCategory, status: validStatus, keywords: validKeywords, 
+            fileUrl: validFileUrl } = validationResult.sanitized;
+    
+    const data = await loadData();
+    const user = req.user;
+    const userHandle = user.handle || user.email?.split('@')[0] || 'anonymous';
+    
+    const paper = {
+      id: generateId(),
+      title: validTitle,
+      abstract: validAbstract,
+      authors: validAuthors,
+      category: validCategory,
+      status: validStatus,
+      keywords: validKeywords,
+      fileUrl: validFileUrl,
+      submittedBy: userHandle,
+      submittedById: user.id,
+      likes: 0,
+      likedBy: [],
+      downloads: 0,
+      views: 0,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    };
+    
+    if (!data.journalPapers) {
+      data.journalPapers = [];
+    }
+    
+    data.journalPapers.push(paper);
+    
+    const success = await saveData(data);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to save paper' });
+    }
+    
+    res.status(201).json({ 
+      message: 'Paper submitted successfully',
+      paper: paper
+    });
+  } catch (error) {
+    console.error('Error creating journal paper:', error);
+    res.status(500).json({ error: 'Failed to create journal paper' });
+  }
+});
+
+// Like/unlike journal paper
+app.put('/api/journal/:id/like', authManager.requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await loadData();
+    const user = req.user;
+    
+    const paper = data.journalPapers.find(p => p.id === id);
+    if (!paper) {
+      return res.status(404).json({ error: 'Paper not found' });
+    }
+    
+    if (!paper.likedBy) {
+      paper.likedBy = [];
+    }
+    
+    const userIndex = paper.likedBy.indexOf(user.id);
+    let liked;
+    
+    if (userIndex === -1) {
+      // Like the paper
+      paper.likedBy.push(user.id);
+      paper.likes = paper.likedBy.length;
+      liked = true;
+    } else {
+      // Unlike the paper
+      paper.likedBy.splice(userIndex, 1);
+      paper.likes = paper.likedBy.length;
+      liked = false;
+    }
+    
+    const success = await saveData(data);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to update like' });
+    }
+    
+    res.json({
+      likes: paper.likes,
+      liked: liked
+    });
+  } catch (error) {
+    console.error('Error toggling paper like:', error);
+    res.status(500).json({ error: 'Failed to update like' });
   }
 });
 

@@ -3,11 +3,22 @@ const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 class AuthManager {
   constructor(userStore) {
     this.userStore = userStore;
-    this.JWT_SECRET = process.env.JWT_SECRET || 'tyton-demo-secret-key-change-in-production';
+    
+    // Enforce secure JWT secret
+    this.JWT_SECRET = process.env.JWT_SECRET;
+    if (!this.JWT_SECRET || this.JWT_SECRET.includes('demo') || this.JWT_SECRET.length < 32) {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('JWT_SECRET must be set to a secure value (32+ characters) in production');
+      }
+      console.warn('⚠️  WARNING: Using insecure JWT_SECRET. Set a secure JWT_SECRET in production!');
+      this.JWT_SECRET = 'tyton-demo-secret-key-change-in-production';
+    }
+    
     this.setupPassport();
   }
 
@@ -38,7 +49,7 @@ class AuthManager {
     passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: '/auth/google/callback',
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || `/auth/google/callback`,
       scope: ['profile', 'email']
     }, async (accessToken, refreshToken, profile, done) => {
       try {
@@ -99,7 +110,7 @@ class AuthManager {
   }
 
   generateUserId() {
-    return 'user_' + Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
+    return 'user_' + crypto.randomUUID();
   }
 
   async hashPassword(password) {

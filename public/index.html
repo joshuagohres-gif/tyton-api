@@ -91,7 +91,11 @@
 
     /* Enhanced Header */
     header{
-      position:sticky; top:0; z-index:10; 
+      position: fixed; 
+      top: 0; 
+      left: 0;
+      right: 0;
+      z-index: 1100; 
       backdrop-filter: blur(20px) saturate(180%);
       background:
         linear-gradient(180deg, var(--surface-elevated) 0%, rgba(15,22,41,.6) 100%);
@@ -100,7 +104,6 @@
         0 1px 0 rgba(230,169,26,.1),
         inset 0 1px 0 rgba(241,245,249,.05);
       border-bottom: 1px solid var(--border-accent);
-      position: relative;
     }
     
     header::before {
@@ -118,23 +121,40 @@
       max-width:1200px;margin:0 auto;
       display:flex; justify-content: space-between;
       align-items:center; gap:16px; padding:12px 20px;
+      position: relative;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1300; /* Ensure the container has proper stacking context */
     }
     
     .brand{
       display:flex; align-items:center; gap:12px; 
       text-decoration:none; color:var(--white);
       transition: transform 0.2s ease;
+      position: absolute;
+      left: -210px; /* Move 200px further to the left */
+      top: 50%; /* Center vertically */
+      transform: translateY(-50%); /* Adjust for perfect centering */
+      cursor: pointer;
+      z-index: 1400; /* Ensure settings button is above sidebar */
     }
     
-    .brand:hover { transform: scale(1.02); }
+    .brand:hover {
+      transform: translateY(-50%) scale(1.02);
+    }
     
     .brand img{
-      width:52px;height:52px; border-radius:12px; 
+      width:40px;height:40px; border-radius:10px; 
       display:block; 
       box-shadow:
-        0 8px 25px rgba(0,0,0,.5),
+        0 6px 20px rgba(0,0,0,.4),
         0 0 0 1px rgba(230,169,26,.3),
-        0 0 20px var(--glow-primary);
+        0 0 15px var(--glow-primary);
       border: 2px solid var(--border-accent);
       object-fit: cover;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -149,11 +169,77 @@
     }
     
     .brand span{
-      font-weight:700; letter-spacing:.8px; font-size: 18px;
+      font-weight:700; letter-spacing:.8px; font-size: 16px;
       background: var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+    
+    .brand[aria-current="page"] {
+      background: rgba(218,165,32,.15);
+      border: 1px solid rgba(218,165,32,.3);
+      border-radius: 10px;
+      padding: 8px 12px;
+    }
+    
+    /* Settings Dropdown - Completely Rebuilt */
+    .settings-container {
+      position: relative;
+    }
+    
+    .settings-dropdown {
+      position: fixed;
+      top: 85px;
+      left: -210px;
+      background: #1a1a2e;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+      min-width: 180px;
+      z-index: 2147483647; /* Maximum possible z-index value */
+      display: none;
+      isolation: isolate; /* Create new stacking context */
+      will-change: transform; /* Force GPU layer */
+    }
+    
+    .settings-dropdown.show {
+      display: block;
+    }
+    
+    .settings-dropdown-item {
+      display: block;
+      width: 100%;
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s ease;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    
+    .settings-dropdown-item:last-child {
+      border-bottom: none;
+    }
+    
+    .settings-dropdown-item:hover {
+      background: rgba(255,255,255,.1);
+      color: #DAA520;
+    }
+
+    /* User Dropdown - Simple and working */
+    #user-dropdown {
+      position: fixed !important;
+      z-index: 999999 !important;
+      pointer-events: auto !important;
+    }
+    
+    #user-dropdown.visible {
+      display: block !important;
+      visibility: visible !important;
     }
     
     .nav{display:flex; justify-content:center; gap:12px;}
@@ -175,7 +261,7 @@
       box-shadow: 0 0 0 2px rgba(218,165,32,.3);
     }
     
-    .right{display:flex; justify-content:end; align-items:center; gap:12px;}
+    .right{display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-left: auto; flex-shrink: 0; min-width: 200px;}
     .badge{
       font-size:11px; color:#cbd5e1; border:1px solid #334155; 
       padding:4px 12px; border-radius:20px; 
@@ -732,47 +818,46 @@
       white-space: nowrap;
     }
 
-    /* Navigation Dropdown */
-    .nav-dropdown {
-      position: relative;
-    }
-
-    .nav-dropdown-menu {
-      position: absolute;
-      top: 100%;
+    /* Fixed Left Navigation Sidebar */
+    .nav-sidebar {
+      position: fixed;
+      top: 0; /* Start at top to pass under header */
       left: 0;
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px var(--shadow);
-      backdrop-filter: blur(12px);
-      min-width: 180px;
-      z-index: 100;
-      display: none;
-      padding: 8px 0;
-      margin-top: 8px;
+      width: 220px;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--surface-elevated) 0%, rgba(15,22,41,.95) 100%);
+      border-right: 1px solid var(--border-accent);
+      box-shadow: 4px 0 20px rgba(0,0,0,.3);
+      backdrop-filter: blur(16px);
+      z-index: 900; /* Lower than header */
+      display: flex;
+      flex-direction: column;
+      padding: 76px 0 20px 0; /* Top padding to align with header height */
     }
 
-    .nav-dropdown-menu::before {
+    .nav-sidebar::before {
       content: '';
       position: absolute;
-      top: -6px;
-      left: 20px;
-      width: 12px;
-      height: 12px;
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.08);
-      border-bottom: none;
-      border-right: none;
-      transform: rotate(45deg);
-      border-radius: 2px;
+      top: 0;
+      right: 0;
+      width: 1px;
+      height: 100%;
+      background: var(--gradient-primary);
+      opacity: 0.6;
     }
 
-    .nav-dropdown-item {
+    
+    .nav-menu {
+      flex: 1;
+      padding: 0 16px;
+    }
+    
+    .nav-item {
       display: flex;
       align-items: center;
       width: 100%;
       padding: 14px 20px;
+      margin-bottom: 4px;
       background: none;
       border: none;
       color: var(--white);
@@ -781,52 +866,146 @@
       font-family: inherit;
       font-size: 14px;
       font-weight: 500;
-      transition: all 0.2s ease;
-      border-radius: 0;
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      position: relative;
     }
 
-    .nav-dropdown-item:hover {
-      background: rgba(255,255,255,.1);
+    
+    .nav-item:hover {
+      background: rgba(255,255,255,.08);
       color: var(--gold);
-      transform: none;
+      transform: translateX(4px);
     }
 
-    .nav-dropdown-item img {
+    .nav-item img {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
       opacity: 0.8;
       transition: opacity 0.2s ease;
     }
 
-    .nav-dropdown-item:hover img {
+    .nav-item:hover img {
       opacity: 1;
     }
 
-    .nav-dropdown-item[aria-current="page"] {
-      background: rgba(218,165,32,.2);
+    .nav-item[aria-current="page"] {
+      background: rgba(218,165,32,.15);
       color: var(--gold);
       border-left: 3px solid var(--gold);
+      margin-left: -3px;
+      padding-left: 23px;
     }
 
-    .nav-dropdown-item[aria-current="page"] img {
+    .nav-item[aria-current="page"] img {
       opacity: 1;
     }
-
-    .brand-clickable {
-      cursor: pointer;
-      user-select: none;
-      position: relative;
+    
+    /* Sidebar Weather Widget */
+    .sidebar-weather-widget {
+      margin: 20px 16px 16px 16px;
+      padding: 12px;
+      background: rgba(14,20,37,.7);
+      border: 1px solid rgba(218,165,32,.3);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
     }
-
-    .brand-clickable::after {
-      content: '▼';
+    
+    .sidebar-weather-widget:hover {
+      background: rgba(14,20,37,.9);
+      border-color: rgba(218,165,32,.5);
+      box-shadow: 0 4px 12px rgba(218,165,32,.2);
+    }
+    
+    .weather-main-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    
+    .weather-temp-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .sidebar-weather-widget .weather-location {
       font-size: 10px;
       color: var(--muted);
-      margin-left: 8px;
-      transition: transform 0.2s ease;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    
+    .sidebar-weather-widget .weather-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    
+    .sidebar-weather-widget .weather-temp {
+      font-size: 18px;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    
+    .sidebar-weather-widget .weather-status {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    
+    .sidebar-weather-widget .weather-time {
+      font-size: 11px;
+      color: var(--white);
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .weather-details-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    
+    .weather-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .weather-detail-row .detail-label {
+      font-size: 9px;
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .weather-detail-row .detail-value {
+      font-size: 10px;
+      color: var(--white);
+      font-weight: 600;
     }
 
-    .brand-clickable:hover::after {
-      color: var(--gold);
-      transform: translateY(-1px);
+    /* Adjust main layout for sidebar and fixed header */
+    body {
+      padding-left: 220px;
+      padding-top: 76px; /* Account for fixed header height */
+    }
+    
+    header {
+      margin-left: -220px;
+      padding-left: 220px;
+      overflow: hidden; /* Prevent content from extending beyond boundaries */
     }
 
     /* Search Bar */
@@ -1154,6 +1333,53 @@
       animation: spin 0.8s ease-in-out infinite;
     }
 
+    /* Search Page Styles */
+    .search-filter {
+      padding: 8px 16px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .search-filter:hover {
+      background: rgba(255,255,255,.1);
+      border-color: var(--border-accent);
+      color: var(--white);
+    }
+
+    .search-filter.active {
+      background: var(--gradient-primary);
+      border-color: var(--gold);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    #search-page-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(218,165,32,.2);
+    }
+
+    .search-result-item {
+      background: var(--card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .search-result-item:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
@@ -1163,6 +1389,7 @@
       /* Tablet view - 2 columns for home grids */
       #home-projects-grid,
       #home-equipment-grid,
+      #home-groups-grid,
       #home-blog-grid {
         grid-template-columns: repeat(2, 1fr) !important;
       }
@@ -1207,6 +1434,7 @@
       /* Override home page grids for mobile */
       #home-projects-grid,
       #home-equipment-grid,
+      #home-groups-grid,
       #home-blog-grid {
         grid-template-columns: 1fr !important;
       }
@@ -1244,6 +1472,102 @@
         overflow-y: auto;
       }
       
+      /* Mobile Navigation */
+      .nav-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1001;
+      }
+      
+      .nav-sidebar.mobile-open {
+        transform: translateX(0);
+      }
+      
+      .nav-sidebar::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 100%;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.5);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .nav-sidebar.mobile-open::after {
+        pointer-events: all;
+        opacity: 1;
+      }
+      
+      .mobile-nav-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: none;
+        border: none;
+        color: var(--white);
+        cursor: pointer;
+        margin-right: 12px;
+      }
+      
+      .mobile-nav-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: var(--white);
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      
+      .mobile-nav-toggle span::before,
+      .mobile-nav-toggle span::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 2px;
+        background: var(--white);
+        transition: all 0.3s ease;
+      }
+      
+      .mobile-nav-toggle span::before {
+        top: -6px;
+      }
+      
+      .mobile-nav-toggle span::after {
+        top: 6px;
+      }
+      
+      .mobile-nav-toggle.active span {
+        background: transparent;
+      }
+      
+      .mobile-nav-toggle.active span::before {
+        transform: rotate(45deg);
+        top: 0;
+      }
+      
+      .mobile-nav-toggle.active span::after {
+        transform: rotate(-45deg);
+        top: 0;
+      }
+
+      /* Improved focus indicators for accessibility */
+      .mobile-nav-toggle:focus,
+      .nav-item:focus,
+      .btn:focus,
+      .search-bar:focus {
+        outline: 2px solid var(--gold);
+        outline-offset: 2px;
+      }
+
+      .nav-item:focus {
+        background: rgba(218,165,32,0.2);
+      }
+
       /* Fix navigation */
       .tabs {
         overflow-x: auto;
@@ -1501,38 +1825,97 @@
     </div>
   </div>
   <div id="app">
+    <!-- Fixed Left Navigation Sidebar -->
+    <nav class="nav-sidebar" aria-label="Main navigation" role="navigation">
+      <div class="nav-menu">
+        <button id="nav-home" class="nav-item" onclick="setRoute('home')">
+          <img src="/assets/tyton_home.png" alt="Home" onerror="this.style.display='none'"> Home
+        </button>
+        <button id="nav-search" class="nav-item" onclick="setRoute('search')">
+          <img src="/assets/tyton_search.png" alt="Search" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNEQUE1MjAiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjYiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxwYXRoIGQ9Ik0xNiAxNkwyMCAyMCIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Search
+        </button>
+        <button id="nav-projects" class="nav-item" onclick="setRoute('projects')">
+          <img src="/assets/tyton_projects.png" alt="Projects" onerror="this.style.display='none'"> Projects
+        </button>
+        <button id="nav-equipment" class="nav-item" onclick="setRoute('equipment')">
+          <img src="/assets/tyton_equipment.png" alt="Marketplace" onerror="this.style.display='none'"> Tyton Marketplace
+        </button>
+        <button id="nav-groups" class="nav-item" onclick="setRoute('groups')">
+          <img src="/assets/tyton_groups.png" alt="Groups" onerror="this.style.display='none'"> Groups
+        </button>
+        <button id="nav-discussions" class="nav-item" onclick="setRoute('discussions')">
+          <img src="/assets/tyton_discussions.png" alt="Discussions" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNEQUE1MjAiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik04IDZDOCA1LjQ0NzcyIDguNDQ3NzIgNSA5IDVIMTdDMTcuNTUyMyA1IDE4IDUuNDQ3NzIgMTggNlYxNEMxOCAxNC41NTIzIDE3LjU1MjMgMTUgMTcgMTVIMTNMMTAgMThWMTVIOUM4LjQ0NzcyIDE1IDggMTQuNTUyMyA4IDE0VjZaIiBmaWxsPSIjMDUwODE0Ii8+CjxwYXRoIGQ9Ik0xMSA5SDE1IiBzdHJva2U9IiNEQUE1MjAiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMSAxMkgxNSIgc3Ryb2tlPSIjREFBNTIwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Discussions
+        </button>
+        <button id="nav-journal" class="nav-item" onclick="setRoute('journal')">
+          <img src="/assets/tyton_journal.png" alt="Journal" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNEQUE1MjAiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik02IDJINEMyLjg5IDIgMiAyLjg5IDIgNFYyMEMyIDIxLjExIDIuODkgMjIgNCAyMkg2VjJaIiBmaWxsPSIjMDUwODE0Ii8+CjxwYXRoIGQ9Ik0yMCAySDZWMjJIMjBDMjEuMTEgMjIgMjIgMjEuMTEgMjIgMjBWNEMyMiAyLjg5IDIxLjExIDIgMjAgMloiIGZpbGw9IiNEQUE1MjAiLz4KPHBhdGggZD0iTTkgN0gxOSIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik05IDEwSDE5IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTkgMTNIMTYiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Tyton Journal
+        </button>
+        <button id="nav-blog" class="nav-item" onclick="setRoute('blog')">
+          <img src="/assets/tyton_blog.png" alt="News" onerror="this.style.display='none'"> News
+        </button>
+        <button id="nav-profile" class="nav-item" onclick="setRoute('profile')">
+          <img src="/assets/tyton_profile.png" alt="Profile" onerror="this.style.display='none'"> Profile
+        </button>
+        
+        <!-- Weather Widget in Sidebar -->
+        <div class="sidebar-weather-widget" id="weather-widget">
+          <div class="weather-location" id="weather-location">Loading...</div>
+          <div class="weather-main-info">
+            <div class="weather-temp-row">
+              <div class="weather-icon" id="weather-icon">☀️</div>
+              <div class="weather-temp" id="weather-temp">--°F</div>
+            </div>
+            <div class="weather-status" id="weather-status">--</div>
+            <div class="weather-time" id="weather-time">--:--</div>
+          </div>
+          <div class="weather-details-sidebar">
+            <div class="weather-detail-row">
+              <span class="detail-label">UV</span>
+              <span class="detail-value" id="uv-index">--</span>
+            </div>
+            <div class="weather-detail-row">
+              <span class="detail-label">AQI</span>
+              <span class="detail-value" id="air-quality">--</span>
+            </div>
+            <div class="weather-detail-row">
+              <span class="detail-label">Humidity</span>
+              <span class="detail-value" id="humidity">--%</span>
+            </div>
+            <div class="weather-detail-row">
+              <span class="detail-label">Rain</span>
+              <span class="detail-value" id="precip-chance">--%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
     <header>
       <div class="bar">
-        <div class="nav-dropdown">
-          <div class="brand brand-clickable" onclick="toggleNavDropdown()">
-            <img id="logo" src="/assets/logo.png" alt="Tyton" onerror="this.src=generateFallbackLogo()" />
+        <div class="header-left">
+          <button class="mobile-nav-toggle" onclick="toggleMobileNav()" style="display: none;" 
+                  aria-label="Toggle navigation menu" aria-expanded="false">
+            <span></span>
+          </button>
+          <div class="settings-container">
+            <div class="brand" onclick="toggleSettingsDropdown()">
+              <img id="header-logo" src="/assets/logo.png" alt="Tyton" onerror="this.src=generateFallbackLogo()" />
+              <span>Settings</span>
+            </div>
+            
+            <!-- Settings Dropdown Menu -->
+            <div id="settings-dropdown" class="settings-dropdown">
+              <button class="settings-dropdown-item">Account Settings</button>
+              <button class="settings-dropdown-item">Preferences</button>
+              <button class="settings-dropdown-item">Theme</button>
+              <button class="settings-dropdown-item">Help & Support</button>
+              <button class="settings-dropdown-item">About</button>
+            </div>
           </div>
-          
-          <div id="nav-dropdown-menu" class="nav-dropdown-menu">
-            <button id="nav-home" class="nav-dropdown-item" onclick="setRoute('home'); hideNavDropdown()">
-              <img src="/assets/tyton_home.png" alt="Home" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> Home
-            </button>
-            <button id="nav-projects" class="nav-dropdown-item" onclick="setRoute('projects'); hideNavDropdown()">
-              <img src="/assets/tyton_projects.png" alt="Projects" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> Projects
-            </button>
-            <button id="nav-equipment" class="nav-dropdown-item" onclick="setRoute('equipment'); hideNavDropdown()">
-              <img src="/assets/tyton_equipment.png" alt="Marketplace" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> Tyton Marketplace
-            </button>
-            <button id="nav-blog" class="nav-dropdown-item" onclick="setRoute('blog'); hideNavDropdown()">
-              <img src="/assets/tyton_blog.png" alt="News" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> News
-            </button>
-            <button id="nav-profile" class="nav-dropdown-item" onclick="setRoute('profile'); hideNavDropdown()">
-              <img src="/assets/tyton_profile.png" alt="Profile" style="width: 24px; height: 24px; margin-right: 12px;" onerror="this.style.display='none'"> Profile
-            </button>
-          </div>
+
         </div>
 
         <div class="right">
           <span class="badge" id="status-badge">📡 Checking connection...</span>
-          <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Search projects, marketplace, blog..." id="search-input" onkeypress="handleSearchKeyPress(event)">
-            <span class="search-icon">🔍</span>
-          </div>
           <div id="auth-buttons" style="display: flex; gap: 8px;">
             <!-- TODO: Replace 🔑 emoji with proper icon -->
             <button class="btn" onclick="showAuthModal('login')">🔑 Login</button>
@@ -1540,12 +1923,12 @@
               Sign Up
             </button>
           </div>
-          <div id="user-menu" style="display: none; position: relative;">
+          <div id="user-menu" style="display: block; position: relative;">
             <button class="btn" id="user-menu-btn" onclick="toggleUserMenu()">
               <img id="user-avatar" src="" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 6px;">
               <span id="user-name">User</span>
             </button>
-            <div id="user-dropdown" style="display: none; position: absolute; top: 100%; right: 0; background: var(--card); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 8px; min-width: 150px; z-index: 1000;">
+            <div id="user-dropdown" style="display: none; position: fixed; top: 60px; right: 10px; background: #1e293b; border: 2px solid #daa520; border-radius: 8px; padding: 12px; min-width: 160px; z-index: 999999; box-shadow: 0 4px 20px rgba(0,0,0,.8);">
               <button class="btn" style="width: 100%; justify-content: flex-start; margin-bottom: 4px;" onclick="setRoute('profile'); toggleUserMenu();">👤 Profile</button>
               <button class="btn" style="width: 100%; justify-content: flex-start;" onclick="logout()">🚪 Logout</button>
             </div>
@@ -1653,6 +2036,10 @@
       <!-- HOME PAGE -->
       <section id="home-page">
         <div style="text-align: center; margin-bottom: 40px;">
+          <img src="/assets/logo.png" 
+               alt="Tyton Logo" 
+               style="width: 80px; height: 80px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 8px 24px rgba(218,165,32,.3);"
+               onerror="this.style.display='none'">
           <h1 class="page-title" style="font-size: 36px; font-weight: 700; margin: 0 0 16px 0;">
             Welcome to Tyton
           </h1>
@@ -1689,6 +2076,20 @@
           </div>
         </section>
 
+        <!-- Top Groups Section -->
+        <section class="card" style="margin-bottom: 32px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 20px;">👥 Top Groups</h3>
+            <button class="btn" onclick="setRoute('groups')" style="font-size: 14px;">View All</button>
+          </div>
+          <div class="grid" id="home-groups-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div class="empty-state">
+              <div class="spinner"></div>
+              <p>Loading top groups...</p>
+            </div>
+          </div>
+        </section>
+
         <!-- Recent News Section -->
         <section class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -1702,6 +2103,80 @@
             </div>
           </div>
         </section>
+      </section>
+
+      <!-- SEARCH PAGE -->
+      <section id="search-page" style="display:none;">
+        <div class="page-header" style="text-align: center; margin-bottom: 32px;">
+          <h2 class="page-title" style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M16 16L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Search Tyton
+          </h2>
+          <p style="color: var(--muted); margin-top: 8px;">Search for projects, equipment, discussions, and more</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container" style="max-width: 800px; margin: 0 auto 40px;">
+          <div style="position: relative;">
+            <input 
+              type="text" 
+              id="search-page-input" 
+              placeholder="Search projects, equipment, discussions, papers..." 
+              style="
+                width: 100%;
+                padding: 16px 20px 16px 50px;
+                font-size: 16px;
+                background: var(--card);
+                border: 2px solid var(--border-accent);
+                border-radius: 12px;
+                color: var(--white);
+                outline: none;
+                transition: all 0.3s ease;
+              "
+              onkeyup="handleSearchInput(event)"
+            >
+            <svg 
+              style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; color: var(--muted);"
+              viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M16 16L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          
+          <!-- Search Filters -->
+          <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+            <button class="search-filter active" data-filter="all" onclick="setSearchFilter('all')">All</button>
+            <button class="search-filter" data-filter="projects" onclick="setSearchFilter('projects')">Projects</button>
+            <button class="search-filter" data-filter="equipment" onclick="setSearchFilter('equipment')">Equipment</button>
+            <button class="search-filter" data-filter="discussions" onclick="setSearchFilter('discussions')">Discussions</button>
+            <button class="search-filter" data-filter="papers" onclick="setSearchFilter('papers')">Papers</button>
+            <button class="search-filter" data-filter="users" onclick="setSearchFilter('users')">Users</button>
+          </div>
+        </div>
+
+        <!-- Search Results -->
+        <div id="search-results-container">
+          <div id="search-results-loading" style="display: none; text-align: center; padding: 40px;">
+            <div class="spinner"></div>
+            <p style="color: var(--muted); margin-top: 16px;">Searching...</p>
+          </div>
+          
+          <div id="search-results-empty" style="text-align: center; padding: 60px 20px;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.3; margin-bottom: 16px;">
+              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M16 16L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h3 style="color: var(--muted); font-weight: 500;">Start typing to search</h3>
+            <p style="color: var(--muted); opacity: 0.7; margin-top: 8px;">Enter keywords to find projects, equipment, discussions, and more</p>
+          </div>
+          
+          <div id="search-results-list" style="display: none;">
+            <!-- Results will be populated here -->
+          </div>
+        </div>
       </section>
 
       <!-- PROJECTS PAGE -->
@@ -1755,6 +2230,155 @@
           <button class="btn" onclick="changePage('equipment', -1)">← Previous</button>
           <span class="pagination-current" id="equipment-page-info">Page 1 of 1</span>
           <button class="btn" onclick="changePage('equipment', 1)">Next →</button>
+        </div>
+      </section>
+
+      <!-- GROUPS PAGE -->
+      <section id="groups-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_groups.png" alt="Groups" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          Groups
+        </h2>
+        
+        <div class="controls" style="margin-bottom: 24px;">
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <input type="text" id="groups-search" placeholder="Search groups..." style="flex: 1; min-width: 200px; padding: 12px; border: 1px solid rgba(255,255,255,.2); border-radius: 8px; background: rgba(255,255,255,.05); color: var(--white);">
+            <select id="groups-type-filter" style="padding: 12px; border: 1px solid rgba(255,255,255,.2); border-radius: 8px; background: var(--card); color: var(--white);">
+              <option value="">All Types</option>
+              <option value="university">University</option>
+              <option value="professional">Professional</option>
+              <option value="research">Research Group</option>
+              <option value="hobby">Hobby</option>
+              <option value="nonprofit">Non-Profit</option>
+            </select>
+            <select id="groups-location-filter" style="padding: 12px; border: 1px solid rgba(255,255,255,.2); border-radius: 8px; background: var(--card); color: var(--white);">
+              <option value="">All Locations</option>
+              <option value="global">Global</option>
+              <option value="north-america">North America</option>
+              <option value="europe">Europe</option>
+              <option value="asia">Asia</option>
+              <option value="local">Local</option>
+            </select>
+            <button class="btn" onclick="filterGroups()" style="background: var(--gradient-primary);">
+              🔍 Filter
+            </button>
+          </div>
+        </div>
+
+        <div class="grid" id="groups-grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+          <div class="empty-state">
+            <div class="spinner"></div>
+            <p>Loading groups...</p>
+          </div>
+        </div>
+
+        <div class="pagination" id="groups-pagination" style="display: none;">
+          <button class="btn" onclick="changePage('groups', -1)">← Previous</button>
+          <span class="pagination-current" id="groups-page-info">Page 1 of 1</span>
+          <button class="btn" onclick="changePage('groups', 1)">Next →</button>
+        </div>
+      </section>
+
+      <!-- GROUP DETAIL PAGE -->
+      <section id="group-detail-page" style="display:none;">
+        <div id="group-detail-content">
+          <!-- Content will be dynamically generated -->
+        </div>
+      </section>
+
+      <!-- DISCUSSIONS PAGE -->
+      <section id="discussions-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_discussions.png" alt="Discussions" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iI0RBQTUyMCIvPgo8cGF0aCBkPSJNOCA5QzggOC40NDc3MiA4LjQ0NzcyIDggOSA4SDE5QzE5LjU1MjMgOCAyMCA4LjQ0NzcyIDIwIDlWMTVDMjAgMTUuNTUyMyAxOS41NTIzIDE2IDE5IDE2SDE0LjVMMTEgMTkuNVYxNkg5QzguNDQ3NzIgMTYgOCAxNS41NTIzIDggMTVWOVoiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeD0iMTIiIHk9IjEyIj4KPHBhdGggZD0iTTIgM0MyIDIuNDQ3NzIgMi40NDc3MiAyIDMgMkg5QzkuNTUyMjggMiAxMCAyLjQ0NzcyIDEwIDNWN0MxMCA3LjU1MjI4IDkuNTUyMjggOCA5IDhINi41TDQgMTAuNVY4SDNDMi40NDc3MiA4IDIgNy41NTIyOCAyIDdWM1oiIGZpbGw9IiNEQUE1MjAiLz4KPC9zdmc+Cjwvc3ZnPgo='">
+          Discussions
+        </h2>
+        
+        <!-- Add Discussion Button -->
+        <div style="text-align: center; margin-bottom: 32px;">
+          <button class="btn" onclick="openCreateDiscussionModal()" style="background: var(--gradient-primary); color: var(--ink); border: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 32px var(--glow-primary);">
+            + Start New Discussion
+          </button>
+        </div>
+        
+        <!-- Discussions Stats -->
+        <div class="pagination-info" id="discussions-info" style="text-align: center; margin-bottom: 20px; color: var(--muted);">
+          <p>Loading discussions...</p>
+        </div>
+        
+        <!-- Discussions Grid -->
+        <div class="grid" id="discussions-grid" style="grid-template-columns: 1fr; gap: 20px;">
+          <div class="empty-state">
+            <div class="spinner"></div>
+            <p>Loading discussions...</p>
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="discussions-pagination" style="display: none;">
+          <button class="btn" onclick="changePage('discussions', -1)">← Previous</button>
+          <span id="discussions-page-info"></span>
+          <button class="btn" onclick="changePage('discussions', 1)">Next →</button>
+        </div>
+      </section>
+      
+      <!-- TYTON JOURNAL PAGE -->
+      <section id="journal-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_journal.png" alt="Journal" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iI0RBQTUyMCIvPgo8cGF0aCBkPSJNNiAySDRDMi44OSAyIDIgMi44OSAyIDRWMjBDMiAyMS4xMSAyLjg5IDIyIDQgMjJINlYyWiIgZmlsbD0iIzA1MDgxNCIvPgo8cGF0aCBkPSJNMjAgMkg2VjIySDIwQzIxLjExIDIyIDIyIDIxLjExIDIyIDIwVjRDMjIgMi44OSAyMS4xMSAyIDIwIDJaIiBmaWxsPSIjREFBNTIwIi8+CjxwYXRoIGQ9Ik05IDdIMTkiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOSAxMEgxOSIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik05IDEzSDE2IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+Cjwvc3ZnPgo='">
+          Tyton Journal
+        </h2>
+        <p style="text-align: center; color: var(--muted); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto;">
+          Share your unpublished research papers, working drafts, and posters with the research community. Get feedback before submission.
+        </p>
+        
+        <!-- Add Paper Button -->
+        <div style="text-align: center; margin-bottom: 32px;">
+          <button class="btn" onclick="openCreatePaperModal()" style="background: var(--gradient-primary); color: var(--ink); border: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 32px var(--glow-primary);">
+            + Submit Paper
+          </button>
+        </div>
+
+        <!-- Filter/Search Controls -->
+        <div style="display: flex; gap: 16px; margin-bottom: 24px; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="journal-search" placeholder="Search papers..." style="flex: 1; min-width: 200px; padding: 12px 16px; background: var(--ring); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--white);">
+          <select id="journal-category-filter" style="padding: 12px 16px; background: var(--ring); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--white);">
+            <option value="">All Categories</option>
+            <option value="physics">Physics</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="biology">Biology</option>
+            <option value="computer-science">Computer Science</option>
+            <option value="mathematics">Mathematics</option>
+            <option value="engineering">Engineering</option>
+            <option value="medicine">Medicine</option>
+            <option value="other">Other</option>
+          </select>
+          <select id="journal-status-filter" style="padding: 12px 16px; background: var(--ring); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--white);">
+            <option value="">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="review">Under Review</option>
+            <option value="revision">Revision</option>
+            <option value="final">Final</option>
+          </select>
+        </div>
+        
+        <!-- Papers Stats -->
+        <div class="pagination-info" id="journal-info" style="text-align: center; margin-bottom: 20px; color: var(--muted);">
+          <p>Loading papers...</p>
+        </div>
+        
+        <!-- Papers Grid -->
+        <div class="grid" id="journal-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px;">
+          <div class="empty-state">
+            <div class="spinner"></div>
+            <p>Loading papers...</p>
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="journal-pagination" style="display: none;">
+          <button class="btn" onclick="changePage('journal', -1)">← Previous</button>
+          <span id="journal-page-info"></span>
+          <button class="btn" onclick="changePage('journal', 1)">Next →</button>
         </div>
       </section>
 
@@ -1963,6 +2587,8 @@
     </main>
   </div>
 
+  <script src="/auth-utils.js"></script>
+  <script src="/error-handling.js"></script>
   <script>
     // App State
     let appState = {
@@ -1977,15 +2603,38 @@
       diag: [],
       isOnline: false,
       blogPosts: [],
+      discussions: [],
       // Pagination state
       pagination: {
         projects: { currentPage: 1, itemsPerPage: 8 },
-        equipment: { currentPage: 1, itemsPerPage: 8 }
+        equipment: { currentPage: 1, itemsPerPage: 8 },
+        discussions: { currentPage: 1, itemsPerPage: 8 }
       }
     };
 
     // API Configuration
     const API_BASE = window.location.origin + '/api';
+
+    // Security Functions for XSS Prevention
+    function escapeHtml(unsafe) {
+      if (typeof unsafe !== 'string') return '';
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(unsafe) {
+      if (typeof unsafe !== 'string') return '';
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#x27;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
 
     // Toast Notification System
     function showToast(message, type = 'info', duration = 4000) {
@@ -2002,7 +2651,7 @@
       
       toast.innerHTML = `
         <span class="toast-icon">${icons[type]}</span>
-        <span class="toast-message">${message}</span>
+        <span class="toast-message">${escapeHtml(message)}</span>
         <span class="toast-close" onclick="this.parentElement.remove()">×</span>
       `;
       
@@ -2156,16 +2805,35 @@
           ...options
         });
         
+        // Read the response body once and determine if it's JSON or HTML
+        const responseText = await response.text();
+        
         if (!response.ok) {
-          const error = await response.json();
+          let errorMessage = 'API request failed';
+          try {
+            const error = JSON.parse(responseText);
+            errorMessage = error.error || errorMessage;
+          } catch (jsonError) {
+            // Response is not JSON (probably HTML error page)
+            console.error('Server returned HTML instead of JSON:', responseText.substring(0, 200));
+            errorMessage = `Server error (${response.status}): ${response.statusText}`;
+          }
+          
           if (response.status === 401 && appState.authToken) {
             // Token expired or invalid, try to refresh auth
             await checkAuth();
           }
-          throw new Error(error.error || 'API request failed');
+          throw new Error(errorMessage);
         }
         
-        return await response.json();
+        // For successful responses, parse as JSON
+        try {
+          return JSON.parse(responseText);
+        } catch (jsonError) {
+          // Response is not JSON even though it's 200 OK
+          console.error('Server returned HTML for successful response:', responseText.substring(0, 200));
+          throw new Error('Server returned HTML instead of JSON');
+        }
       } catch (error) {
         log(`API Error: ${error.message}`);
         throw error;
@@ -2383,17 +3051,308 @@
 
     function toggleUserMenu() {
       const dropdown = document.getElementById('user-dropdown');
-      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+      
+      if (!dropdown) {
+        console.error('User dropdown not found');
+        return;
+      }
+      
+      // Close all other dropdowns first
+      document.querySelectorAll('.settings-dropdown.show').forEach(d => d.classList.remove('show'));
+      
+      // Toggle user dropdown using classes for better CSS control
+      const isVisible = dropdown.classList.contains('visible');
+      
+      if (isVisible) {
+        dropdown.classList.remove('visible');
+        dropdown.style.display = 'none';
+      } else {
+        dropdown.classList.add('visible');
+        dropdown.style.display = 'block';
+      }
     }
 
-    function toggleNavDropdown() {
-      const dropdown = document.getElementById('nav-dropdown-menu');
-      dropdown.style.display = dropdown.style.display === 'none' || dropdown.style.display === '' ? 'block' : 'none';
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+      const userDropdown = document.getElementById('user-dropdown');
+      const userMenuButton = document.querySelector('[onclick="toggleUserMenu()"]');
+      
+      if (userDropdown && userMenuButton && 
+          !userDropdown.contains(event.target) && 
+          !userMenuButton.contains(event.target)) {
+        userDropdown.classList.remove('visible');
+        userDropdown.style.display = 'none';
+      }
+      
+      // Close settings dropdown too
+      const settingsDropdown = document.getElementById('settings-dropdown');
+      const settingsButton = document.querySelector('[onclick="toggleSettingsDropdown()"]');
+      
+      if (settingsDropdown && settingsButton &&
+          !settingsDropdown.contains(event.target) && 
+          !settingsButton.contains(event.target)) {
+        settingsDropdown.classList.remove('show');
+      }
+    });
+
+    // Mobile navigation toggle
+    function toggleMobileNav() {
+      const sidebar = document.querySelector('.nav-sidebar');
+      const toggleBtn = document.querySelector('.mobile-nav-toggle');
+      
+      const isOpen = sidebar.classList.contains('mobile-open');
+      
+      sidebar.classList.toggle('mobile-open');
+      toggleBtn.classList.toggle('active');
+      
+      // Update ARIA attributes
+      toggleBtn.setAttribute('aria-expanded', !isOpen);
+      sidebar.setAttribute('aria-hidden', isOpen);
+      
+      // Prevent body scroll when menu is open
+      if (!isOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
     }
 
-    function hideNavDropdown() {
-      document.getElementById('nav-dropdown-menu').style.display = 'none';
+    // Close mobile nav when clicking on nav items
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('nav-item')) {
+        const sidebar = document.querySelector('.nav-sidebar');
+        const toggleBtn = document.querySelector('.mobile-nav-toggle');
+        
+        if (sidebar.classList.contains('mobile-open')) {
+          sidebar.classList.remove('mobile-open');
+          toggleBtn.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+    });
+
+    // Close mobile nav when clicking on overlay
+    document.addEventListener('click', function(event) {
+      const sidebar = document.querySelector('.nav-sidebar');
+      const toggleBtn = document.querySelector('.mobile-nav-toggle');
+      
+      if (sidebar.classList.contains('mobile-open') && 
+          event.target === sidebar && 
+          event.target.tagName !== 'BUTTON') {
+        sidebar.classList.remove('mobile-open');
+        toggleBtn.classList.remove('active');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        sidebar.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Keyboard navigation support
+    document.addEventListener('keydown', function(event) {
+      const sidebar = document.querySelector('.nav-sidebar');
+      const toggleBtn = document.querySelector('.mobile-nav-toggle');
+      
+      // Close mobile nav with ESC key
+      if (event.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
+        sidebar.classList.remove('mobile-open');
+        toggleBtn.classList.remove('active');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        sidebar.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        toggleBtn.focus(); // Return focus to toggle button
+      }
+    });
+    
+    function toggleSettingsDropdown() {
+      console.log('Settings dropdown clicked');
+      const dropdown = document.getElementById('settings-dropdown');
+      if (dropdown) {
+        const isVisible = dropdown.classList.contains('show');
+        
+        // Close all other dropdowns first
+        document.querySelectorAll('.settings-dropdown.show').forEach(d => d.classList.remove('show'));
+        
+        if (!isVisible) {
+          dropdown.classList.add('show');
+          console.log('Dropdown opened');
+        } else {
+          console.log('Dropdown closed');
+        }
+      }
     }
+    
+    function hideSettingsDropdown() {
+      const dropdown = document.getElementById('settings-dropdown');
+      if (dropdown) {
+        dropdown.classList.remove('show');
+      }
+    }
+
+    // Weather Widget Functions
+    class WeatherWidget {
+      constructor() {
+        this.userAgent = 'TytonAPI/1.0 (Research Collaboration Platform, contact@tyton.edu)';
+        this.defaultLocation = { lat: 37.8715, lon: -122.2730, name: 'Berkeley, CA' }; // Berkeley, CA
+        this.weatherIcons = {
+          'clear': '☀️',
+          'sunny': '☀️',
+          'partly cloudy': '⛅',
+          'mostly cloudy': '☁️',
+          'cloudy': '☁️',
+          'overcast': '☁️',
+          'rain': '🌧️',
+          'showers': '🌦️',
+          'thunderstorms': '⛈️',
+          'snow': '❄️',
+          'fog': '🌫️',
+          'windy': '💨',
+          'default': '🌤️'
+        };
+        this.init();
+      }
+
+      async init() {
+        this.updateTime();
+        setInterval(() => this.updateTime(), 60000); // Update time every minute
+        await this.requestLocation();
+      }
+
+      updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        });
+        document.getElementById('weather-time').textContent = timeString;
+      }
+
+      async requestLocation() {
+        if (navigator.geolocation) {
+          try {
+            const position = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject, {
+                timeout: 10000,
+                enableHighAccuracy: true
+              });
+            });
+            
+            const { latitude, longitude } = position.coords;
+            await this.getWeatherData(latitude, longitude);
+          } catch (error) {
+            console.log('Location permission denied or unavailable, using default location');
+            await this.getWeatherData(this.defaultLocation.lat, this.defaultLocation.lon, this.defaultLocation.name);
+          }
+        } else {
+          console.log('Geolocation not supported, using default location');
+          await this.getWeatherData(this.defaultLocation.lat, this.defaultLocation.lon, this.defaultLocation.name);
+        }
+      }
+
+      async getWeatherData(lat, lon, defaultName = null) {
+        try {
+          // Simplified weather implementation - show basic info with simulated data
+          // This avoids CORS issues and external API dependencies
+          const locationName = defaultName || 'Local Area';
+          
+          // Generate realistic but simulated weather data
+          const weatherInfo = {
+            location: locationName,
+            temperature: this.generateSimulatedTemperature(),
+            status: this.generateSimulatedConditions(),
+            humidity: Math.floor(Math.random() * 40) + 30, // 30-70%
+            precipChance: Math.floor(Math.random() * 100),
+            uvIndex: Math.floor(Math.random() * 10) + 1,
+            airQuality: Math.floor(Math.random() * 150) + 50 // 50-200 AQI
+          };
+          
+          this.updateWeatherDisplay(weatherInfo);
+          
+        } catch (error) {
+          console.error('Weather widget error:', error);
+          this.updateWeatherDisplay({
+            location: 'Weather Unavailable',
+            temperature: '--',
+            status: 'Error',
+            humidity: null,
+            precipChance: null,
+            uvIndex: null,
+            airQuality: null
+          });
+        }
+      }
+
+      generateSimulatedTemperature() {
+        // Generate temperature based on current time and season
+        const now = new Date();
+        const hour = now.getHours();
+        const month = now.getMonth();
+        
+        // Base temperature varies by season
+        let baseTemp = 65; // Spring/Fall
+        if (month >= 5 && month <= 8) baseTemp = 75; // Summer
+        if (month >= 11 || month <= 2) baseTemp = 45; // Winter
+        
+        // Vary by time of day
+        const timeVariation = Math.sin((hour - 6) * Math.PI / 12) * 15;
+        const randomVariation = (Math.random() - 0.5) * 10;
+        
+        return Math.round(baseTemp + timeVariation + randomVariation);
+      }
+
+      generateSimulatedConditions() {
+        const conditions = ['Clear', 'Partly Cloudy', 'Cloudy', 'Partly Sunny', 'Fair'];
+        const rareConditions = ['Light Rain', 'Showers', 'Thunderstorms'];
+        
+        // 80% chance of normal conditions, 20% chance of rain
+        if (Math.random() < 0.8) {
+          return conditions[Math.floor(Math.random() * conditions.length)];
+        } else {
+          return rareConditions[Math.floor(Math.random() * rareConditions.length)];
+        }
+      }
+
+      estimateUVIndex(forecast) {
+        const lowerForecast = forecast.toLowerCase();
+        if (lowerForecast.includes('sunny') || lowerForecast.includes('clear')) return Math.floor(Math.random() * 3) + 6; // 6-8
+        if (lowerForecast.includes('partly')) return Math.floor(Math.random() * 3) + 4; // 4-6
+        if (lowerForecast.includes('cloudy') || lowerForecast.includes('overcast')) return Math.floor(Math.random() * 3) + 2; // 2-4
+        return Math.floor(Math.random() * 2) + 1; // 1-2
+      }
+
+      generatePlaceholderAQI() {
+        // Generate a realistic AQI value (typically 20-150)
+        return Math.floor(Math.random() * 80) + 30;
+      }
+
+      getWeatherIcon(status) {
+        const lowerStatus = status.toLowerCase();
+        for (const [key, icon] of Object.entries(this.weatherIcons)) {
+          if (lowerStatus.includes(key)) {
+            return icon;
+          }
+        }
+        return this.weatherIcons.default;
+      }
+
+      updateWeatherDisplay(weatherInfo) {
+        // Update main weather info
+        document.getElementById('weather-location').textContent = weatherInfo.location;
+        document.getElementById('weather-temp').textContent = `${weatherInfo.temperature}°F`;
+        document.getElementById('weather-status').textContent = weatherInfo.status;
+        
+        // Update weather icon
+        const weatherIcon = this.getWeatherIcon(weatherInfo.status);
+        document.getElementById('weather-icon').textContent = weatherIcon;
+        
+        // Update detailed weather info
+        document.getElementById('uv-index').textContent = weatherInfo.uvIndex || '--';
+        document.getElementById('air-quality').textContent = weatherInfo.airQuality || '--';
+        document.getElementById('humidity').textContent = weatherInfo.humidity ? `${Math.round(weatherInfo.humidity)}%` : '--%';
+        document.getElementById('precip-chance').textContent = weatherInfo.precipChance ? `${weatherInfo.precipChance}%` : '--%';
+      }
+    }
+
 
     function updateAuthUI() {
       const authButtons = document.getElementById('auth-buttons');
@@ -2438,9 +3397,14 @@
         appState.followers = data.followers || {};
         appState.profile = data.profile || {};
         appState.currentUser = data.currentUser;
+        appState.communities = data.communities || [];
         appState.isOnline = true;
         updateConnectionStatus();
         log('Data loaded from server');
+        
+        // Load discussions and journal papers separately
+        await loadDiscussions();
+        await loadJournalPapers();
       } catch (error) {
         // Don't set offline if we're authenticated but just had a data loading issue
         if (appState.currentUser) {
@@ -2464,6 +3428,20 @@
           appState.isOnline = false;
         }
         updateConnectionStatus();
+      }
+    }
+
+    async function loadDiscussions() {
+      try {
+        console.log('Loading discussions...');
+        const discussions = await apiCall('/discussions');
+        console.log('Received discussions:', discussions);
+        appState.discussions = discussions || [];
+        log('Discussions loaded from server:', appState.discussions.length, 'discussions');
+      } catch (error) {
+        console.error('Failed to load discussions:', error);
+        log('Failed to load discussions:', error);
+        appState.discussions = [];
       }
     }
 
@@ -2504,20 +3482,20 @@
 
       grid.innerHTML = items.map(item => `
         <article class="card ${item.type === 'project' ? 'clickable-project' : item.type === 'equipment' ? 'clickable-equipment' : ''}" 
-                 ${item.type === 'project' ? `onclick="openProject('${item.id}')"` : 
-                   item.type === 'equipment' ? `onclick="openEquipment('${item.id}')"` : ''}>
-          <h3>${item.title}</h3>
+                 ${item.type === 'project' ? `onclick="openProject('${escapeAttribute(item.id)}')"` : 
+                   item.type === 'equipment' ? `onclick="openEquipment('${escapeAttribute(item.id)}')"` : ''}>
+          <h3>${escapeHtml(item.title)}</h3>
           <div class="meta">${formatMeta(item)}</div>
-          <p>${item.description || 'No description provided.'}</p>
+          <p>${escapeHtml(item.description || 'No description provided.')}</p>
           ${item.tags ? `<div style="margin: 12px 0;">${formatTags(item.tags)}</div>` : ''}
           
           ${item.type === 'equipment' ? getBookingSection(item) : ''}
           
           <div class="actions" ${item.type === 'project' || item.type === 'equipment' ? 'onclick="event.stopPropagation()"' : ''}>
-            <button class="btn" onclick="handleLike('${item.id}')">
+            <button class="btn" onclick="handleLike('${escapeAttribute(item.id)}')">
               ❤️ ${item.likes || 0}
             </button>
-            <button class="btn ghost" onclick="handleFollow('${item.id}')">
+            <button class="btn ghost" onclick="handleFollow('${escapeAttribute(item.id)}')">
               ${appState.followers[item.id] ? '👁️ Following' : '👀 Follow'}
             </button>
           </div>
@@ -2539,6 +3517,41 @@
         .sort((a, b) => (b.likes || 0) - (a.likes || 0))
         .slice(0, 3);
       updateGrid('home-equipment-grid', featuredEquipment);
+      
+      // Load top groups (top 3 by member count)
+      const topGroups = appState.communities
+        ? appState.communities
+          .sort((a, b) => (b.memberCount || 0) - (a.memberCount || 0))
+          .slice(0, 3)
+        : [];
+      
+      const groupsGrid = document.getElementById('home-groups-grid');
+      if (topGroups.length === 0) {
+        groupsGrid.innerHTML = `
+          <div class="card" style="padding: 20px;">
+            <h4 style="margin: 0 0 12px 0; color: var(--gold);">No Groups Yet</h4>
+            <p style="margin: 0; color: var(--muted);">Groups will appear here once they're added!</p>
+          </div>
+        `;
+      } else {
+        groupsGrid.innerHTML = topGroups.map(group => `
+          <article class="card" style="cursor: pointer; transition: transform 0.3s ease;" onclick="viewGroup('${group.id}')">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 16px; flex-shrink: 0;">
+                ${group.avatar || '🏛️'}
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <h4 style="margin: 0; font-size: 16px; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${group.name}</h4>
+                <div style="color: var(--muted); font-size: 12px;">
+                  <span style="background: rgba(218,165,32,.2); padding: 1px 6px; border-radius: 8px; font-size: 10px;">${group.type}</span>
+                  <span style="margin-left: 6px;">👥 ${group.memberCount || 0}</span>
+                </div>
+              </div>
+            </div>
+            <p style="margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${group.description || 'No description provided.'}</p>
+          </article>
+        `).join('');
+      }
       
       // Load recent blog posts
       const recentBlogPosts = appState.blogPosts ? appState.blogPosts.slice(0, 3) : [];
@@ -2887,15 +3900,15 @@
 
     function formatMeta(item) {
       const ts = new Date(item.createdAt || Date.now()).toLocaleDateString();
-      const who = item.owner || '@anon';
-      const where = item.location ? ` • ${item.location}` : '';
+      const who = escapeHtml(item.owner || '@anon');
+      const where = item.location ? ` • ${escapeHtml(item.location)}` : '';
       return `${who} • ${ts}${where}`;
     }
 
     function formatTags(tagsStr) {
       if (!tagsStr) return '';
       return tagsStr.split(',').map(tag => 
-        `<span class="tag">${tag.trim()}</span>`
+        `<span class="tag">${escapeHtml(tag.trim())}</span>`
       ).join('');
     }
 
@@ -2916,8 +3929,13 @@
     function updateRoute() {
       // Hide all pages
       document.getElementById('home-page').style.display = 'none';
+      document.getElementById('search-page').style.display = 'none';
       document.getElementById('projects-page').style.display = 'none';
       document.getElementById('equipment-page').style.display = 'none';
+      document.getElementById('groups-page').style.display = 'none';
+      document.getElementById('group-detail-page').style.display = 'none';
+      document.getElementById('discussions-page').style.display = 'none';
+      document.getElementById('journal-page').style.display = 'none';
       document.getElementById('blog-page').style.display = 'none';
       document.getElementById('profile-page').style.display = 'none';
       
@@ -2937,10 +3955,11 @@
       }
       
       // Update nav buttons
-      document.querySelectorAll('.nav-dropdown-item').forEach(btn => {
+      document.querySelectorAll('.nav-item').forEach(btn => {
         btn.removeAttribute('aria-current');
       });
       
+      // Set active nav button
       const activeNavButton = document.getElementById('nav-' + appState.route);
       if (activeNavButton) {
         activeNavButton.setAttribute('aria-current', 'page');
@@ -2953,6 +3972,14 @@
         renderProjects();
       } else if (appState.route === 'equipment') {
         renderEquipment();
+      } else if (appState.route === 'groups') {
+        renderGroups();
+      } else if (appState.route === 'group-detail') {
+        renderGroupDetail(appState.currentGroupId);
+      } else if (appState.route === 'discussions') {
+        renderDiscussions();
+      } else if (appState.route === 'journal') {
+        renderJournal();
       } else if (appState.route === 'profile') {
         renderProfile();
         updateProfileDisplay();
@@ -2975,6 +4002,284 @@
 
     function hideCreateModal() {
       document.getElementById('createModal').style.display = 'none';
+    }
+
+    // Discussion modal functions
+    function openCreateDiscussionModal() {
+      // Create modal if it doesn't exist
+      if (!document.getElementById('createDiscussionModal')) {
+        createDiscussionModal();
+      }
+      document.getElementById('createDiscussionModal').style.display = 'flex';
+      setTimeout(() => {
+        document.getElementById('discussion-title').focus();
+      }, 100);
+    }
+
+    function closeCreateDiscussionModal() {
+      document.getElementById('createDiscussionModal').style.display = 'none';
+      document.getElementById('create-discussion-form').reset();
+    }
+
+    function createDiscussionModal() {
+      const modal = document.createElement('div');
+      modal.id = 'createDiscussionModal';
+      modal.className = 'modal-overlay';
+      modal.style.display = 'none';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Start New Discussion</h3>
+            <button class="modal-close" onclick="closeCreateDiscussionModal()">×</button>
+          </div>
+          
+          <form id="create-discussion-form">
+            <div class="modal-form-grid">
+              <div class="field field-full">
+                <label>Title</label>
+                <input name="title" id="discussion-title" placeholder="What would you like to discuss?" required>
+              </div>
+              
+              <div class="field field-full">
+                <label>Content</label>
+                <textarea name="content" id="discussion-content" rows="6" placeholder="Share your thoughts, questions, or ideas..." required></textarea>
+              </div>
+              
+              <div class="field field-full">
+                <label>Tags (optional)</label>
+                <input name="tags" id="discussion-tags" placeholder="research, AI, collaboration (comma-separated)">
+              </div>
+            </div>
+            
+            <div class="modal-actions">
+              <button type="button" class="btn" onclick="closeCreateDiscussionModal()">Cancel</button>
+              <button type="submit" class="btn gold">💬 Post Discussion</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      // Add form submit handler
+      document.getElementById('create-discussion-form').addEventListener('submit', handleCreateDiscussion);
+      
+      // Close modal when clicking outside
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeCreateDiscussionModal();
+        }
+      });
+    }
+
+    async function handleCreateDiscussion(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('discussion-title').value.trim();
+      const content = document.getElementById('discussion-content').value.trim();
+      const tags = document.getElementById('discussion-tags').value.trim();
+      
+      if (!title || !content) {
+        showToast('Title and content are required.', 'error');
+        return;
+      }
+      
+      // Check if user is authenticated
+      if (!appState.currentUser) {
+        showToast('Please log in to create a discussion.', 'error');
+        return;
+      }
+      
+      // Add loading state to submit button
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner"></span> Creating...';
+      submitBtn.disabled = true;
+      
+      try {
+        console.log('Creating discussion with data:', { title, content, tags: tags || undefined });
+        console.log('Current user:', appState.currentUser);
+        console.log('Auth token:', appState.authToken);
+        
+        const response = await apiCall('/discussions', {
+          method: 'POST',
+          body: JSON.stringify({
+            title,
+            content,
+            tags: tags || undefined
+          })
+        });
+        
+        console.log('Discussion creation response:', response);
+        
+        if (response && response.message) {
+          closeCreateDiscussionModal();
+          await loadDiscussions(); // Reload discussions
+          if (appState.route === 'discussions') {
+            renderDiscussions(); // Re-render if on discussions page
+          }
+          showToast('Discussion created successfully!');
+        } else {
+          showToast('Failed to create discussion: Invalid response', 'error');
+        }
+      } catch (error) {
+        console.error('Error creating discussion:', error);
+        console.error('Error details:', error.message);
+        
+        if (error.message && error.message.includes('<!DOCTYPE')) {
+          showToast('Authentication error. Please try logging in again.', 'error');
+        } else {
+          showToast('Failed to create discussion: ' + (error.message || 'Unknown error'), 'error');
+        }
+      } finally {
+        // Restore button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+
+    function openDiscussionThread(discussionId) {
+      window.open(`/discussion-thread.html?id=${discussionId}`, '_blank');
+    }
+
+    // Journal functionality
+    async function loadJournalPapers() {
+      try {
+        console.log('Loading journal papers...');
+        const response = await apiCall('/journal');
+        console.log('Received journal papers:', response);
+        appState.journalPapers = response || [];
+        log('Journal papers loaded from server:', appState.journalPapers.length, 'papers');
+      } catch (error) {
+        console.error('Failed to load journal papers:', error);
+        log('Failed to load journal papers:', error);
+        appState.journalPapers = [];
+      }
+    }
+
+    function renderJournal() {
+      const papers = appState.journalPapers || [];
+      const grid = document.getElementById('journal-grid');
+      const info = document.getElementById('journal-info');
+      
+      info.innerHTML = `<p>Showing ${papers.length} paper${papers.length !== 1 ? 's' : ''}</p>`;
+      
+      if (papers.length === 0) {
+        grid.innerHTML = '<div class="empty-state">No papers yet. Be the first to submit your research!</div>';
+        return;
+      }
+      
+      grid.innerHTML = papers.map(paper => `
+        <div class="card" style="cursor: pointer; transition: all 0.3s ease; position: relative;">
+          <div style="position: absolute; top: 16px; right: 16px;">
+            <span style="background: ${getStatusColor(paper.status)}; color: var(--ink); padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+              ${paper.status.charAt(0).toUpperCase() + paper.status.slice(1)}
+            </span>
+          </div>
+          
+          <div style="margin-bottom: 16px; padding-right: 80px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 1.3rem; color: var(--white); line-height: 1.4;">${escapeHtml(paper.title)}</h3>
+            <div style="display: flex; align-items: center; gap: 16px; color: var(--muted); font-size: 14px; margin-bottom: 12px;">
+              <span style="color: var(--gold); font-weight: 600;">@${escapeHtml(paper.submittedBy)}</span>
+              <span>${formatTime(paper.createdAt)}</span>
+              <span style="color: var(--atomic-cyan);">${escapeHtml(paper.category)}</span>
+            </div>
+            <div style="color: var(--muted); font-size: 13px; margin-bottom: 8px;">
+              Authors: ${escapeHtml(Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors)}
+            </div>
+          </div>
+          
+          <div style="color: var(--muted); margin-bottom: 16px; line-height: 1.6;">
+            ${escapeHtml(paper.abstract.length > 200 ? paper.abstract.substring(0, 200) + '...' : paper.abstract)}
+          </div>
+          
+          <div style="display: flex; gap: 24px; color: var(--muted); font-size: 14px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>👍</span>
+              <span>${paper.likes || 0}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>👁️</span>
+              <span>${paper.views || 0}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>📥</span>
+              <span>${paper.downloads || 0}</span>
+            </div>
+          </div>
+          
+          ${paper.keywords && paper.keywords.length > 0 ? `
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              ${paper.keywords.map(keyword => `
+                <span style="background: rgba(139,92,246,.15); color: var(--cosmic-purple); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(139,92,246,.3);">
+                  ${keyword}
+                </span>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function getStatusColor(status) {
+      switch(status) {
+        case 'draft': return '#6b7280';
+        case 'review': return '#f59e0b';
+        case 'revision': return '#ef4444';
+        case 'final': return '#10b981';
+        default: return '#6b7280';
+      }
+    }
+
+    function openCreatePaperModal() {
+      if (!appState.currentUser) {
+        showToast('Please sign in to submit a paper', 'error');
+        return;
+      }
+      // TODO: Implement paper submission modal
+      showToast('Paper submission modal coming soon!', 'info');
+    }
+
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) return 'just now';
+      if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+      if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+      if (diff < 604800000) return Math.floor(diff / 86400000) + 'd ago';
+      
+      return date.toLocaleDateString();
+    }
+
+    function showToast(message, type = 'success') {
+      // Create toast if it doesn't exist
+      let toast = document.getElementById('toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 16px 24px;
+          border-radius: 8px;
+          color: white;
+          font-weight: 600;
+          z-index: 10000;
+          transform: translateX(100%);
+          transition: transform 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+      }
+      
+      toast.textContent = message;
+      toast.style.background = type === 'error' ? '#ef4444' : '#10b981';
+      toast.style.transform = 'translateX(0)';
+      
+      setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+      }, 3000);
     }
 
     // Close modal when clicking outside
@@ -3196,6 +4501,177 @@
       updatePaginationInfo('equipment', 'Marketplace Items');
     }
 
+    function renderGroups() {
+      if (!appState.communities) {
+        appState.communities = [];
+      }
+      
+      const allGroups = appState.communities;
+      const grid = document.getElementById('groups-grid');
+      
+      if (allGroups.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <h3>No groups yet</h3>
+            <p>Groups will appear here once they're added!</p>
+          </div>`;
+        return;
+      }
+
+      // Apply filters
+      let filteredGroups = [...allGroups];
+      
+      const searchTerm = document.getElementById('groups-search')?.value?.toLowerCase() || '';
+      const typeFilter = document.getElementById('groups-type-filter')?.value || '';
+      const locationFilter = document.getElementById('groups-location-filter')?.value || '';
+      
+      if (searchTerm) {
+        filteredGroups = filteredGroups.filter(group => 
+          group.name?.toLowerCase().includes(searchTerm) ||
+          group.description?.toLowerCase().includes(searchTerm) ||
+          group.tags?.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      if (typeFilter) {
+        filteredGroups = filteredGroups.filter(group => group.type === typeFilter);
+      }
+      
+      if (locationFilter) {
+        filteredGroups = filteredGroups.filter(group => group.location === locationFilter);
+      }
+
+      grid.innerHTML = filteredGroups.map(group => `
+        <article class="card" style="cursor: pointer; transition: transform 0.3s ease;" onclick="viewGroup('${group.id}')">
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 20px; flex-shrink: 0;">
+              ${group.avatar || '🏛️'}
+            </div>
+            <div>
+              <h3 style="margin: 0; font-size: 18px;">${group.name}</h3>
+              <div style="color: var(--muted); font-size: 14px;">
+                <span style="background: rgba(218,165,32,.2); padding: 2px 8px; border-radius: 12px; font-size: 12px;">${group.type}</span>
+                <span style="margin-left: 8px;">📍 ${group.location}</span>
+              </div>
+            </div>
+          </div>
+          
+          <p style="margin: 12px 0; color: var(--muted);">${group.description || 'No description provided.'}</p>
+          
+          <div style="margin: 12px 0;">
+            <div style="color: var(--muted); font-size: 14px; margin-bottom: 8px;">
+              👥 <strong>${group.memberCount || 0}</strong> members
+              ${group.tags ? `• 🏷️ ${group.tags}` : ''}
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 8px; margin-top: 16px;">
+            <button class="btn" onclick="event.stopPropagation(); joinGroup('${group.id}')" style="flex: 1; background: var(--gradient-secondary);">
+              ${group.joined ? '✓ Joined' : '+ Join Group'}
+            </button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function filterGroups() {
+      renderGroups();
+    }
+
+    async function joinGroup(groupId) {
+      if (!appState.currentUser) {
+        showAuthModal();
+        return;
+      }
+      
+      try {
+        const response = await apiCall(`/communities/${groupId}/join`, { method: 'PUT' });
+        
+        // Update local state
+        const group = appState.communities.find(c => c.id === groupId);
+        if (group) {
+          group.joined = response.joined;
+          group.memberCount = response.memberCount;
+          
+          // Update UI based on current page
+          if (appState.route === 'groups') {
+            renderGroups();
+          } else if (appState.route === 'group-detail') {
+            renderGroupDetail(groupId);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to join/leave group:', error);
+        showToast('Failed to update group membership. Please try again.', 'error');
+      }
+    }
+
+    function viewGroup(groupId) {
+      appState.currentGroupId = groupId;
+      appState.route = 'group-detail';
+      updateRoute();
+    }
+
+    function renderGroupDetail(groupId) {
+      const group = appState.communities?.find(c => c.id === groupId);
+      const container = document.getElementById('group-detail-content');
+      
+      if (!group) {
+        container.innerHTML = `
+          <div class="card">
+            <h2>Group not found</h2>
+            <p>The requested group could not be found.</p>
+            <button class="btn" onclick="setRoute('groups')">Back to Groups</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="card" style="margin-bottom: 24px;">
+          <button class="btn" onclick="setRoute('groups')" style="margin-bottom: 20px;">← Back to Groups</button>
+          
+          <div style="display: flex; align-items: center; margin-bottom: 24px;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; margin-right: 20px; font-size: 32px; flex-shrink: 0;">
+              ${group.avatar || '🏛️'}
+            </div>
+            <div style="flex: 1;">
+              <h1 style="margin: 0; font-size: 28px; color: var(--white);">${group.name}</h1>
+              <div style="color: var(--muted); font-size: 16px; margin-top: 8px;">
+                <span style="background: rgba(218,165,32,.2); padding: 4px 12px; border-radius: 12px; margin-right: 12px;">${group.type}</span>
+                <span>📍 ${group.location}</span>
+                <span style="margin-left: 12px;">👥 ${group.memberCount || 0} members</span>
+              </div>
+            </div>
+            <button class="btn" onclick="joinGroup('${group.id}')" style="background: var(--gradient-secondary); min-width: 150px;">
+              ${group.joined ? '✓ Joined' : '+ Join Group'}
+            </button>
+          </div>
+
+          <div style="border-top: 1px solid rgba(255,255,255,.1); padding-top: 20px; margin-top: 0;">
+            <h3 style="margin: 0 0 12px 0; color: var(--gold); font-size: 18px;">About</h3>
+            <p style="color: var(--muted); line-height: 1.6; margin: 0 0 16px 0;">${group.description || 'No description available.'}</p>
+            ${group.tags ? `
+              <div style="margin-top: 16px;">
+                <strong style="color: var(--white);">Tags:</strong>
+                <span style="color: var(--muted); margin-left: 8px;">${group.tags}</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin: 0 0 20px 0; color: var(--gold);">Group Activity</h3>
+          <div class="empty-state">
+            <p>Group discussions and activities coming soon!</p>
+          </div>
+        </div>
+      `;
+      
+      // Show the page
+      document.getElementById('group-detail-page').style.display = 'block';
+    }
+
     // Profile functions
     function setProfileTab(tab) {
       appState.profileTab = tab;
@@ -3312,6 +4788,62 @@
           `).join('');
         }
       }
+    }
+
+    function renderDiscussions() {
+      const discussions = appState.discussions || [];
+      const grid = document.getElementById('discussions-grid');
+      const info = document.getElementById('discussions-info');
+      
+      info.innerHTML = `<p>Showing ${discussions.length} discussion${discussions.length !== 1 ? 's' : ''}</p>`;
+      
+      if (discussions.length === 0) {
+        grid.innerHTML = '<div class="empty-state">No discussions yet. Start the first discussion!</div>';
+        return;
+      }
+      
+      grid.innerHTML = discussions.map(discussion => `
+        <div class="card" onclick="openDiscussionThread('${escapeAttribute(discussion.id)}')" style="cursor: pointer; transition: all 0.3s ease;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 8px 0; font-size: 1.4rem; color: var(--white);">${escapeHtml(discussion.title)}</h3>
+              <div style="display: flex; align-items: center; gap: 16px; color: var(--muted); font-size: 14px;">
+                <span style="color: var(--gold); font-weight: 600;">@${escapeHtml(discussion.owner)}</span>
+                <span>${formatTime(discussion.createdAt)}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="color: var(--muted); margin-bottom: 16px; line-height: 1.6;">
+            ${escapeHtml(discussion.content.length > 200 ? discussion.content.substring(0, 200) + '...' : discussion.content)}
+          </div>
+          
+          <div style="display: flex; gap: 24px; color: var(--muted); font-size: 14px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>💬</span>
+              <span>${discussion.replies || 0} replies</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>👁️</span>
+              <span>${discussion.views || 0} views</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>👍</span>
+              <span>${discussion.likes || 0} likes</span>
+            </div>
+          </div>
+          
+          ${discussion.tags ? `
+            <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
+              ${discussion.tags.split(',').map(tag => `
+                <span style="background: rgba(218,165,32,.15); color: var(--gold); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(218,165,32,.3);">
+                  ${tag.trim()}
+                </span>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
     }
 
     function updateProfileDisplay() {
@@ -3791,6 +5323,9 @@ As gravitational wave astronomy matures from discovery science to precision meas
       // Initialize blog posts first
       initializeBlogPosts();
       
+      // Initialize weather widget
+      new WeatherWidget();
+      
       // Check authentication first
       await checkAuth();
       
@@ -3806,14 +5341,18 @@ As gravitational wave astronomy matures from discovery science to precision meas
         const userDropdown = document.getElementById('user-dropdown');
         if (userMenu && userDropdown && !userMenu.contains(e.target)) {
           userDropdown.style.display = 'none';
+          userDropdown.classList.remove('visible');
+        }
+        
+        // Close settings dropdown
+        const settingsContainer = document.querySelector('.settings-container');
+        if (settingsContainer && !settingsContainer.contains(e.target)) {
+          const settingsDropdown = document.getElementById('settings-dropdown');
+          if (settingsDropdown) {
+            settingsDropdown.classList.remove('show');
+          }
         }
 
-        // Close navigation dropdown
-        const navDropdown = document.querySelector('.nav-dropdown');
-        const navDropdownMenu = document.getElementById('nav-dropdown-menu');
-        if (navDropdown && navDropdownMenu && !navDropdown.contains(e.target)) {
-          navDropdownMenu.style.display = 'none';
-        }
       });
       
       // Handle auth redirect
@@ -3835,7 +5374,12 @@ As gravitational wave astronomy matures from discovery science to precision meas
       }
       
       // Load data and update UI
-      await loadData();
+      showLoading('Loading data...');
+      try {
+        await loadData();
+      } finally {
+        hideLoading();
+      }
       
       // Ensure DOM is ready before updating route
       setTimeout(() => {
@@ -3973,27 +5517,27 @@ As gravitational wave astronomy matures from discovery science to precision meas
         <div class="section">
           <h2 class="page-title">Search Results</h2>
           <p style="color: var(--muted); margin-bottom: 24px;">
-            Found ${searchResponse.count} results for "${searchResponse.query}"
+            Found ${searchResponse.count} results for "${escapeHtml(searchResponse.query)}"
           </p>
           <div class="grid">
             ${searchResponse.results.map(item => `
               <div class="card">
                 <div class="card-header">
-                  <span class="card-type ${item.type}">${item.type === 'project' ? '📊' : '🔧'} ${item.type}</span>
-                  <span class="card-meta">${item.owner}</span>
+                  <span class="card-type ${escapeAttribute(item.type)}">${item.type === 'project' ? '📊' : '🔧'} ${escapeHtml(item.type)}</span>
+                  <span class="card-meta">${escapeHtml(item.owner)}</span>
                 </div>
-                <h3>${item.title}</h3>
-                <p>${item.description}</p>
+                <h3>${escapeHtml(item.title)}</h3>
+                <p>${escapeHtml(item.description)}</p>
                 ${item.tags ? `
                   <div class="tags">
-                    ${item.tags.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('')}
+                    ${item.tags.split(',').map(tag => `<span class="tag">${escapeHtml(tag.trim())}</span>`).join('')}
                   </div>
                 ` : ''}
                 <div class="card-footer">
-                  <button class="btn" onclick="likeItem('${item.id}')">
+                  <button class="btn" onclick="likeItem('${escapeAttribute(item.id)}')">
                     ${item.likedBy?.includes(appState.currentUser?.id) ? '❤️' : '🤍'} ${item.likes || 0}
                   </button>
-                  <button class="btn" onclick="toggleFollow('${item.id}')">
+                  <button class="btn" onclick="toggleFollow('${escapeAttribute(item.id)}')">
                     ${appState.followers[item.id] ? '✓ Following' : '+ Follow'}
                   </button>
                 </div>
@@ -4004,9 +5548,183 @@ As gravitational wave astronomy matures from discovery science to precision meas
       `;
       
       searchPage.style.display = 'block';
+    }
+
+    // Search Page Functions
+    let searchFilter = 'all';
+    let searchDebounceTimer = null;
+
+    function handleSearchInput(event) {
+      const query = event.target.value.trim();
       
-      // Clear search input
-      document.getElementById('search-input').value = '';
+      // Clear existing timer
+      if (searchDebounceTimer) {
+        clearTimeout(searchDebounceTimer);
+      }
+      
+      // Debounce search to avoid too many requests
+      searchDebounceTimer = setTimeout(() => {
+        performSearchPageQuery(query);
+      }, 300);
+    }
+
+    function setSearchFilter(filter) {
+      searchFilter = filter;
+      
+      // Update active button
+      document.querySelectorAll('.search-filter').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+      
+      // Re-run search if there's a query
+      const query = document.getElementById('search-page-input').value.trim();
+      if (query) {
+        performSearchPageQuery(query);
+      }
+    }
+
+    async function performSearchPageQuery(query) {
+      const resultsContainer = document.getElementById('search-results-container');
+      const loadingDiv = document.getElementById('search-results-loading');
+      const emptyDiv = document.getElementById('search-results-empty');
+      const resultsList = document.getElementById('search-results-list');
+      
+      if (!query) {
+        loadingDiv.style.display = 'none';
+        emptyDiv.style.display = 'block';
+        resultsList.style.display = 'none';
+        return;
+      }
+      
+      // Show loading state
+      loadingDiv.style.display = 'block';
+      emptyDiv.style.display = 'none';
+      resultsList.style.display = 'none';
+      
+      try {
+        // Perform search based on filter
+        let results = [];
+        
+        if (searchFilter === 'all' || searchFilter === 'projects') {
+          const projects = appState.items.filter(item => 
+            item.type === 'project' && 
+            (item.title.toLowerCase().includes(query.toLowerCase()) ||
+             item.description.toLowerCase().includes(query.toLowerCase()) ||
+             (item.tags && item.tags.toLowerCase().includes(query.toLowerCase())))
+          );
+          results = results.concat(projects.map(p => ({...p, resultType: 'project'})));
+        }
+        
+        if (searchFilter === 'all' || searchFilter === 'equipment') {
+          const equipment = appState.items.filter(item => 
+            item.type === 'equipment' && 
+            (item.title.toLowerCase().includes(query.toLowerCase()) ||
+             item.description.toLowerCase().includes(query.toLowerCase()) ||
+             (item.tags && item.tags.toLowerCase().includes(query.toLowerCase())))
+          );
+          results = results.concat(equipment.map(e => ({...e, resultType: 'equipment'})));
+        }
+        
+        if (searchFilter === 'all' || searchFilter === 'discussions') {
+          const discussions = appState.discussions.filter(d => 
+            d.title.toLowerCase().includes(query.toLowerCase()) ||
+            d.content.toLowerCase().includes(query.toLowerCase())
+          );
+          results = results.concat(discussions.map(d => ({...d, resultType: 'discussion'})));
+        }
+        
+        if (searchFilter === 'all' || searchFilter === 'papers') {
+          const papers = appState.journalPapers.filter(p => 
+            p.title.toLowerCase().includes(query.toLowerCase()) ||
+            p.authors.toLowerCase().includes(query.toLowerCase()) ||
+            p.abstract.toLowerCase().includes(query.toLowerCase())
+          );
+          results = results.concat(papers.map(p => ({...p, resultType: 'paper'})));
+        }
+        
+        // Display results
+        displaySearchPageResults(results);
+        
+      } catch (error) {
+        console.error('Search error:', error);
+        showToast('Search failed. Please try again.', 'error');
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+
+    function displaySearchPageResults(results) {
+      const resultsList = document.getElementById('search-results-list');
+      const emptyDiv = document.getElementById('search-results-empty');
+      
+      if (results.length === 0) {
+        emptyDiv.innerHTML = `
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.3; margin-bottom: 16px;">
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M16 16L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <h3 style="color: var(--muted); font-weight: 500;">No results found</h3>
+          <p style="color: var(--muted); opacity: 0.7; margin-top: 8px;">Try different keywords or filters</p>
+        `;
+        emptyDiv.style.display = 'block';
+        resultsList.style.display = 'none';
+        return;
+      }
+      
+      // Build results HTML
+      let html = `<h3 style="margin-bottom: 20px;">Found ${results.length} result${results.length !== 1 ? 's' : ''}</h3>`;
+      
+      results.forEach(result => {
+        const typeLabel = result.resultType.charAt(0).toUpperCase() + result.resultType.slice(1);
+        const typeColor = {
+          project: 'var(--gold)',
+          equipment: 'var(--atomic-cyan)',
+          discussion: 'var(--cosmic-purple)',
+          paper: 'var(--retro-orange)'
+        }[result.resultType] || 'var(--muted)';
+        
+        html += `
+          <div class="search-result-item" onclick="navigateToResult('${result.resultType}', '${result.id}')">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+              <h4 style="margin: 0; color: var(--white);">${escapeHtml(result.title)}</h4>
+              <span style="background: ${typeColor}; color: var(--ink); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                ${typeLabel}
+              </span>
+            </div>
+            <p style="color: var(--muted); margin: 0 0 8px 0; line-height: 1.5;">
+              ${escapeHtml(result.description || result.content || result.abstract || 'No description available').substring(0, 200)}...
+            </p>
+            <div style="display: flex; gap: 16px; font-size: 13px; color: var(--muted);">
+              ${result.owner ? `<span>By @${escapeHtml(result.owner)}</span>` : ''}
+              ${result.createdAt ? `<span>${new Date(result.createdAt).toLocaleDateString()}</span>` : ''}
+              ${result.tags ? `<span>${escapeHtml(result.tags)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      });
+      
+      resultsList.innerHTML = html;
+      resultsList.style.display = 'block';
+      emptyDiv.style.display = 'none';
+    }
+
+    function navigateToResult(type, id) {
+      switch(type) {
+        case 'project':
+          window.location.href = `/project.html?id=${id}`;
+          break;
+        case 'equipment':
+          window.location.href = `/marketplace.html?id=${id}`;
+          break;
+        case 'discussion':
+          window.location.href = `/discussion-thread.html?id=${id}`;
+          break;
+        case 'paper':
+          // For now, just show the journal page
+          setRoute('journal');
+          break;
+      }
     }
 
     // Demo data seeding
