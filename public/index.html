@@ -87,6 +87,37 @@
       100% { transform: translate(0, 0) rotate(360deg); }
     }
     
+    @keyframes betaGlow {
+      0% { 
+        text-shadow: 0 0 15px rgba(139,92,246,0.6), 0 0 25px rgba(139,92,246,0.3);
+        background-position: 0% 50%;
+      }
+      16.67% {
+        text-shadow: 0 0 17px rgba(168,85,247,0.7), 0 0 28px rgba(168,85,247,0.4);
+        background-position: 16.67% 50%;
+      }
+      33.33% {
+        text-shadow: 0 0 19px rgba(196,132,252,0.75), 0 0 32px rgba(196,132,252,0.45);
+        background-position: 33.33% 50%;
+      }
+      50% {
+        text-shadow: 0 0 20px rgba(232,121,249,0.8), 0 0 35px rgba(232,121,249,0.5), 0 0 45px rgba(232,121,249,0.2);
+        background-position: 50% 50%;
+      }
+      66.67% {
+        text-shadow: 0 0 19px rgba(251,191,36,0.75), 0 0 32px rgba(251,191,36,0.45);
+        background-position: 66.67% 50%;
+      }
+      83.33% {
+        text-shadow: 0 0 17px rgba(239,68,68,0.7), 0 0 28px rgba(239,68,68,0.4);
+        background-position: 83.33% 50%;
+      }
+      100% { 
+        text-shadow: 0 0 15px rgba(139,92,246,0.6), 0 0 25px rgba(139,92,246,0.3);
+        background-position: 100% 50%;
+      }
+    }
+    
     [x-cloak]{display:none!important;}
 
     /* Enhanced Header */
@@ -1875,7 +1906,7 @@
           <div class="logo-container">
             <div class="brand">
               <img id="header-logo" src="/assets/logo.png" alt="Tyton" onerror="this.src=generateFallbackLogo()" />
-              <span style="font-family: 'Bebas Neue', 'Orbitron', cursive; font-size: 24px; font-weight: 400; letter-spacing: 2px; background: linear-gradient(135deg, var(--gold) 0%, #ffd700 50%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 10px rgba(218,165,32,0.3);">TYTON</span>
+              <span style="font-family: 'Bebas Neue', 'Orbitron', cursive; font-size: 24px; font-weight: 400; letter-spacing: 2px; background: linear-gradient(135deg, var(--gold) 0%, #ffd700 50%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 10px rgba(218,165,32,0.3);">TYTON</span><span class="beta-text" style="font-family: 'Space Grotesk', 'Inter', italic; font-size: 16px; font-weight: 500; font-style: italic; margin-left: 8px; background: linear-gradient(90deg, #8b5cf6, #a855f7, #c084fc, #e879f9, #fbbf24, #f59e0b, #ef4444, #ec4899, #8b5cf6); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 15px rgba(139,92,246,0.6), 0 0 25px rgba(139,92,246,0.3); animation: betaGlow 4s ease-in-out infinite;">Beta</span>
             </div>
           </div>
 
