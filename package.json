@@ -1,6 +1,6 @@
 {
   "name": "tyton-api",
-  "version": "0.2.0-beta",
+  "version": "0.2.0-alpha",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {

@@ -1,6 +1,6 @@
-# Tyton Beta Development Setup
+# Tyton Alpha Development Setup
 
-This guide helps you quickly set up the Tyton Beta project on any device with Claude Code.
+This guide helps you quickly set up the Tyton Alpha project on any device with Claude Code.
 
 ## Quick Setup for Development
 

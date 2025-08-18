@@ -87,7 +87,7 @@
       100% { transform: translate(0, 0) rotate(360deg); }
     }
     
-    @keyframes betaGlow {
+    @keyframes alphaGlow {
       0% { 
         text-shadow: 0 0 15px rgba(139,92,246,0.6), 0 0 25px rgba(139,92,246,0.3);
         background-position: 0% 50%;
@@ -1904,9 +1904,9 @@
             <span></span>
           </button>
           <div class="logo-container">
-            <div class="brand">
+            <div class="brand" onclick="showMasthead()" style="cursor: pointer;">
               <img id="header-logo" src="/assets/logo.png" alt="Tyton" onerror="this.src=generateFallbackLogo()" />
-              <span style="font-family: 'Bebas Neue', 'Orbitron', cursive; font-size: 24px; font-weight: 400; letter-spacing: 2px; background: linear-gradient(135deg, var(--gold) 0%, #ffd700 50%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 10px rgba(218,165,32,0.3);">TYTON</span><span class="beta-text" style="font-family: 'Space Grotesk', 'Inter', italic; font-size: 16px; font-weight: 500; font-style: italic; margin-left: 8px; background: linear-gradient(90deg, #8b5cf6, #a855f7, #c084fc, #e879f9, #fbbf24, #f59e0b, #ef4444, #ec4899, #8b5cf6); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 15px rgba(139,92,246,0.6), 0 0 25px rgba(139,92,246,0.3); animation: betaGlow 4s ease-in-out infinite;">Beta</span>
+              <span style="font-family: 'Bebas Neue', 'Orbitron', cursive; font-size: 24px; font-weight: 400; letter-spacing: 2px; background: linear-gradient(135deg, var(--gold) 0%, #ffd700 50%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 10px rgba(218,165,32,0.3);">TYTON</span><span class="alpha-text" style="font-family: 'Space Grotesk', 'Inter', italic; font-size: 16px; font-weight: 500; font-style: italic; margin-left: 8px; background: linear-gradient(90deg, #8b5cf6, #a855f7, #c084fc, #e879f9, #fbbf24, #f59e0b, #ef4444, #ec4899, #8b5cf6); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 15px rgba(139,92,246,0.6), 0 0 25px rgba(139,92,246,0.3); animation: alphaGlow 4s ease-in-out infinite;">Alpha</span>
             </div>
           </div>
 
@@ -2993,6 +2993,98 @@
             
             <h4 style="margin-top: 24px;">Contact Information</h4>
             <p style="color: var(--muted);">Email: support@tyton.com | Website: www.tyton.com</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- MASTHEAD PAGE (Only accessible via logo) -->
+      <section id="masthead-page" style="display:none;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+          <!-- Back to Home Button -->
+          <button class="btn" onclick="setRoute('home')" style="margin-bottom: 32px; background: rgba(241,245,249,.08); border: 1px solid var(--border-subtle);">
+            ← Back to Home
+          </button>
+          
+          <!-- Masthead Content -->
+          <div class="card" style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.95) 100%); padding: 60px 40px; text-align: center; position: relative; overflow: hidden;">
+            <!-- Animated Background Pattern -->
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.05; background: radial-gradient(circle at 20% 50%, var(--gold) 0%, transparent 50%), radial-gradient(circle at 80% 50%, var(--cosmic-purple) 0%, transparent 50%), radial-gradient(circle at 50% 20%, var(--atomic-cyan) 0%, transparent 50%); animation: cosmic-drift 20s ease-in-out infinite;"></div>
+            
+            <!-- Logo and Title -->
+            <div style="position: relative; z-index: 1;">
+              <img src="/assets/logo.png" alt="Tyton Logo" style="width: 120px; height: 120px; margin: 0 auto 24px; display: block; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,.4), 0 0 0 2px var(--border-accent), 0 0 60px var(--glow-primary);" onerror="this.src=generateFallbackLogo()">
+              
+              <h1 style="font-family: 'Bebas Neue', 'Orbitron', cursive; font-size: 72px; font-weight: 400; letter-spacing: 4px; margin: 0 0 16px 0; background: linear-gradient(135deg, var(--gold) 0%, #ffd700 50%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 30px rgba(218,165,32,0.5);">
+                TYTON
+              </h1>
+              
+              <span style="font-family: 'Space Grotesk', 'Inter', italic; font-size: 32px; font-weight: 500; font-style: italic; background: linear-gradient(90deg, #8b5cf6, #a855f7, #c084fc, #e879f9, #fbbf24, #f59e0b, #ef4444, #ec4899, #8b5cf6); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 20px rgba(139,92,246,0.6), 0 0 35px rgba(139,92,246,0.3); animation: alphaGlow 4s ease-in-out infinite;">
+                Alpha
+              </span>
+              
+              <div style="margin: 40px 0; height: 1px; background: linear-gradient(90deg, transparent, var(--border-accent), transparent);"></div>
+              
+              <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 300; color: var(--white); margin: 0 0 16px 0; letter-spacing: 2px;">
+                Research Collaboration Platform
+              </h2>
+              
+              <p style="font-size: 18px; color: var(--muted); max-width: 600px; margin: 0 auto 40px; line-height: 1.8;">
+                Empowering researchers worldwide to connect, collaborate, and accelerate scientific discovery through shared projects, equipment, and knowledge.
+              </p>
+              
+              <!-- Key Features -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 32px; margin: 48px 0;">
+                <div style="text-align: center;">
+                  <div style="width: 60px; height: 60px; margin: 0 auto 16px; background: var(--gradient-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="var(--ink)">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                      <path d="M2 17L12 22L22 17M2 12L12 17L22 12"/>
+                    </svg>
+                  </div>
+                  <h3 style="color: var(--gold); margin: 0 0 8px 0;">Project Sharing</h3>
+                  <p style="color: var(--muted); font-size: 14px;">Collaborate on cutting-edge research projects</p>
+                </div>
+                
+                <div style="text-align: center;">
+                  <div style="width: 60px; height: 60px; margin: 0 auto 16px; background: var(--gradient-secondary); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="var(--ink)">
+                      <path d="M20 7H4C2.89 7 2 7.89 2 9V19C2 20.11 2.89 21 4 21H20C21.11 21 22 20.11 22 19V9C22 7.89 21.11 7 20 7ZM20 19H4V9H20V19Z"/>
+                      <path d="M12 2L17 7H7L12 2Z"/>
+                    </svg>
+                  </div>
+                  <h3 style="color: var(--atomic-cyan); margin: 0 0 8px 0;">Equipment Access</h3>
+                  <p style="color: var(--muted); font-size: 14px;">Share and book specialized research equipment</p>
+                </div>
+                
+                <div style="text-align: center;">
+                  <div style="width: 60px; height: 60px; margin: 0 auto 16px; background: var(--gradient-mystical); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="var(--ink)">
+                      <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9C22.1 9 23 9.9 23 11C23 12.1 22.1 13 21 13C19.9 13 19 12.1 19 11C19 9.9 19.9 9 21 9ZM3 9C4.1 9 5 9.9 5 11C5 12.1 4.1 13 3 13C1.9 13 1 12.1 1 11C1 9.9 1.9 9 3 9ZM12 14L16 10L20 14L16 18L12 14ZM8 10L4 14L8 18L12 14L8 10Z"/>
+                    </svg>
+                  </div>
+                  <h3 style="color: var(--cosmic-purple); margin: 0 0 8px 0;">Global Network</h3>
+                  <p style="color: var(--muted); font-size: 14px;">Connect with researchers worldwide</p>
+                </div>
+              </div>
+              
+              <!-- Mission Statement -->
+              <div style="background: rgba(218,165,32,.1); border: 1px solid var(--border-accent); border-radius: 16px; padding: 32px; margin: 48px 0;">
+                <h3 style="color: var(--gold); margin: 0 0 16px 0; font-size: 20px;">Our Mission</h3>
+                <p style="color: var(--white); font-size: 16px; line-height: 1.8; margin: 0;">
+                  To democratize scientific research by creating an open, collaborative platform where researchers from all backgrounds can share resources, knowledge, and discoveries. We believe that by breaking down barriers between institutions and disciplines, we can accelerate the pace of innovation and solve humanity's greatest challenges together.
+                </p>
+              </div>
+              
+              <!-- Version and Build Info -->
+              <div style="margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border-subtle);">
+                <p style="color: var(--muted); font-size: 14px; margin: 0;">
+                  Version 0.2.0-alpha | Build 2025.08.18 | © 2025 Tyton Systems
+                </p>
+                <p style="color: var(--muted); font-size: 12px; margin: 8px 0 0 0; opacity: 0.7;">
+                  Made with ❤️ for the research community
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -4469,6 +4561,32 @@
       appState.route = route;
       updateRoute();
     }
+    
+    function showMasthead() {
+      // Hide all pages first
+      document.getElementById('home-page').style.display = 'none';
+      document.getElementById('search-page').style.display = 'none';
+      document.getElementById('projects-page').style.display = 'none';
+      document.getElementById('equipment-page').style.display = 'none';
+      document.getElementById('groups-page').style.display = 'none';
+      document.getElementById('group-detail-page').style.display = 'none';
+      document.getElementById('discussions-page').style.display = 'none';
+      document.getElementById('journal-page').style.display = 'none';
+      document.getElementById('project-manager-page').style.display = 'none';
+      document.getElementById('blog-page').style.display = 'none';
+      document.getElementById('tyton-plus-page').style.display = 'none';
+      document.getElementById('profile-page').style.display = 'none';
+      document.getElementById('preferences-page').style.display = 'none';
+      document.getElementById('theme-page').style.display = 'none';
+      document.getElementById('help-page').style.display = 'none';
+      document.getElementById('about-page').style.display = 'none';
+      
+      // Show only the masthead page
+      document.getElementById('masthead-page').style.display = 'block';
+      
+      // Update the app state to track that we're on masthead (but don't use standard routing)
+      appState.route = 'masthead';
+    }
 
     function updateRoute() {
       // Hide all pages
@@ -4488,6 +4606,7 @@
       document.getElementById('theme-page').style.display = 'none';
       document.getElementById('help-page').style.display = 'none';
       document.getElementById('about-page').style.display = 'none';
+      document.getElementById('masthead-page').style.display = 'none';
       
       // Profile info section is now part of the profile page, so no separate handling needed
       

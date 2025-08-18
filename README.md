@@ -1,6 +1,6 @@
-# Tyton Beta - Research Collaboration Platform
+# Tyton Alpha - Research Collaboration Platform
 
-A modern research collaboration platform for projects and equipment sharing. Currently in beta development with dynamic UI features and enhanced user experience.
+A modern research collaboration platform for projects and equipment sharing. Currently in alpha development with dynamic UI features and enhanced user experience.
 
 ## Features
 
@@ -10,7 +10,7 @@ A modern research collaboration platform for projects and equipment sharing. Cur
 - 📱 **Offline Support** - Works offline with localStorage fallback
 - 🌐 **Real-time API** - RESTful API with JSON data persistence
 - 📸 **File Upload** - Image upload for profile pictures
-- 🎨 **Modern UI** - Beautiful dark theme with responsive design and animated beta branding
+- 🎨 **Modern UI** - Beautiful dark theme with responsive design and animated alpha branding
 
 ## Quick Start
 
