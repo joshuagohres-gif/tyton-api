@@ -5,7 +5,7 @@
   <title>Tyton Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
     
     :root{
       --navy:#0a0d1a; --gold:#daa520; --maroon:#7a263a; --ink:#050814; --muted:#a8c8ec; --bg:#060b16;
@@ -118,9 +118,9 @@
     }
     
     .bar{
-      max-width:1200px;margin:0 auto;
+      width: 100%;
       display:flex; justify-content: space-between;
-      align-items:center; gap:16px; padding:12px 20px;
+      align-items:center; gap:16px; padding:12px 0 12px 20px;
       position: relative;
     }
     
@@ -136,16 +136,10 @@
       display:flex; align-items:center; gap:12px; 
       text-decoration:none; color:var(--white);
       transition: transform 0.2s ease;
-      position: absolute;
-      left: -210px; /* Move 200px further to the left */
-      top: 50%; /* Center vertically */
-      transform: translateY(-50%); /* Adjust for perfect centering */
-      cursor: pointer;
-      z-index: 1400; /* Ensure settings button is above sidebar */
     }
     
     .brand:hover {
-      transform: translateY(-50%) scale(1.02);
+      transform: scale(1.02);
     }
     
     .brand img{
@@ -183,51 +177,9 @@
       padding: 8px 12px;
     }
     
-    /* Settings Dropdown - Completely Rebuilt */
-    .settings-container {
+    /* Logo Container */
+    .logo-container {
       position: relative;
-    }
-    
-    .settings-dropdown {
-      position: fixed;
-      top: 85px;
-      left: -210px;
-      background: #1a1a2e;
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,.5);
-      min-width: 180px;
-      z-index: 2147483647; /* Maximum possible z-index value */
-      display: none;
-      isolation: isolate; /* Create new stacking context */
-      will-change: transform; /* Force GPU layer */
-    }
-    
-    .settings-dropdown.show {
-      display: block;
-    }
-    
-    .settings-dropdown-item {
-      display: block;
-      width: 100%;
-      padding: 12px 16px;
-      background: none;
-      border: none;
-      color: #ffffff;
-      text-align: left;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s ease;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-    }
-    
-    .settings-dropdown-item:last-child {
-      border-bottom: none;
-    }
-    
-    .settings-dropdown-item:hover {
-      background: rgba(255,255,255,.1);
-      color: #DAA520;
     }
 
     /* User Dropdown - Simple and working */
@@ -1829,31 +1781,49 @@
     <nav class="nav-sidebar" aria-label="Main navigation" role="navigation">
       <div class="nav-menu">
         <button id="nav-home" class="nav-item" onclick="setRoute('home')">
-          <img src="/assets/tyton_home.png" alt="Home" onerror="this.style.display='none'"> Home
+          <img src="/assets/tyton_home.png" alt="Home" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik0zIDEyTDEyIDNMMjEgMTIiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTUgMTJWMTlBMSAxIDAgMCAwIDYgMjBIMTBWMTZBMSAxIDAgMCAxIDExIDE1SDEzQTEgMSAwIDAgMSAxNCAxNlYyMEgxOEExIDEgMCAwIDAgMTkgMTlWMTIiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cjwvc3ZnPg=='"> Home
         </button>
         <button id="nav-search" class="nav-item" onclick="setRoute('search')">
-          <img src="/assets/tyton_search.png" alt="Search" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNEQUE1MjAiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjYiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxwYXRoIGQ9Ik0xNiAxNkwyMCAyMCIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Search
+          <img src="/assets/tyton_search.png" alt="Search" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjYiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxwYXRoIGQ9Ik0xNiAxNkwyMCAyMCIgc3Ryb2tlPSIjREFBNTIwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Search
         </button>
         <button id="nav-projects" class="nav-item" onclick="setRoute('projects')">
-          <img src="/assets/tyton_projects.png" alt="Projects" onerror="this.style.display='none'"> Projects
+          <img src="/assets/tyton_projects.png" alt="Projects" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik04IDNINkM1IDMgNCA0IDQgNVYxOUM0IDIwIDUgMjEgNiAyMUgxOEMxOSAyMSAyMCAyMCAyMCAxOVY5SDE4VjE4SDZWNUg4VjNaIiBmaWxsPSIjREFBNTIwIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iNiIgcj0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjREFBNTIwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8cGF0aCBkPSJNMTIgOUwxNSAxMkwxMiAxNUw5IDEyWiIgZmlsbD0iI0RBQTUyMCIvPgo8cGF0aCBkPSJNOCAxMEgxNk04IDEzSDE2TTggMTZIMTYiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjwvc3ZnPgo8L3N2Zz4='"> Projects
+        </button>
+        <button id="nav-project-manager" class="nav-item" onclick="setRoute('project-manager')">
+          <img src="/assets/tyton_project_manager.png" alt="Project Manager" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik04IDRINkM1LjQ0NzcyIDQgNSA0LjQ0NzcyIDUgNVYxOUM1IDE5LjU1MjMgNS40NDc3MiAyMCA2IDIwSDhWNFoiIGZpbGw9IiNEQUE1MjAiLz4KPHBhdGggZD0iTTE4IDRIOFYyMEgxOEMxOC41NTIzIDIwIDE5IDE5LjU1MjMgMTkgMTlWNUMxOSA0LjQ0NzcyIDE4LjU1MjMgNCAxOCA0WiIgZmlsbD0iI0RBQTUyMCIvPgo8cGF0aCBkPSJNMTAgN0gxNiIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTAgMTBIMTYiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTEwIDEzSDE0IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjIiIGZpbGw9IiNEQUE1MjAiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIwLjUiLz4KPC9zdmc+Cjwvc3ZnPg=='"> Project Manager
         </button>
         <button id="nav-equipment" class="nav-item" onclick="setRoute('equipment')">
-          <img src="/assets/tyton_equipment.png" alt="Marketplace" onerror="this.style.display='none'"> Tyton Marketplace
+          <img src="/assets/tyton_equipment.png" alt="Marketplace" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik01IDhMMy41IDEwVjIwSDIwLjVWMTBMMTkgOEg1WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjREFBNTIwIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8Y2lyY2xlIGN4PSIxMCIgY3k9IjEzIiByPSIyIiBmaWxsPSIjREFBNTIwIi8+CjxjaXJjbGUgY3g9IjE0IiBjeT0iMTMiIHI9IjIiIGZpbGw9IiNEQUE1MjAiLz4KPHBhdGggZD0iTTggOFY1QzggNCA5IDMgMTAgM0gxNEMxNSAzIDE2IDQgMTYgNVY4IiBzdHJva2U9IiNEQUE1MjAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTYgMTdIMTgiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Tyton Marketplace
         </button>
         <button id="nav-groups" class="nav-item" onclick="setRoute('groups')">
-          <img src="/assets/tyton_groups.png" alt="Groups" onerror="this.style.display='none'"> Groups
+          <img src="/assets/tyton_groups.png" alt="Groups" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxMiIgcng9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPGNpcmNsZSBjeD0iOSIgY3k9IjgiIHI9IjEuNSIgZmlsbD0iI0RBQTUyMCIvPgo8Y2lyY2xlIGN4PSIxNSIgY3k9IjgiIHI9IjEuNSIgZmlsbD0iI0RBQTUyMCIvPgo8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxLjUiIGZpbGw9IiNEQUE1MjAiLz4KPHBhdGggZD0iTTEyIDEwVjE0TTEwIDEySDlNMTAgMTJWMTBNMTAgMTJIMTJNMTQgMTJIMTVNMTQgMTJWMTBNMTQgMTJIMTIiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHJlY3QgeD0iNCIgeT0iMTgiIHdpZHRoPSIxNiIgaGVpZ2h0PSIyIiBmaWxsPSIjREFBNTIwIi8+Cjwvc3ZnPgo8L3N2Zz4='"> Groups
         </button>
         <button id="nav-discussions" class="nav-item" onclick="setRoute('discussions')">
-          <img src="/assets/tyton_discussions.png" alt="Discussions" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNEQUE1MjAiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik04IDZDOCA1LjQ0NzcyIDguNDQ3NzIgNSA5IDVIMTdDMTcuNTUyMyA1IDE4IDUuNDQ3NzIgMTggNlYxNEMxOCAxNC41NTIzIDE3LjU1MjMgMTUgMTcgMTVIMTNMMTAgMThWMTVIOUM4LjQ0NzcyIDE1IDggMTQuNTUyMyA4IDE0VjZaIiBmaWxsPSIjMDUwODE0Ii8+CjxwYXRoIGQ9Ik0xMSA5SDE1IiBzdHJva2U9IiNEQUE1MjAiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMSAxMkgxNSIgc3Ryb2tlPSIjREFBNTIwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Discussions
+          <img src="/assets/tyton_discussions.png" alt="Discussions" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik04IDZDOCA1LjQ0NzcyIDguNDQ3NzIgNSA5IDVIMTdDMTcuNTUyMyA1IDE4IDUuNDQ3NzIgMTggNlYxNEMxOCAxNC41NTIzIDE3LjU1MjMgMTUgMTcgMTVIMTNMMTAgMThWMTVIOUM4LjQ0NzcyIDE1IDggMTQuNTUyMyA4IDE0VjZaIiBmaWxsPSIjREFBNTIwIi8+CjxwYXRoIGQ9Ik0xMSA5SDE1IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMSAxMkgxNSIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Discussions
         </button>
         <button id="nav-journal" class="nav-item" onclick="setRoute('journal')">
-          <img src="/assets/tyton_journal.png" alt="Journal" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNEQUE1MjAiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik02IDJINEMyLjg5IDIgMiAyLjg5IDIgNFYyMEMyIDIxLjExIDIuODkgMjIgNCAyMkg2VjJaIiBmaWxsPSIjMDUwODE0Ii8+CjxwYXRoIGQ9Ik0yMCAySDZWMjJIMjBDMjEuMTEgMjIgMjIgMjEuMTEgMjIgMjBWNEMyMiAyLjg5IDIxLjExIDIgMjAgMloiIGZpbGw9IiNEQUE1MjAiLz4KPHBhdGggZD0iTTkgN0gxOSIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik05IDEwSDE5IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTkgMTNIMTYiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Tyton Journal
+          <img src="/assets/tyton_journal.png" alt="Journal" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik02IDJINEMyLjg5IDIgMiAyLjg5IDIgNFYyMEMyIDIxLjExIDIuODkgMjIgNCAyMkg2VjJaIiBmaWxsPSIjREFBNTIwIi8+CjxwYXRoIGQ9Ik0yMCAySDZWMjJIMjBDMjEuMTEgMjIgMjIgMjEuMTEgMjIgMjBWNEMyMiAyLjg5IDIxLjExIDIgMjAgMloiIGZpbGw9IiNEQUE1MjAiLz4KPHBhdGggZD0iTTkgN0gxOSIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik05IDEwSDE5IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTkgMTNIMTYiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Tyton Journal
         </button>
         <button id="nav-blog" class="nav-item" onclick="setRoute('blog')">
-          <img src="/assets/tyton_blog.png" alt="News" onerror="this.style.display='none'"> News
+          <img src="/assets/tyton_blog.png" alt="News" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik02IDNINEMzLjQ0IDMgMyAzLjQ0IDMgNFYyMEMzIDIwLjU2IDMuNDQgMjEgNCAyMUg2VjNaIiBmaWxsPSIjREFBNTIwIi8+CjxwYXRoIGQ9Ik0yMCAzSDZWMjFIMjBDMjAuNTYgMjEgMjEgMjAuNTYgMjEgMjBWNEMyMSAzLjQ0IDIwLjU2IDMgMjAgM1oiIGZpbGw9IiNEQUE1MjAiLz4KPHBhdGggZD0iTTkgNkgxOSIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8cGF0aCBkPSJNOSA5SDE3IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMS41Ii8+CjxwYXRoIGQ9Ik05IDEySDEzIiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMS41Ii8+CjxjaXJjbGUgY3g9IjE3IiBjeT0iMTIiIHI9IjEuNSIgZmlsbD0iIzA1MDgxNCIvPgo8cGF0aCBkPSJNOSAxNUgxNiIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8cGF0aCBkPSJNOSAxOEgxNCIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8L3N2Zz4KPC9zdmc+'"> News
         </button>
         <button id="nav-profile" class="nav-item" onclick="setRoute('profile')">
-          <img src="/assets/tyton_profile.png" alt="Profile" onerror="this.style.display='none'"> Profile
+          <img src="/assets/tyton_profile.png" alt="Profile" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOCIgcj0iMy41IiBmaWxsPSJub25lIiBzdHJva2U9IiNEQUE1MjAiIHN0cm9rZS13aWR0aD0iMS41Ii8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOCIgcj0iMS41IiBmaWxsPSIjREFBNTIwIi8+CjxwYXRoIGQ9Ik01IDE4QzUgMTQuNjg2MyA4LjEzNDAxIDEyIDEyIDEyUzE5IDE0LjY4NjMgMTkgMTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHBhdGggZD0iTTggMTdIMTZNNyAxOUgxNyIgc3Ryb2tlPSIjREFBNTIwIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+Cjwvc3ZnPg=='"> Profile
+        </button>
+        <button id="nav-preferences" class="nav-item" onclick="setRoute('preferences')">
+          <img src="/assets/tyton_preferences.png" alt="Preferences" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjMiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIi8+CjxwYXRoIGQ9Ik0xMiAxVjNNMTIgMjFWMjNNNC4yMiA0LjIyTDUuNjQgNS42NU0xOC4zNiAxOC4zNUwxOS43OCAxOS43N000LjIyIDE5Ljc4TDUuNjQgMTguMzZNMTguMzYgNS42NUwxOS43OCA0LjIzTTEgMTJIM000MiAxMkgyM00xMiAxVjNNMTIgMjFWMjMiIHN0cm9rZT0iI0RBQTUyMCIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+Cjwvc3ZnPg=='"> Preferences
+        </button>
+        <button id="nav-theme" class="nav-item" onclick="setRoute('theme')">
+          <img src="/assets/tyton_theme.png" alt="Theme" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik0xMiA2VjJIMTNWNkgxMlpNNC45MyA1Ljc1TDQuMjIgNy4wNkw3LjQgOC45MUw4LjExIDcuNkw0LjkzIDUuNzVaTTQgMThIMlYxOUg0VjE4Wk02LjMgMTcuN0w1IDE4LjNMNy4xIDIwLjNMOC40IDE5LjdMNi4zIDE3LjdaTTEyIDIyVjE4SDEzVjIySDEyWk0xNy42IDE5LjdMMTguOSAyMC4zTDIxIDIwLjNMMTkuNyAxOC4zTDE3LjYgMTkuN1pNMjAgMThWMTlIMjJWMThIMjBaTTE5IDE2LjlMMjAuMjUgMTcuMTVMMjIuMjUgMTVMMjEgMTQuNjVMMTkgMTYuOVpNNyAxNi45TDUgMTQuNjVMMy43NSAxNUw1Ljc1IDE3LjE1TDcgMTYuOVpNMTYgMTNIMTNWMTZIMTZWMTNaTTEyIDEyQzEzLjEgMTIgMTQgMTEuMSAxNCAxMFYzQzE0IDIuNDUgMTMuNTUgMiAxMyAySEEwQzEyLjQ1IDIgMTIgMi40NSAxMiAzVjEwQzEyIDExLjEgMTIuOSAxMiAxMiAxMloiIGZpbGw9IiNEQUE1MjAiLz4KPC9zdmc+Cjwvc3ZnPg=='"> Theme
+        </button>
+        <button id="nav-help" class="nav-item" onclick="setRoute('help')">
+          <img src="/assets/tyton_help.png" alt="Help" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIiBzdHJva2U9IiNEQUE1MjAiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIvPgo8cGF0aCBkPSJNMTIgMTZWMTJNMTIgOEgxMi4wMSIgc3Ryb2tlPSIjREFBNTIwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> Help & Support
+        </button>
+        <button id="nav-about" class="nav-item" onclick="setRoute('about')">
+          <img src="/assets/tyton_about.png" alt="About" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIiBzdHJva2U9IiNEQUE1MjAiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIvPgo8cGF0aCBkPSJNMTIgMTZWMTJNMTIgOEgxMi4wMSIgc3Ryb2tlPSIjREFBNTIwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+'"> About
+        </button>
+        <button id="nav-tyton-plus" class="nav-item" onclick="setRoute('tyton-plus')">
+          <img src="/assets/tyton_plus.png" alt="Tyton+" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeD0iOCIgeT0iOCI+CjxwYXRoIGQ9Ik0xMiAyTDE1LjA5IDguMjZMMjIgOUwxNyAxNEwxOC4xOCAyMUwxMiAxNy43N0w1LjgyIDIxTDcgMTRMMiA5TDguOTEgOC4yNkwxMiAyWiIgZmlsbD0iI0RBQTUyMCIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjAuNSIvPgo8dGV4dCB4PSIxMiIgeT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwNTA4MTQiIGZvbnQtc2l6ZT0iMTAiIGZvbnQtd2VpZ2h0PSJib2xkIj4rPC90ZXh0Pgo8L3N2Zz4KPC9zdmc+'"> Tyton+
         </button>
         
         <!-- Weather Widget in Sidebar -->
@@ -1886,6 +1856,12 @@
             </div>
           </div>
         </div>
+        
+        <!-- Copyright Notice -->
+        <div class="sidebar-copyright" style="margin-top: 32px; padding: 16px; text-align: center; font-size: 11px; color: var(--muted); line-height: 1.4; opacity: 0.7;">
+          © 2025 Tyton Systems<br>
+          <span style="font-size: 10px; opacity: 0.8;">All rights reserved</span>
+        </div>
       </div>
     </nav>
     
@@ -1896,19 +1872,10 @@
                   aria-label="Toggle navigation menu" aria-expanded="false">
             <span></span>
           </button>
-          <div class="settings-container">
-            <div class="brand" onclick="toggleSettingsDropdown()">
+          <div class="logo-container">
+            <div class="brand">
               <img id="header-logo" src="/assets/logo.png" alt="Tyton" onerror="this.src=generateFallbackLogo()" />
-              <span>Settings</span>
-            </div>
-            
-            <!-- Settings Dropdown Menu -->
-            <div id="settings-dropdown" class="settings-dropdown">
-              <button class="settings-dropdown-item">Account Settings</button>
-              <button class="settings-dropdown-item">Preferences</button>
-              <button class="settings-dropdown-item">Theme</button>
-              <button class="settings-dropdown-item">Help & Support</button>
-              <button class="settings-dropdown-item">About</button>
+              <span style="font-family: 'Bebas Neue', 'Orbitron', cursive; font-size: 24px; font-weight: 400; letter-spacing: 2px; background: linear-gradient(135deg, var(--gold) 0%, #ffd700 50%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 10px rgba(218,165,32,0.3);">TYTON</span>
             </div>
           </div>
 
@@ -2289,7 +2256,7 @@
       <!-- DISCUSSIONS PAGE -->
       <section id="discussions-page" style="display:none;">
         <h2 class="page-title">
-          <img src="/assets/tyton_discussions.png" alt="Discussions" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iI0RBQTUyMCIvPgo8cGF0aCBkPSJNOCA5QzggOC40NDc3MiA4LjQ0NzcyIDggOSA4SDE5QzE5LjU1MjMgOCAyMCA4LjQ0NzcyIDIwIDlWMTVDMjAgMTUuNTUyMyAxOS41NTIzIDE2IDE5IDE2SDE0LjVMMTEgMTkuNVYxNkg5QzguNDQ3NzIgMTYgOCAxNS41NTIzIDggMTVWOVoiIGZpbGw9IiMwNTA4MTQiLz4KPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeD0iMTIiIHk9IjEyIj4KPHBhdGggZD0iTTIgM0MyIDIuNDQ3NzIgMi40NDc3MiAyIDMgMkg5QzkuNTUyMjggMiAxMCAyLjQ0NzcyIDEwIDNWN0MxMCA3LjU1MjI4IDkuNTUyMjggOCA5IDhINi41TDQgMTAuNVY4SDNDMi40NDc3MiA4IDIgNy41NTIyOCAyIDdWM1oiIGZpbGw9IiNEQUE1MjAiLz4KPC9zdmc+Cjwvc3ZnPgo='">
+          <img src="/assets/tyton_discussions.png" alt="Discussions" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzA1MDgxNCIvPgo8cGF0aCBkPSJNOCA5QzggOC40NDc3MiA4LjQ0NzcyIDggOSA4SDE5QzE5LjU1MjMgOCAyMCA4LjQ0NzcyIDIwIDlWMTVDMjAgMTUuNTUyMyAxOS41NTIzIDE2IDE5IDE2SDE0LjVMMTEgMTkuNVYxNkg5QzguNDQ3NzIgMTYgOCAxNS41NTIzIDggMTVWOVoiIGZpbGw9IiNEQUE1MjAiLz4KPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeD0iMTIiIHk9IjEyIj4KPHBhdGggZD0iTTIgM0MyIDIuNDQ3NzIgMi40NDc3MiAyIDMgMkg5QzkuNTUyMjggMiAxMCAyLjQ0NzcyIDEwIDNWN0MxMCA3LjU1MjI4IDkuNTUyMjggOCA5IDhINi41TDQgMTAuNVY4SDNDMi40NDc3MiA4IDIgNy41NTIyOCAyIDdWM1oiIGZpbGw9IiNEQUE1MjAiLz4KPC9zdmc+Cjwvc3ZnPgo='">
           Discussions
         </h2>
         
@@ -2324,7 +2291,7 @@
       <!-- TYTON JOURNAL PAGE -->
       <section id="journal-page" style="display:none;">
         <h2 class="page-title">
-          <img src="/assets/tyton_journal.png" alt="Journal" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iI0RBQTUyMCIvPgo8cGF0aCBkPSJNNiAySDRDMi44OSAyIDIgMi44OSAyIDRWMjBDMiAyMS4xMSAyLjg5IDIyIDQgMjJINlYyWiIgZmlsbD0iIzA1MDgxNCIvPgo8cGF0aCBkPSJNMjAgMkg2VjIySDIwQzIxLjExIDIyIDIyIDIxLjExIDIyIDIwVjRDMjIgMi44OSAyMS4xMSAyIDIwIDJaIiBmaWxsPSIjREFBNTIwIi8+CjxwYXRoIGQ9Ik05IDdIMTkiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOSAxMEgxOSIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik05IDEzSDE2IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+Cjwvc3ZnPgo='">
+          <img src="/assets/tyton_journal.png" alt="Journal" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzA1MDgxNCIvPgo8cGF0aCBkPSJNNiAySDRDMi44OSAyIDIgMi44OSAyIDRWMjBDMiAyMS4xMSAyLjg5IDIyIDQgMjJINlYyWiIgZmlsbD0iI0RBQTUyMCIvPgo8cGF0aCBkPSJNMjAgMkg2VjIySDIwQzIxLjExIDIyIDIyIDIxLjExIDIyIDIwVjRDMjIgMi44OSAyMS4xMSAyIDIwIDJaIiBmaWxsPSIjREFBNTIwIi8+CjxwYXRoIGQ9Ik05IDdIMTkiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOSAxMEgxOSIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik05IDEzSDE2IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+Cjwvc3ZnPgo='">
           Tyton Journal
         </h2>
         <p style="text-align: center; color: var(--muted); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto;">
@@ -2379,6 +2346,101 @@
           <button class="btn" onclick="changePage('journal', -1)">← Previous</button>
           <span id="journal-page-info"></span>
           <button class="btn" onclick="changePage('journal', 1)">Next →</button>
+        </div>
+      </section>
+      
+      <!-- PROJECT MANAGER PAGE -->
+      <section id="project-manager-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_project_manager.png" alt="Project Manager" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzA1MDgxNCIvPgo8cGF0aCBkPSJNOCA0SDZDNS40NDc3MiA0IDUgNC40NDc3MiA1IDVWMTlDNSAxOS41NTIzIDUuNDQ3NzIgMjAgNiAyMEg4VjRaIiBmaWxsPSIjREFBNTIwIi8+CjxwYXRoIGQ9Ik0xOCA0SDhWMjBIMThDMTguNTUyMyAyMCAxOSAxOS41NTIzIDE5IDE5VjVDMTkgNC40NDc3MiAxOC41NTIzIDQgMTggNFoiIGZpbGw9IiNEQUE1MjAiLz4KPHBhdGggZD0iTTEwIDdIMTYiIHN0cm9rZT0iIzA1MDgxNCIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTEwIDEwSDE2IiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMCAxM0gxNCIgc3Ryb2tlPSIjMDUwODE0IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIyIiBmaWxsPSIjREFBNTIwIiBzdHJva2U9IiMwNTA4MTQiIHN0cm9rZS13aWR0aD0iMC41Ii8+Cjwvc3ZnPgo='">
+          Tyton Project Manager
+        </h2>
+        
+        <!-- Tyton+ Feature Notice -->
+        <div style="text-align: center; margin: 60px auto; max-width: 800px;">
+          <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%), linear-gradient(135deg, rgba(255,107,53,.08) 0%, rgba(139,92,246,.05) 50%, rgba(0,212,170,.07) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 60px 40px; box-shadow: 0 20px 40px rgba(0,0,0,.3), 0 8px 16px rgba(0,0,0,.2), inset 0 1px 0 rgba(241,245,249,.08); backdrop-filter: blur(16px) saturate(180%); position: relative; overflow: hidden;">
+            
+            <!-- Tyton+ Badge -->
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--gradient-primary); color: var(--ink); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; margin-bottom: 24px; box-shadow: 0 4px 12px var(--glow-primary);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              Tyton+
+            </div>
+            
+            <!-- AI Icon -->
+            <div style="margin-bottom: 24px;">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" style="color: var(--gold); margin: 0 auto; display: block;">
+                <path d="M12 2L13.09 8.26L20 9L14 14L15.09 21L12 18L8.91 21L10 14L4 9L10.91 8.26L12 2Z" fill="currentColor" opacity="0.3"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            
+            <!-- Content -->
+            <h3 style="color: var(--gold); font-size: 28px; font-weight: 700; margin-bottom: 16px; letter-spacing: 1px;">
+              AI-Powered Project Builder
+            </h3>
+            
+            <p style="color: var(--muted); font-size: 18px; line-height: 1.6; margin-bottom: 32px;">
+              Our advanced AI assistant will help you plan, organize, and manage research projects from conception to completion. Get intelligent suggestions, automated workflows, and collaborative tools powered by cutting-edge artificial intelligence.
+            </p>
+            
+            <!-- Features List -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 40px; text-align: left;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ink)">
+                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"/>
+                  </svg>
+                </div>
+                <span style="color: var(--white); font-weight: 500;">Smart Project Planning</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ink)">
+                    <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88"/>
+                  </svg>
+                </div>
+                <span style="color: var(--white); font-weight: 500;">Team Collaboration</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ink)">
+                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/>
+                  </svg>
+                </div>
+                <span style="color: var(--white); font-weight: 500;">Automated Workflows</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ink)">
+                    <path d="M9 19C-2 19 2 3 2 3S6 1 13 1 24 3 24 3-5 19 9 19ZM20 12C20 16 16 20 12 20"/>
+                  </svg>
+                </div>
+                <span style="color: var(--white); font-weight: 500;">AI Insights & Analytics</span>
+              </div>
+            </div>
+            
+            <!-- Construction Notice -->
+            <div style="background: rgba(218,165,32,.1); border: 1px solid var(--border-accent); border-radius: 12px; padding: 24px; margin-bottom: 32px;">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--gold)">
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                  <path d="M2 17L12 22L22 17M2 12L12 17L22 12"/>
+                </svg>
+                <span style="color: var(--gold); font-weight: 700; font-size: 18px;">Under Construction</span>
+              </div>
+              <p style="color: var(--muted); margin: 0; font-size: 16px;">
+                This Tyton+ feature is currently under development. Our team is working hard to bring you the most advanced AI-powered project management tools for research collaboration.
+              </p>
+            </div>
+            
+            <!-- Coming Soon -->
+            <p style="color: var(--white); font-weight: 600; font-size: 16px; margin: 0;">
+              🚀 Coming Soon to Tyton+
+            </p>
+          </div>
         </div>
       </section>
 
@@ -2533,6 +2595,373 @@
           <div class="empty-state">
             <div class="spinner"></div>
             <p>Loading news articles...</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- TYTON+ PREMIUM PAGE -->
+      <section id="tyton-plus-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_plus.png" alt="Tyton+" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          Tyton+
+        </h2>
+        
+        <!-- Hero Section -->
+        <div style="text-align: center; margin: 40px auto 60px; max-width: 1000px;">
+          <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.95) 100%), linear-gradient(135deg, rgba(255,107,53,.1) 0%, rgba(139,92,246,.08) 50%, rgba(218,165,32,.12) 100%); border: 1px solid var(--border-accent); border-radius: 24px; padding: 60px 40px; box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(241,245,249,.1); backdrop-filter: blur(20px) saturate(180%); position: relative; overflow: hidden;">
+            
+            <!-- Decorative Background Elements -->
+            <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 40%, rgba(218,165,32,.15) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(255,107,53,.1) 0%, transparent 50%), radial-gradient(circle at 50% 80%, rgba(139,92,246,.1) 0%, transparent 50%); opacity: 0.6; z-index: -1;"></div>
+            
+            <!-- Premium Badge -->
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--gradient-primary); color: var(--ink); padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 16px; margin-bottom: 32px; box-shadow: 0 8px 32px var(--glow-primary); transform: scale(1.05);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+              </svg>
+              PREMIUM MEMBERSHIP
+            </div>
+            
+            <!-- Main Heading -->
+            <h1 style="color: var(--white); font-size: clamp(32px, 5vw, 48px); font-weight: 800; margin-bottom: 24px; letter-spacing: 2px; line-height: 1.2;">
+              Supercharge Your Research
+            </h1>
+            
+            <p style="color: var(--muted); font-size: 20px; line-height: 1.6; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto;">
+              Unlock AI-powered tools, advanced analytics, priority support, and exclusive features designed for serious researchers and institutions.
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 40px;">
+              <button style="background: var(--gradient-primary); color: var(--ink); border: none; padding: 18px 36px; border-radius: 16px; font-weight: 700; font-size: 18px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 12px 36px var(--glow-primary); transform: translateY(-2px);">
+                🚀 Start Free Trial
+              </button>
+              <button style="background: rgba(255,255,255,.1); color: var(--white); border: 1px solid rgba(255,255,255,.2); padding: 18px 36px; border-radius: 16px; font-weight: 600; font-size: 18px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                📋 Compare Plans
+              </button>
+            </div>
+            
+            <!-- Trust Indicators -->
+            <div style="display: flex; gap: 32px; justify-content: center; align-items: center; flex-wrap: wrap; opacity: 0.8;">
+              <div style="text-align: center;">
+                <div style="color: var(--gold); font-size: 24px; font-weight: 700;">500+</div>
+                <div style="color: var(--muted); font-size: 14px;">Research Groups</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--gold); font-size: 24px; font-weight: 700;">10K+</div>
+                <div style="color: var(--muted); font-size: 14px;">Active Projects</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--gold); font-size: 24px; font-weight: 700;">99.9%</div>
+                <div style="color: var(--muted); font-size: 14px;">Uptime</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Feature Highlights -->
+        <div style="margin-bottom: 80px;">
+          <h2 style="text-align: center; margin-bottom: 48px; font-size: 32px; color: var(--white);">Premium Features</h2>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; max-width: 1200px; margin: 0 auto;">
+            <!-- AI Project Manager -->
+            <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 32px; box-shadow: 0 12px 32px rgba(0,0,0,.2); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="var(--ink)">
+                  <path d="M12 2L13.09 8.26L20 9L14 14L15.09 21L12 18L8.91 21L10 14L4 9L10.91 8.26L12 2Z"/>
+                  <circle cx="12" cy="12" r="3" stroke="var(--ink)" stroke-width="1"/>
+                </svg>
+              </div>
+              <h3 style="color: var(--white); font-size: 20px; margin-bottom: 16px;">AI Project Manager</h3>
+              <p style="color: var(--muted); line-height: 1.6; margin-bottom: 20px;">Intelligent project planning, automated workflows, and AI-powered insights to accelerate your research timeline.</p>
+              <div style="color: var(--gold); font-weight: 600; font-size: 14px;">Coming Soon</div>
+            </div>
+            
+            <!-- Advanced Analytics -->
+            <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 32px; box-shadow: 0 12px 32px rgba(0,0,0,.2); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--gradient-secondary); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                  <path d="M3 3V21H21V19H5V3H3ZM21 7H19V17H21V7ZM17 9H15V17H17V9ZM13 11H11V17H13V11ZM9 13H7V17H9V13Z"/>
+                </svg>
+              </div>
+              <h3 style="color: var(--white); font-size: 20px; margin-bottom: 16px;">Advanced Analytics</h3>
+              <p style="color: var(--muted); line-height: 1.6; margin-bottom: 20px;">Deep insights into collaboration patterns, research trends, and productivity metrics with beautiful dashboards.</p>
+              <div style="color: var(--atomic-cyan); font-weight: 600; font-size: 14px;">Available Now</div>
+            </div>
+            
+            <!-- Priority Support -->
+            <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 32px; box-shadow: 0 12px 32px rgba(0,0,0,.2); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--gradient-mystical); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                  <path d="M21 6H3C2.45 6 2 6.45 2 7S2.45 8 3 8H21C21.55 8 22 7.55 22 7S21.55 6 21 6ZM21 10H3C2.45 10 2 10.45 2 11S2.45 12 3 12H21C21.55 12 22 11.55 22 11S21.55 10 21 10ZM21 14H3C2.45 14 2 14.45 2 15S2.45 16 3 16H21C21.55 16 22 15.55 22 15S21.55 14 21 14ZM21 18H3C2.45 18 2 18.45 2 19S2.45 20 3 20H21C21.55 20 22 19.55 22 19S21.55 18 21 18Z"/>
+                </svg>
+              </div>
+              <h3 style="color: var(--white); font-size: 20px; margin-bottom: 16px;">Priority Support</h3>
+              <p style="color: var(--muted); line-height: 1.6; margin-bottom: 20px;">24/7 dedicated support, direct access to our research team, and priority feature requests.</p>
+              <div style="color: var(--cosmic-purple); font-weight: 600; font-size: 14px;">Available Now</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pricing Section -->
+        <div style="margin-bottom: 80px;">
+          <h2 style="text-align: center; margin-bottom: 48px; font-size: 32px; color: var(--white);">Choose Your Plan</h2>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; max-width: 1000px; margin: 0 auto;">
+            <!-- Free Plan -->
+            <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 32px; box-shadow: 0 8px 24px rgba(0,0,0,.2); position: relative;">
+              <h3 style="color: var(--white); font-size: 24px; margin-bottom: 8px;">Free</h3>
+              <div style="color: var(--muted); margin-bottom: 24px;">Perfect for getting started</div>
+              <div style="margin-bottom: 32px;">
+                <span style="color: var(--white); font-size: 48px; font-weight: 700;">$0</span>
+                <span style="color: var(--muted); font-size: 16px;">/month</span>
+              </div>
+              <ul style="list-style: none; padding: 0; margin: 0 0 32px 0;">
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--atomic-cyan);">✓</span> Basic project management
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--atomic-cyan);">✓</span> Community discussions
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--atomic-cyan);">✓</span> Equipment marketplace
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--atomic-cyan);">✓</span> 5GB storage
+                </li>
+              </ul>
+              <button style="width: 100%; background: rgba(255,255,255,.1); color: var(--white); border: 1px solid rgba(255,255,255,.2); padding: 16px; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                Current Plan
+              </button>
+            </div>
+            
+            <!-- Plus Plan -->
+            <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%), linear-gradient(135deg, rgba(218,165,32,.1) 0%, rgba(255,107,53,.05) 100%); border: 2px solid var(--border-accent); border-radius: 20px; padding: 32px; box-shadow: 0 16px 48px rgba(218,165,32,.2), 0 8px 24px rgba(0,0,0,.3); position: relative; transform: scale(1.05);">
+              <!-- Popular Badge -->
+              <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gradient-primary); color: var(--ink); padding: 8px 24px; border-radius: 20px; font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px var(--glow-primary);">
+                MOST POPULAR
+              </div>
+              <h3 style="color: var(--gold); font-size: 24px; margin-bottom: 8px; font-weight: 700;">Tyton+</h3>
+              <div style="color: var(--muted); margin-bottom: 24px;">For serious researchers</div>
+              <div style="margin-bottom: 32px;">
+                <span style="color: var(--gold); font-size: 48px; font-weight: 700;">$9.99</span>
+                <span style="color: var(--muted); font-size: 16px;">/month</span>
+              </div>
+              <ul style="list-style: none; padding: 0; margin: 0 0 32px 0;">
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--gold);">⭐</span> Everything in Free
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--gold);">⭐</span> AI Project Manager
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--gold);">⭐</span> Advanced analytics
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--gold);">⭐</span> Priority support
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--gold);">⭐</span> 100GB storage
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--gold);">⭐</span> Custom integrations
+                </li>
+              </ul>
+              <button style="width: 100%; background: var(--gradient-primary); color: var(--ink); border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px var(--glow-primary);">
+                Start Free Trial
+              </button>
+            </div>
+            
+            <!-- Enterprise Plan -->
+            <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.9) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 32px; box-shadow: 0 8px 24px rgba(0,0,0,.2); position: relative;">
+              <h3 style="color: var(--white); font-size: 24px; margin-bottom: 8px;">Enterprise</h3>
+              <div style="color: var(--muted); margin-bottom: 24px;">For institutions & teams</div>
+              <div style="margin-bottom: 32px;">
+                <span style="color: var(--white); font-size: 24px; font-weight: 700;">Custom</span>
+                <span style="color: var(--muted); font-size: 16px;"> pricing</span>
+              </div>
+              <ul style="list-style: none; padding: 0; margin: 0 0 32px 0;">
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--cosmic-purple);">💎</span> Everything in Plus
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--cosmic-purple);">💎</span> Unlimited storage
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--cosmic-purple);">💎</span> Dedicated account manager
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--cosmic-purple);">💎</span> On-premise deployment
+                </li>
+                <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--white);">
+                  <span style="color: var(--cosmic-purple);">💎</span> Custom SLA
+                </li>
+              </ul>
+              <button style="width: 100%; background: var(--gradient-mystical); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                Contact Sales
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- FAQ Section -->
+        <div style="margin-bottom: 60px; max-width: 800px; margin-left: auto; margin-right: auto;">
+          <h2 style="text-align: center; margin-bottom: 48px; font-size: 32px; color: var(--white);">Frequently Asked Questions</h2>
+          
+          <div style="space-y: 16px;">
+            <div style="background: var(--card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 24px; margin-bottom: 16px;">
+              <h4 style="color: var(--white); margin-bottom: 12px;">What's included in the free trial?</h4>
+              <p style="color: var(--muted); margin: 0; line-height: 1.6;">You get full access to all Tyton+ features for 14 days, including the AI Project Manager, advanced analytics, and priority support. No credit card required.</p>
+            </div>
+            
+            <div style="background: var(--card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 24px; margin-bottom: 16px;">
+              <h4 style="color: var(--white); margin-bottom: 12px;">Can I cancel anytime?</h4>
+              <p style="color: var(--muted); margin: 0; line-height: 1.6;">Yes! You can cancel your subscription at any time. Your access to premium features will continue until the end of your current billing period.</p>
+            </div>
+            
+            <div style="background: var(--card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 24px; margin-bottom: 16px;">
+              <h4 style="color: var(--white); margin-bottom: 12px;">Is my research data secure?</h4>
+              <p style="color: var(--muted); margin: 0; line-height: 1.6;">Absolutely. We use enterprise-grade encryption, regular security audits, and comply with research data protection standards. Your intellectual property is always protected.</p>
+            </div>
+            
+            <div style="background: var(--card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 24px;">
+              <h4 style="color: var(--white); margin-bottom: 12px;">Do you offer student discounts?</h4>
+              <p style="color: var(--muted); margin: 0; line-height: 1.6;">Yes! Students with valid .edu email addresses receive 50% off Tyton+ subscriptions. Contact our support team to verify your student status.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Final CTA -->
+        <div style="text-align: center; margin-bottom: 40px;">
+          <div style="background: linear-gradient(135deg, var(--card) 0%, rgba(15,22,41,.95) 100%); border: 1px solid var(--border-accent); border-radius: 20px; padding: 48px 32px; max-width: 600px; margin: 0 auto; box-shadow: 0 12px 32px rgba(0,0,0,.2);">
+            <h3 style="color: var(--gold); font-size: 28px; margin-bottom: 16px; font-weight: 700;">Ready to upgrade your research?</h3>
+            <p style="color: var(--muted); font-size: 18px; margin-bottom: 32px; line-height: 1.6;">Join thousands of researchers who are already using Tyton+ to accelerate their discoveries.</p>
+            <button style="background: var(--gradient-primary); color: var(--ink); border: none; padding: 20px 40px; border-radius: 16px; font-weight: 700; font-size: 18px; cursor: pointer; box-shadow: 0 12px 36px var(--glow-primary); margin-right: 16px;">
+              🚀 Start Your Free Trial
+            </button>
+            <div style="color: var(--muted); font-size: 14px; margin-top: 16px;">
+              No credit card required • 14-day free trial • Cancel anytime
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- PREFERENCES PAGE -->
+      <section id="preferences-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_preferences.png" alt="Preferences" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          Preferences
+        </h2>
+        
+        <!-- Account Settings Section -->
+        <div class="card" style="margin-bottom: 24px;">
+          <h3>Account Settings</h3>
+          <p>Manage your account details, security settings, and login preferences.</p>
+          
+          <div style="margin-top: 24px;">
+            <h4>Email & Password</h4>
+            <p style="color: var(--muted);">Update your email address and password settings.</p>
+            
+            <h4 style="margin-top: 24px;">Two-Factor Authentication</h4>
+            <p style="color: var(--muted);">Add an extra layer of security to your account.</p>
+            
+            <h4 style="margin-top: 24px;">Connected Accounts</h4>
+            <p style="color: var(--muted);">Manage your Google and other connected social accounts.</p>
+          </div>
+        </div>
+        
+        <!-- User Preferences Section -->
+        <div class="card">
+          <h3>User Preferences</h3>
+          <p>Customize your Tyton experience to match your workflow and preferences.</p>
+          
+          <div style="margin-top: 24px;">
+            <h4>Notifications</h4>
+            <p style="color: var(--muted);">Choose which emails and in-app notifications you receive.</p>
+            
+            <h4 style="margin-top: 24px;">Display Settings</h4>
+            <p style="color: var(--muted);">Adjust timezone, date formats, and language preferences.</p>
+            
+            <h4 style="margin-top: 24px;">Privacy</h4>
+            <p style="color: var(--muted);">Control who can see your profile and activity.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- THEME PAGE -->
+      <section id="theme-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_theme.png" alt="Theme" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          Theme Settings
+        </h2>
+        
+        <div class="card">
+          <h3>Appearance</h3>
+          <p>Customize the visual appearance of Tyton to match your style.</p>
+          
+          <div style="margin-top: 24px;">
+            <h4>Color Theme</h4>
+            <p style="color: var(--muted);">Choose between dark mode, light mode, or automatic based on system preferences.</p>
+            
+            <h4 style="margin-top: 24px;">Interface Density</h4>
+            <p style="color: var(--muted);">Adjust the spacing and sizing of interface elements.</p>
+            
+            <h4 style="margin-top: 24px;">Custom Colors</h4>
+            <p style="color: var(--muted);">Personalize accent colors and highlighting (Tyton+ feature).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- HELP & SUPPORT PAGE -->
+      <section id="help-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_help.png" alt="Help" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          Help & Support
+        </h2>
+        
+        <div class="card">
+          <h3>Get Help</h3>
+          <p>Find answers to your questions and get support when you need it.</p>
+          
+          <div style="margin-top: 24px;">
+            <h4>Documentation</h4>
+            <p style="color: var(--muted);">Browse our comprehensive guides and tutorials.</p>
+            
+            <h4 style="margin-top: 24px;">Contact Support</h4>
+            <p style="color: var(--muted);">Get help from our support team via email or live chat.</p>
+            
+            <h4 style="margin-top: 24px;">Community Forum</h4>
+            <p style="color: var(--muted);">Ask questions and get help from other Tyton users.</p>
+            
+            <h4 style="margin-top: 24px;">Video Tutorials</h4>
+            <p style="color: var(--muted);">Watch step-by-step video guides for common tasks.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT PAGE -->
+      <section id="about-page" style="display:none;">
+        <h2 class="page-title">
+          <img src="/assets/tyton_about.png" alt="About" style="width: 32px; height: 32px; margin-right: 12px; vertical-align: middle;" onerror="this.style.display='none'">
+          About Tyton
+        </h2>
+        
+        <div class="card">
+          <h3>About This Platform</h3>
+          <p>Tyton is a research collaboration platform designed to connect researchers and accelerate scientific discovery.</p>
+          
+          <div style="margin-top: 24px;">
+            <h4>Version Information</h4>
+            <p style="color: var(--muted);">Tyton Platform v2.1.0 - Last updated: December 2024</p>
+            
+            <h4 style="margin-top: 24px;">Terms of Service</h4>
+            <p style="color: var(--muted);">Read our terms of service and privacy policy.</p>
+            
+            <h4 style="margin-top: 24px;">Credits & Acknowledgments</h4>
+            <p style="color: var(--muted);">Built with modern web technologies and open-source libraries.</p>
+            
+            <h4 style="margin-top: 24px;">Contact Information</h4>
+            <p style="color: var(--muted);">Email: support@tyton.com | Website: www.tyton.com</p>
           </div>
         </div>
       </section>
@@ -3058,7 +3487,6 @@
       }
       
       // Close all other dropdowns first
-      document.querySelectorAll('.settings-dropdown.show').forEach(d => d.classList.remove('show'));
       
       // Toggle user dropdown using classes for better CSS control
       const isVisible = dropdown.classList.contains('visible');
@@ -3082,16 +3510,6 @@
           !userMenuButton.contains(event.target)) {
         userDropdown.classList.remove('visible');
         userDropdown.style.display = 'none';
-      }
-      
-      // Close settings dropdown too
-      const settingsDropdown = document.getElementById('settings-dropdown');
-      const settingsButton = document.querySelector('[onclick="toggleSettingsDropdown()"]');
-      
-      if (settingsDropdown && settingsButton &&
-          !settingsDropdown.contains(event.target) && 
-          !settingsButton.contains(event.target)) {
-        settingsDropdown.classList.remove('show');
       }
     });
 
@@ -3163,30 +3581,6 @@
       }
     });
     
-    function toggleSettingsDropdown() {
-      console.log('Settings dropdown clicked');
-      const dropdown = document.getElementById('settings-dropdown');
-      if (dropdown) {
-        const isVisible = dropdown.classList.contains('show');
-        
-        // Close all other dropdowns first
-        document.querySelectorAll('.settings-dropdown.show').forEach(d => d.classList.remove('show'));
-        
-        if (!isVisible) {
-          dropdown.classList.add('show');
-          console.log('Dropdown opened');
-        } else {
-          console.log('Dropdown closed');
-        }
-      }
-    }
-    
-    function hideSettingsDropdown() {
-      const dropdown = document.getElementById('settings-dropdown');
-      if (dropdown) {
-        dropdown.classList.remove('show');
-      }
-    }
 
     // Weather Widget Functions
     class WeatherWidget {
@@ -3215,6 +3609,12 @@
         this.updateTime();
         setInterval(() => this.updateTime(), 60000); // Update time every minute
         await this.requestLocation();
+        
+        // Auto-refresh weather every 10 minutes
+        setInterval(() => {
+          console.log('Auto-refreshing weather data...');
+          this.requestLocation();
+        }, 10 * 60 * 1000); // 10 minutes
       }
 
       updateTime() {
@@ -3228,6 +3628,17 @@
       }
 
       async requestLocation() {
+        // Show loading state
+        this.updateWeatherDisplay({
+          location: 'Updating...',
+          temperature: '--',
+          status: 'Loading',
+          humidity: null,
+          precipChance: null,
+          uvIndex: null,
+          airQuality: null
+        });
+        
         if (navigator.geolocation) {
           try {
             const position = await new Promise((resolve, reject) => {
@@ -3251,19 +3662,121 @@
 
       async getWeatherData(lat, lon, defaultName = null) {
         try {
-          // Simplified weather implementation - show basic info with simulated data
-          // This avoids CORS issues and external API dependencies
-          const locationName = defaultName || 'Local Area';
+          // Try to get city name from coordinates using reverse geocoding
+          let cityName = defaultName || 'Berkeley';
           
-          // Generate realistic but simulated weather data
+          // Get location name using reverse geocoding
+          if (!defaultName) {
+            try {
+              const geocodeResponse = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
+                { mode: 'cors', cache: 'default' }
+              );
+              
+              if (geocodeResponse.ok) {
+                const geocodeData = await geocodeResponse.json();
+                const city = geocodeData.city || geocodeData.locality || geocodeData.principalSubdivision;
+                const region = geocodeData.principalSubdivisionCode || geocodeData.countryCode;
+                
+                if (city) {
+                  cityName = region ? `${city}, ${region}` : city;
+                } else if (geocodeData.countryName) {
+                  cityName = geocodeData.countryName;
+                }
+              }
+            } catch (geocodeError) {
+              console.log('Reverse geocoding failed, using coordinates');
+              cityName = `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
+            }
+          }
+          
+          // Use Open-Meteo free weather API (no key required)
+          try {
+            const response = await fetch(
+              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch`,
+              { 
+                mode: 'cors',
+                cache: 'default'
+              }
+            );
+            
+            if (response.ok) {
+              const data = await response.json();
+              const current = data.current_weather;
+              
+              // Map weather codes to conditions
+              const weatherCodeMap = {
+                0: 'Clear',
+                1: 'Mostly Clear',
+                2: 'Partly Cloudy',
+                3: 'Overcast',
+                45: 'Foggy',
+                48: 'Foggy',
+                51: 'Light Drizzle',
+                53: 'Drizzle',
+                55: 'Heavy Drizzle',
+                61: 'Light Rain',
+                63: 'Rain',
+                65: 'Heavy Rain',
+                71: 'Light Snow',
+                73: 'Snow',
+                75: 'Heavy Snow',
+                80: 'Light Showers',
+                81: 'Showers',
+                82: 'Heavy Showers',
+                95: 'Thunderstorm',
+                96: 'Thunderstorm with Hail',
+                99: 'Thunderstorm with Heavy Hail'
+              };
+              
+              const weatherStatus = weatherCodeMap[current.weathercode] || 'Unknown';
+              
+              const weatherInfo = {
+                location: cityName,
+                temperature: Math.round(current.temperature),
+                status: weatherStatus,
+                description: weatherStatus.toLowerCase(),
+                humidity: 65, // Open-Meteo doesn't provide humidity in basic tier
+                precipChance: current.weathercode >= 51 ? 60 : 20,
+                uvIndex: this.estimateUVIndex(weatherStatus),
+                airQuality: this.generatePlaceholderAQI(),
+                windSpeed: Math.round(current.windspeed),
+                icon: this.getWeatherIcon(weatherStatus)
+              };
+              
+              this.updateWeatherDisplay(weatherInfo);
+              
+              // Store successful fetch
+              localStorage.setItem('lastWeatherUpdate', Date.now());
+              localStorage.setItem('lastWeatherData', JSON.stringify(weatherInfo));
+              return;
+            }
+          } catch (apiError) {
+            console.log('Weather API unavailable, checking cache');
+            
+            // Try to use cached weather data if recent (within 30 minutes)
+            const lastUpdate = localStorage.getItem('lastWeatherUpdate');
+            const lastData = localStorage.getItem('lastWeatherData');
+            
+            if (lastUpdate && lastData) {
+              const timeDiff = Date.now() - parseInt(lastUpdate);
+              if (timeDiff < 30 * 60 * 1000) { // 30 minutes
+                const cachedWeather = JSON.parse(lastData);
+                this.updateWeatherDisplay(cachedWeather);
+                return;
+              }
+            }
+          }
+          
+          // Fallback to simulated data if API fails and no cache
           const weatherInfo = {
-            location: locationName,
+            location: defaultName || 'Berkeley, CA',
             temperature: this.generateSimulatedTemperature(),
             status: this.generateSimulatedConditions(),
-            humidity: Math.floor(Math.random() * 40) + 30, // 30-70%
+            humidity: Math.floor(Math.random() * 40) + 30,
             precipChance: Math.floor(Math.random() * 100),
             uvIndex: Math.floor(Math.random() * 10) + 1,
-            airQuality: Math.floor(Math.random() * 150) + 50 // 50-200 AQI
+            airQuality: Math.floor(Math.random() * 150) + 50
           };
           
           this.updateWeatherDisplay(weatherInfo);
@@ -3936,8 +4449,14 @@
       document.getElementById('group-detail-page').style.display = 'none';
       document.getElementById('discussions-page').style.display = 'none';
       document.getElementById('journal-page').style.display = 'none';
+      document.getElementById('project-manager-page').style.display = 'none';
       document.getElementById('blog-page').style.display = 'none';
+      document.getElementById('tyton-plus-page').style.display = 'none';
       document.getElementById('profile-page').style.display = 'none';
+      document.getElementById('preferences-page').style.display = 'none';
+      document.getElementById('theme-page').style.display = 'none';
+      document.getElementById('help-page').style.display = 'none';
+      document.getElementById('about-page').style.display = 'none';
       
       // Profile info section is now part of the profile page, so no separate handling needed
       
@@ -5324,7 +5843,7 @@ As gravitational wave astronomy matures from discovery science to precision meas
       initializeBlogPosts();
       
       // Initialize weather widget
-      new WeatherWidget();
+      window.weatherWidget = new WeatherWidget();
       
       // Check authentication first
       await checkAuth();
@@ -5342,15 +5861,6 @@ As gravitational wave astronomy matures from discovery science to precision meas
         if (userMenu && userDropdown && !userMenu.contains(e.target)) {
           userDropdown.style.display = 'none';
           userDropdown.classList.remove('visible');
-        }
-        
-        // Close settings dropdown
-        const settingsContainer = document.querySelector('.settings-container');
-        if (settingsContainer && !settingsContainer.contains(e.target)) {
-          const settingsDropdown = document.getElementById('settings-dropdown');
-          if (settingsDropdown) {
-            settingsDropdown.classList.remove('show');
-          }
         }
 
       });
@@ -6008,8 +6518,11 @@ As gravitational wave astronomy matures from discovery science to precision meas
   <!-- Footer with Quick Actions -->
   <footer style="margin-top: 60px; padding: 24px; background: var(--card); border-top: 1px solid rgba(255,255,255,0.1);">
     <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
-      <p style="color: var(--muted); margin-bottom: 16px;">
+      <p style="color: var(--muted); margin-bottom: 8px;">
         Tyton Demo - Research Collaboration Platform
+      </p>
+      <p style="color: var(--muted); font-size: 11px; margin-bottom: 16px; opacity: 0.7;">
+        © 2025 Tyton Systems - All rights reserved
       </p>
       <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
         <button class="btn" onclick="seedDemoData()" title="Load sample projects and equipment">
