@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Tyton** is a research collaboration platform that connects researchers, enables project sharing, and facilitates equipment booking across academic institutions.
+**Tyton Beta** is a research collaboration platform that connects researchers, enables project sharing, and facilitates equipment booking across academic institutions. Currently in beta development with enhanced UI features including animated branding and standardized navigation icons.
 
 ## Architecture
 
@@ -199,6 +199,17 @@ curl -X POST http://localhost:3000/api/seed
 - [ ] Optimize search with full-text search
 
 ## Recent Changes
+
+- **2025-08-18**: Major UI/UX improvements and beta branding
+  - Redesigned navigation icons for 5 key buttons (projects, marketplace, groups, news, profile)
+  - Updated logo to "TYTON Beta" with dynamic animated spectrum effect
+  - Fixed erroneous ">" character in navigation text
+  - Standardized all navigation icons with consistent 40x40 viewBox design
+  - Enhanced SVG fallback icons with #050814 background and #DAA520 gold content
+  - Improved art deco typography with Bebas Neue font integration
+  - Added animated backglow effects and smooth color transitions
+  - Created comprehensive development documentation (DEVELOPMENT.md)
+  - Updated copyright notices and Tyton+ pricing display
 
 - **2025-08-17**: Initial implementation completed
   - Full authentication system
